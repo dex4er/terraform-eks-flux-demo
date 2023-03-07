@@ -1,12 +1,15 @@
 # terraform-eks-flux-demo
 
-Simple demo of the application deployed in EKS cluster using Flux with OCI
+Demo of the application deployed in EKS cluster using Flux with OCI
 repository instead of Git repository.
 
-EKS cluster is in a private network with ELB endpoints in public network and
-master nodes in intra network.
+EKS cluster has features:
 
-EKS cluster is encrypted at rest.
+- is in a private network with ELB endpoints in public network and
+  master nodes in intra network
+- encrypted at rest
+- has customized nodes in self-managed node group
+- supports autoscaler
 
 ## Usage
 

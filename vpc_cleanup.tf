@@ -22,7 +22,3 @@ resource "null_resource" "vpc_cleanup" {
 locals {
   vpc_id = null_resource.vpc_cleanup.triggers.vpc_id
 }
-
-output "vpc_id" {
-  value = try(local.vpc_id, null)
-}

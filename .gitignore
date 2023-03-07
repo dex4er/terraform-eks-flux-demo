@@ -9,3 +9,5 @@
 *.tfplan
 *.tfvars
 *.tfstate*
+
+/aws_auth.yaml
