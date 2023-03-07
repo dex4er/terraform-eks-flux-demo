@@ -6,6 +6,8 @@ repository instead of Git repository.
 EKS cluster is in a private network with ELB endpoints in public network and
 master nodes in intra network.
 
+EKS cluster is encrypted at rest.
+
 ## Usage
 
 - Configure AWS:

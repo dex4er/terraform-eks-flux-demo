@@ -1,6 +1,7 @@
 ## VPC with three subnetworks
 
 module "vpc" {
+  ## https://github.com/terraform-aws-modules/terraform-aws-vpc
   source  = "terraform-aws-modules/vpc/aws"
   version = "3.19.0"
 
