@@ -1,5 +1,6 @@
 ?.*
 
+.kube
 .terraform
 .vscode
 
