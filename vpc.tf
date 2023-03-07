@@ -56,3 +56,11 @@ module "vpc" {
     VPC    = var.name
   }
 }
+
+locals {
+  subnets_private_ids_by_azs = { for i, v in var.azs : v => module.vpc.private_subnets[i] }
+}
+
+output "subnets_private_ids_by_azs" {
+  value = try(join(",", [for k, v in local.subnets_private_ids_by_azs : "${k}=${local.subnets_private_ids_by_azs[k]}"]), null)
+}
