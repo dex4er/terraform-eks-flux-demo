@@ -1,6 +1,9 @@
 ## aws-auth is the most important ConfigMap and it is needed for nodes to be
 ## joined to the cluster.
 ##
+## It is intentionaly outside Flux because accidential breaking of this file
+## causes catastrophic failure of the cluster.
+##
 ## There is a lot of troubles when Kubernetes resources are handled in the same
 ## configuration as AWS resources, especially on destroy or when cluster is
 ## recreated. To avoid problems here YAML manifest is created then applied by
@@ -60,7 +63,7 @@ resource "local_file" "aws_auth" {
 
 resource "null_resource" "apply_aws_auth" {
   triggers = {
-    aws_auth = sha256(local_file.aws_auth.content)
+    content_checksum = sha256(local_file.aws_auth.content)
   }
 
   provisioner "local-exec" {

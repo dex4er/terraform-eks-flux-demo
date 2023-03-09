@@ -10,4 +10,7 @@
 *.tfvars
 *.tfstate*
 
+/.*.zip
+
 /aws_auth.yaml
+/flux/flux-system/ocirepository.yaml
