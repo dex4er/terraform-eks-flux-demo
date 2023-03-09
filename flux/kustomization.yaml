@@ -3,6 +3,7 @@ kind: Kustomization
 namespace: flux-system
 resources:
   - all.yaml
+  - aws-load-balancer-controller.yaml
   - cluster-autoscaler.yaml
   - flux-system.yaml
   - podinfo.yaml
