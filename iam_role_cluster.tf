@@ -3,7 +3,7 @@
 module "iam_role_cluster" {
   ## https://github.com/terraform-aws-modules/terraform-aws-iam/tree/master/modules/iam-assumable-role
   source  = "terraform-aws-modules/iam/aws//modules/iam-assumable-role"
-  version = "5.11.2"
+  version = "5.12.0"
 
   role_name = "${var.name}-cluster"
   role_path = "/"

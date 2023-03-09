@@ -6,7 +6,7 @@
 module "iam_policy_cluster_cloudwatch" {
   ## https://github.com/terraform-aws-modules/terraform-aws-iam/tree/master/modules/iam-policy
   source  = "terraform-aws-modules/iam/aws//modules/iam-policy"
-  version = "5.11.2"
+  version = "5.12.0"
 
   name        = "${var.name}-cluster-cloudwatch"
   path        = "/"

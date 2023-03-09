@@ -13,4 +13,5 @@
 /.*.zip
 
 /aws_auth.yaml
+/flux/cluster-autoscaler/configmap-cluster-autoscaler-priority-expander.yaml
 /flux/flux-system/ocirepository.yaml

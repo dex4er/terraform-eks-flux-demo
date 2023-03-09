@@ -19,8 +19,6 @@ spec:
   values:
     ## https://github.com/stefanprodan/podinfo/blob/master/charts/podinfo/values.yaml
 
-    replicaCount: 1
-
     image:
       tag: 6.3.0
 
@@ -33,3 +31,14 @@ spec:
         memory: 256Mi
       limits:
         memory: 256Mi
+
+    affinity:
+      podAntiAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+                - key: app.kubernetes.io/name
+                  operator: In
+                  values:
+                    - podinfo
+            topologyKey: "kubernetes.io/hostname"

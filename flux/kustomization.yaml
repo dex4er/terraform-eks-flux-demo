@@ -3,5 +3,6 @@ kind: Kustomization
 namespace: flux-system
 resources:
   - all.yaml
+  - cluster-autoscaler.yaml
   - flux-system.yaml
   - podinfo.yaml

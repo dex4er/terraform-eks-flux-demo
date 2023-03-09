@@ -16,6 +16,7 @@ resource "null_resource" "flux_push_artifact" {
   }
 
   depends_on = [
+    local_file.flux_cluster_autoscaler_priority_expander,
     local_file.flux_cluster_vars,
     local_file.flux_ocirepository,
     null_resource.aws_eks_update-kubeconfig_terraform,

@@ -1,0 +1,66 @@
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: cluster-autoscaler
+  namespace: kube-system
+spec:
+  interval: 1m
+  timeout: 2m
+  maxHistory: 2
+  chart:
+    spec:
+      interval: 1m
+      chart: cluster-autoscaler
+      ## https://github.com/kubernetes/autoscaler/blob/master/charts/cluster-autoscaler/Chart.yaml#L14
+      version: "9.26.0"
+      sourceRef:
+        kind: HelmRepository
+        name: autoscaler
+      reconcileStrategy: Revision
+  values:
+    ## https://github.com/kubernetes/autoscaler/blob/master/charts/cluster-autoscaler/values.yaml
+
+    affinity:
+      podAntiAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+                - key: app.kubernetes.io/instance
+                  operator: In
+                  values:
+                    - cluster-autoscaler
+                - key: app.kubernetes.io/name
+                  operator: In
+                  values:
+                    - aws-cluster-autoscaler
+            topologyKey: "kubernetes.io/hostname"
+
+    autoDiscovery:
+      clusterName: ${cluster_name}
+
+    awsRegion: ${region}
+
+    extraArgs:
+      ## https://github.com/kubernetes/autoscaler/blob/master/cluster-autoscaler/FAQ.md#what-are-the-parameters-to-ca
+      aws-use-static-instance-list: true
+      expander: priority
+      leader-elect-lease-duration: 1m
+      leader-elect-renew-deadline: 45s
+      leader-elect-retry-period: 30s
+      scale-down-delay-after-add: 2m
+      scale-down-unneeded-time: 2m
+
+    fullnameOverride: cluster-autoscaler
+
+    image:
+      ## https://github.com/kubernetes/autoscaler/releases?q=cluster+autoscaler+1&expanded=true
+      ## https://github.com/kubernetes/autoscaler/tree/master/cluster-autoscaler#releases
+      tag: v1.24.0
+
+    rbac:
+      serviceAccount:
+        name: cluster-autoscaler
+        annotations:
+          eks.amazonaws.com/role-arn: arn:aws:iam::${account_id}:role/${cluster_name}-irsa-cluster-autoscaler
+
+    replicaCount: 2
