@@ -63,4 +63,4 @@ spec:
         annotations:
           eks.amazonaws.com/role-arn: arn:aws:iam::${account_id}:role/${cluster_name}-irsa-cluster-autoscaler
 
-    replicaCount: 2
+    replicaCount: 1
