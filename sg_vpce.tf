@@ -1,6 +1,8 @@
 ## Security group for endpoint services
 
 module "sg_vpce" {
+  count = var.cluster_in_private_subnet ? 1 : 0
+
   ## https://github.com/terraform-aws-modules/terraform-aws-security-group
   source  = "terraform-aws-modules/security-group/aws"
   version = "4.17.1"

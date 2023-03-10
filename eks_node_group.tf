@@ -75,7 +75,7 @@ module "eks_node_group" {
 
   iam_role_attach_cni_policy = true
 
-  subnet_ids = [for i, v in each.value.azs : local.subnets_private_ids_by_azs[v]]
+  subnet_ids = [for i, v in each.value.azs : local.subnets_ids_by_azs[v]]
 
   cluster_primary_security_group_id = module.eks.cluster_primary_security_group_id
   vpc_security_group_ids            = [local.sg_node_group_id]
@@ -144,7 +144,7 @@ module "eks_node_group" {
 
   network_interfaces = [
     {
-      associate_public_ip_address = false
+      associate_public_ip_address = var.cluster_in_private_subnet ? false : true
       delete_on_termination       = true
     }
   ]

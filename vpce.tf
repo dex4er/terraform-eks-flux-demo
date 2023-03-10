@@ -1,13 +1,18 @@
 ## Endpoint services for private network to avoid communication with AWS APIs
 ## via NAT gateway
+##
+## Warning! Each endpoint requires a separate network interface that makes
+## additional monthly cost $26.28 multiplied by number of endpoints!
 
 module "vpce" {
+  count = var.cluster_in_private_subnet ? 1 : 0
+
   ## https://github.com/terraform-aws-modules/terraform-aws-vpc/tree/master/modules/vpc-endpoints
   source  = "terraform-aws-modules/vpc/aws//modules/vpc-endpoints"
   version = "3.19.0"
 
   vpc_id             = local.vpc_id
-  security_group_ids = [module.sg_vpce.security_group_id]
+  security_group_ids = [module.sg_vpce[0].security_group_id]
   subnet_ids         = module.vpc.private_subnets
 
   endpoints = merge({

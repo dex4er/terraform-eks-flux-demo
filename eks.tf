@@ -24,7 +24,7 @@ module "eks" {
   cluster_version = local.cluster_version
 
   vpc_id                    = local.vpc_id
-  subnet_ids                = module.vpc.private_subnets
+  subnet_ids                = var.cluster_in_private_subnet ? module.vpc.private_subnets : module.vpc.public_subnets
   control_plane_subnet_ids  = module.vpc.intra_subnets
   cluster_service_ipv4_cidr = local.cluster_service_cidr
 

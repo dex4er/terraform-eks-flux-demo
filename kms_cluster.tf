@@ -16,7 +16,7 @@ module "kms_cluster" {
 
   deletion_window_in_days = local.cluster_kms_key_deletion_window_in_days
 
-  key_owners = var.assume_role != null ? [var.assume_role] : null
+  key_owners = var.assume_role != null ? [var.assume_role] : []
   key_users  = ["arn:aws:iam::${var.account_id}:role/${var.name}-cluster"]
 
   tags = {

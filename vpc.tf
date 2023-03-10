@@ -1,4 +1,8 @@
-## VPC with three subnetworks
+## VPC for the cluster. NAT gateway costs $37.96 monthly even if the cluster is
+## scaled to zero!
+##
+## For demo purpose it might be better to run cluster in public network even if
+## it is more risky.
 
 module "vpc" {
   ## https://github.com/terraform-aws-modules/terraform-aws-vpc
@@ -20,8 +24,8 @@ module "vpc" {
   ## https://github.com/terraform-aws-modules/terraform-aws-vpc#nat-gateway-scenarios
   ## One NAT Gateway per subnet: we have single AZ node groups
   ## The first AZ will have NAT gateway
-  enable_nat_gateway     = true
-  single_nat_gateway     = true
+  enable_nat_gateway     = var.cluster_in_private_subnet ? true : false
+  single_nat_gateway     = var.cluster_in_private_subnet ? true : false
   one_nat_gateway_per_az = false
 
   enable_dns_hostnames = true
@@ -58,5 +62,7 @@ module "vpc" {
 }
 
 locals {
+  subnets_public_ids_by_azs  = { for i, v in var.azs : v => module.vpc.public_subnets[i] }
   subnets_private_ids_by_azs = { for i, v in var.azs : v => module.vpc.private_subnets[i] }
+  subnets_ids_by_azs         = var.cluster_in_private_subnet ? local.subnets_private_ids_by_azs : local.subnets_public_ids_by_azs
 }
