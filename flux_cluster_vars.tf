@@ -15,7 +15,7 @@ resource "null_resource" "flux_cluster_vars" {
   }
 
   provisioner "local-exec" {
-    command = join("", concat(["kubectl delete configmap -n flux-system cluster-vars --ignore-not-found --kubeconfig <(aws ssm get-parameter --region ${var.region} --name ${aws_ssm_parameter.kubeconfig.name} --output text --query Parameter.Value --with-decryption) --context ${self.triggers.cluster_context} && kubectl create configmap -n flux-system cluster-vars"], [
+    command = join("", concat([". .asdf/asdf.sh && kubectl delete configmap -n flux-system cluster-vars --ignore-not-found --kubeconfig <(aws ssm get-parameter --region ${var.region} --name ${aws_ssm_parameter.kubeconfig.name} --output text --query Parameter.Value --with-decryption) --context ${self.triggers.cluster_context} && kubectl create configmap -n flux-system cluster-vars"], [
       " --from-literal=account_id=${var.account_id}",
       " --from-literal=account_id_string='\"${var.account_id}\"'",
       ], [for i, v in var.azs :
