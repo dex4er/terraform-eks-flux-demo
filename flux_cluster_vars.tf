@@ -33,7 +33,7 @@ resource "null_resource" "flux_cluster_vars" {
 
   provisioner "local-exec" {
     when        = destroy
-    command     = ". .asdf/asdf.sh && kubectl delete configmap -n flux-system cluster-vars --ignore-not-found --kubeconfig <(aws ssm get-parameter --region ${var.region} --name ${self.triggers.kubeconfig_parameter} --output text --query Parameter.Value --with-decryption) --context ${self.triggers.cluster_context}"
+    command     = ". .asdf/asdf.sh && kubectl delete configmap -n flux-system cluster-vars --ignore-not-found --kubeconfig <(aws ssm get-parameter --region ${self.triggers.region} --name ${self.triggers.kubeconfig_parameter} --output text --query Parameter.Value --with-decryption) --context ${self.triggers.cluster_context}"
     interpreter = ["/bin/bash", "-c"]
   }
 

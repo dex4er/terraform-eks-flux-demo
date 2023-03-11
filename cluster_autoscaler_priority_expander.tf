@@ -19,6 +19,7 @@ resource "null_resource" "cluster_autoscaler_priority_expander" {
     cluster_autoscaler_priorities_checksum = sha256(local.cluster_autoscaler_priorities)
     cluster_context                        = local.cluster_context
     kubeconfig_parameter                   = aws_ssm_parameter.kubeconfig.name
+    region                                 = var.region
   }
 
   provisioner "local-exec" {
@@ -28,7 +29,7 @@ resource "null_resource" "cluster_autoscaler_priority_expander" {
 
   provisioner "local-exec" {
     when        = destroy
-    command     = ". .asdf/asdf.sh && kubectl delete configmap -n kube-system cluster-autoscaler-priority-expander --kubeconfig <(aws ssm get-parameter --region ${var.region} --name ${self.triggers.kubeconfig_parameter} --output text --query Parameter.Value --with-decryption) --context ${self.triggers.cluster_context}"
+    command     = ". .asdf/asdf.sh && kubectl delete configmap -n kube-system cluster-autoscaler-priority-expander --kubeconfig <(aws ssm get-parameter --region ${self.triggers.region} --name ${self.triggers.kubeconfig_parameter} --output text --query Parameter.Value --with-decryption) --context ${self.triggers.cluster_context}"
     interpreter = ["/bin/bash", "-c"]
   }
 

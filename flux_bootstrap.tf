@@ -5,6 +5,7 @@ resource "null_resource" "flux_bootstrap" {
   triggers = {
     cluster_context      = local.cluster_context
     kubeconfig_parameter = aws_ssm_parameter.kubeconfig.name
+    region               = var.region
   }
 
   provisioner "local-exec" {
@@ -14,7 +15,7 @@ resource "null_resource" "flux_bootstrap" {
 
   provisioner "local-exec" {
     when        = destroy
-    command     = ". .asdf/asdf.sh && flux uninstall --keep-namespace=true --silent --kubeconfig <(aws ssm get-parameter --region ${var.region} --name ${self.triggers.kubeconfig_parameter} --output text --query Parameter.Value --with-decryption) --context ${self.triggers.cluster_context}"
+    command     = ". .asdf/asdf.sh && flux uninstall --keep-namespace=true --silent --kubeconfig <(aws ssm get-parameter --region ${self.triggers.region} --name ${self.triggers.kubeconfig_parameter} --output text --query Parameter.Value --with-decryption) --context ${self.triggers.cluster_context}"
     interpreter = ["/bin/bash", "-c"]
   }
 
