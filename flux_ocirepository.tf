@@ -8,18 +8,19 @@ resource "null_resource" "flux_ocirepository" {
   }
 
   provisioner "local-exec" {
-    command     = ". asdf.sh && kubectl delete ocirepository -n flux-system flux-system --ignore-not-found --kubeconfig <(aws ssm get-parameter --name ${aws_ssm_parameter.kubeconfig.name} --output text --query Parameter.Value --with-decryption) --context ${self.triggers.cluster_context} && flux create source oci flux-system --url=oci://${local.flux_system_repository_url} --tag=latest --provider=aws --kubeconfig <(aws ssm get-parameter --name ${aws_ssm_parameter.kubeconfig.name} --output text --query Parameter.Value --with-decryption) --context ${local.cluster_context}"
+    command     = ". .asdf/asdf.sh && kubectl delete ocirepository -n flux-system flux-system --ignore-not-found --kubeconfig <(aws ssm get-parameter --name ${aws_ssm_parameter.kubeconfig.name} --output text --query Parameter.Value --with-decryption) --context ${self.triggers.cluster_context} && flux create source oci flux-system --url=oci://${local.flux_system_repository_url} --tag=latest --provider=aws --kubeconfig <(aws ssm get-parameter --name ${aws_ssm_parameter.kubeconfig.name} --output text --query Parameter.Value --with-decryption) --context ${local.cluster_context}"
     interpreter = ["/bin/bash", "-c"]
   }
 
   provisioner "local-exec" {
     when        = destroy
-    command     = ". asdf.sh && kubectl delete ocirepository -n flux-system flux-system --ignore-not-found --kubeconfig <(aws ssm get-parameter --name ${self.triggers.kubeconfig_parameter} --output text --query Parameter.Value --with-decryption) --context ${self.triggers.cluster_context}"
+    command     = ". .asdf/asdf.sh && kubectl delete ocirepository -n flux-system flux-system --ignore-not-found --kubeconfig <(aws ssm get-parameter --name ${self.triggers.kubeconfig_parameter} --output text --query Parameter.Value --with-decryption) --context ${self.triggers.cluster_context}"
     interpreter = ["/bin/bash", "-c"]
   }
 
   depends_on = [
     module.ecr_flux_system,
+    null_resource.asdf_install,
     null_resource.flux_bootstrap,
   ]
 }

@@ -6,7 +6,7 @@ resource "null_resource" "flux_reconcile" {
   }
 
   provisioner "local-exec" {
-    command     = ". asdf.sh && flux reconcile source oci flux-system --kubeconfig <(aws ssm get-parameter --name ${aws_ssm_parameter.kubeconfig.name} --output text --query Parameter.Value --with-decryption) --context ${local.cluster_context} && flux reconcile ks all --kubeconfig <(aws ssm get-parameter --name ${aws_ssm_parameter.kubeconfig.name} --output text --query Parameter.Value --with-decryption) --context ${local.cluster_context}"
+    command     = ". .asdf/asdf.sh && flux reconcile source oci flux-system --kubeconfig <(aws ssm get-parameter --name ${aws_ssm_parameter.kubeconfig.name} --output text --query Parameter.Value --with-decryption) --context ${local.cluster_context} && flux reconcile ks all --kubeconfig <(aws ssm get-parameter --name ${aws_ssm_parameter.kubeconfig.name} --output text --query Parameter.Value --with-decryption) --context ${local.cluster_context}"
     interpreter = ["/bin/bash", "-c"]
   }
 
