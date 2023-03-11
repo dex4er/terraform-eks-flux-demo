@@ -64,5 +64,5 @@ resource "aws_ssm_parameter" "kubeconfig" {
 }
 
 output "cluster_update_kubeconfig_command" {
-  value = try("aws eks update-kubeconfig --name ${module.eks.cluster_name} --region ${var.region}", null)
+  value = try(join("", concat(["aws eks update-kubeconfig --name ${module.eks.cluster_name} --region ${var.region}"], var.assume_role != null ? [" --role ${var.assume_role}"] : [])), null)
 }
