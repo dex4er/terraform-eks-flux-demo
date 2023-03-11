@@ -64,7 +64,7 @@ resource "null_resource" "aws_auth" {
   }
 
   provisioner "local-exec" {
-    command     = "kubectl apply -f - --server-side --kubeconfig <(aws ssm get-parameter --name ${aws_ssm_parameter.kubeconfig.name} --output text --query Parameter.Value --with-decryption) --context ${local.cluster_context} <<END\n${local.aws_auth}\nEND\n"
+    command     = ". asdf.sh && kubectl apply -f - --server-side --kubeconfig <(aws ssm get-parameter --name ${aws_ssm_parameter.kubeconfig.name} --output text --query Parameter.Value --with-decryption) --context ${local.cluster_context} <<END\n${local.aws_auth}\nEND\n"
     interpreter = ["/bin/bash", "-c"]
   }
 }
