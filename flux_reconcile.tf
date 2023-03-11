@@ -10,6 +10,6 @@ resource "null_resource" "flux_reconcile" {
   }
 
   depends_on = [
-    null_resource.flux_bootstrap,
+    null_resource.flux_kustomization_all,
   ]
 }

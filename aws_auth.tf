@@ -9,8 +9,8 @@
 ## recreated. To avoid problems here YAML manifest is created then applied by
 ## `kubectl` command, rather than by Terraform provider.
 
-resource "local_file" "aws_auth" {
-  content = yamlencode({
+locals {
+  aws_auth = yamlencode({
     apiVersion : "v1"
     kind : "ConfigMap"
     metadata : {
@@ -56,18 +56,15 @@ resource "local_file" "aws_auth" {
       ))
     }
   })
-  filename             = "aws_auth.yaml"
-  directory_permission = "0755"
-  file_permission      = "0644"
 }
 
 resource "null_resource" "apply_aws_auth" {
   triggers = {
-    content_checksum = sha256(local_file.aws_auth.content)
+    aws_auth_checksum = sha256(local.aws_auth)
   }
 
   provisioner "local-exec" {
-    command = "kubectl apply -f ${local_file.aws_auth.filename} --server-side --kubeconfig .kube/config --context ${local.cluster_context}"
+    command = "kubectl apply -f - --server-side --kubeconfig .kube/config --context ${local.cluster_context} <<END\n${local.aws_auth}\nEND\n"
   }
 
   depends_on = [

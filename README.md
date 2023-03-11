@@ -85,7 +85,4 @@ EKS cluster should be created from the session run in a dedicated role. Such a
 user or role is a super user for the cluster and this parameter is invisible in
 a panel or API and can't be changed later.
 
-The state for Terraform should be local because `local_file` resources are used
-for extra files generated: OCIRepository and environment variables for Flux.
-
 `local-exec` runs `aws`, `kubectl` and `flux` commands.

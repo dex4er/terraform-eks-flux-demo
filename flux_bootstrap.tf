@@ -1,12 +1,17 @@
-## Bootstrap Flux:
-##
-## 1. install CRDs and main manifest
-## 2. install sources and kustomization
-## 3. install main Flux kustomization
+## Bootstrap Flux
 
 resource "null_resource" "flux_bootstrap" {
+  triggers = {
+    cluster_context = local.cluster_context
+  }
+
   provisioner "local-exec" {
-    command = "kubectl apply -k flux/flux-system-install --server-side --force-conflicts --kubeconfig .kube/config --context ${local.cluster_context} && kubectl apply -k flux/flux-system --server-side --force-conflicts --kubeconfig .kube/config --context ${local.cluster_context} && kubectl apply -f flux/all.yaml --server-side --force-conflicts --kubeconfig .kube/config --context ${local.cluster_context} && sleep 120"
+    command = "kubectl apply -k flux/flux-system --server-side --force-conflicts --kubeconfig .kube/config --context ${local.cluster_context}"
+  }
+
+  provisioner "local-exec" {
+    when    = destroy
+    command = "flux uninstall --keep-namespace=true --silent --kubeconfig .kube/config --context ${self.triggers.cluster_context}"
   }
 
   depends_on = [
