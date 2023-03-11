@@ -1,23 +1,65 @@
-## Generates kubeconfig. Uses granted.dev if it is installed.
+## Generates kubeconfig and stores it in AWS SSM so kubectl can use
+## it without storing it locally.
 
 locals {
   cluster_context = "arn:aws:eks:${var.region}:${var.account_id}:cluster/${var.name}"
+  kubeconfig = yamlencode(
+    {
+      "apiVersion" : "v1",
+      "clusters" : [
+        {
+          "cluster" : {
+            "certificate-authority-data" : module.eks.cluster_certificate_authority_data,
+            "server" : module.eks.cluster_endpoint
+          },
+          "name" : "arn:aws:eks:eu-central-1:345707776530:cluster/terraform-eks-flux-demo"
+        }
+      ],
+      "contexts" : [
+        {
+          "context" : {
+            "cluster" : "arn:aws:eks:eu-central-1:345707776530:cluster/terraform-eks-flux-demo",
+            "user" : "arn:aws:eks:eu-central-1:345707776530:cluster/terraform-eks-flux-demo"
+          },
+          "name" : module.eks.cluster_arn
+        }
+      ],
+      "current-context" : module.eks.cluster_arn,
+      "kind" : "Config",
+      "preferences" : {},
+      "users" : [
+        {
+          "name" : module.eks.cluster_arn,
+          "user" : {
+            "exec" : {
+              "apiVersion" : "client.authentication.k8s.io/v1beta1",
+              "args" : concat([
+                "--region",
+                var.region,
+                "eks",
+                "get-token",
+                "--cluster-name",
+                module.eks.cluster_name
+                ], var.assume_role != null ? [
+                "--role",
+                var.assume_role
+              ] : []),
+              "command" : "aws"
+            }
+          }
+        }
+      ]
+  })
 }
 
-## ./.kube/config
+resource "aws_ssm_parameter" "kubeconfig" {
+  name  = "${var.name}-kubeconfig"
+  type  = "SecureString"
+  value = local.kubeconfig
 
-resource "null_resource" "aws_eks_update-kubeconfig_terraform" {
-  triggers = {
-    cluster_context = local.cluster_context
-  }
-
-  provisioner "local-exec" {
-    command = join("", ["aws eks update-kubeconfig --name ${module.eks.cluster_name} --region ${var.region} --kubeconfig ./.kube/config && if command -v assumego >/dev/null 2>&1; then kubectl config set-credentials ${local.cluster_context} --exec-command=assumego --exec-arg=$AWS_PROFILE --exec-arg=--exec --exec-arg='aws --region ${var.region} eks get-token --cluster-name ${var.name}", var.assume_role != null ? " --role ${var.assume_role}" : "", "' --exec-env=GRANTED_QUIET=true --exec-env=FORCE_NO_ALIAS=true --exec-env=AWS_PROFILE- --kubeconfig ./.kube/config; fi"])
-  }
-
-  provisioner "local-exec" {
-    when    = destroy
-    command = "rm -f ./.kube/config"
+  tags = {
+    Name   = "${var.name}-kubeconfig"
+    Object = "aws_ssm_parameter.kubeconfig"
   }
 }
 

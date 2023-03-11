@@ -222,6 +222,6 @@ resource "time_sleep" "eks_default_node_group_delay" {
   }
 
   depends_on = [
-    null_resource.apply_aws_auth,
+    null_resource.aws_auth,
   ]
 }

@@ -58,16 +58,13 @@ locals {
   })
 }
 
-resource "null_resource" "apply_aws_auth" {
+resource "null_resource" "aws_auth" {
   triggers = {
     aws_auth_checksum = sha256(local.aws_auth)
   }
 
   provisioner "local-exec" {
-    command = "kubectl apply -f - --server-side --kubeconfig .kube/config --context ${local.cluster_context} <<END\n${local.aws_auth}\nEND\n"
+    command     = "kubectl apply -f - --server-side --kubeconfig <(aws ssm get-parameter --name ${aws_ssm_parameter.kubeconfig.name} --output text --query Parameter.Value --with-decryption) --context ${local.cluster_context} <<END\n${local.aws_auth}\nEND\n"
+    interpreter = ["/bin/bash", "-c"]
   }
-
-  depends_on = [
-    null_resource.aws_eks_update-kubeconfig_terraform,
-  ]
 }
