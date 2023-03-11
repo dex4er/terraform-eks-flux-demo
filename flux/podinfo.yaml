@@ -4,6 +4,8 @@ metadata:
   name: podinfo
   namespace: flux-system
 spec:
+  dependsOn:
+    - name: aws-load-balancer-controller
   interval: 1m
   sourceRef:
     kind: OCIRepository
