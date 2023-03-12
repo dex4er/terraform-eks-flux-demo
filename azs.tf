@@ -13,11 +13,3 @@ data "aws_availability_zones" "this" {
 locals {
   azs_ids = flatten(data.aws_availability_zones.this[*].zone_ids)
 }
-
-output "azs_ids" {
-  value = try(join(",", local.azs_ids), null)
-}
-
-output "azs_names" {
-  value = try(join(",", flatten(data.aws_availability_zones.this[*].names)), null)
-}
