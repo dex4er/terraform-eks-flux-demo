@@ -60,16 +60,3 @@ module "eks" {
     Object  = "module.eks"
   }
 }
-
-locals {
-  cluster_endpoint                   = try(module.eks.cluster_endpoint, null)
-  cluster_certificate_authority_data = try(module.eks.cluster_certificate_authority_data, null)
-}
-
-output "cluster_endpoint" {
-  value = local.cluster_endpoint
-}
-
-output "cluster_certificate_authority_data" {
-  value = local.cluster_certificate_authority_data
-}
