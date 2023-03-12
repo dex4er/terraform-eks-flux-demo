@@ -4,7 +4,7 @@
 resource "null_resource" "flux_bootstrap" {
   triggers = {
     asdf_dir             = coalesce(var.asdf_dir, ".asdf-flux_bootstrap")
-    asdf_tools           = "awscli kubectl"
+    asdf_tools           = "awscli flux2 kubectl"
     cluster_context      = local.cluster_context
     kubeconfig_parameter = aws_ssm_parameter.kubeconfig.name
     region               = var.region
