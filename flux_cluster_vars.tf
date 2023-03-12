@@ -4,6 +4,8 @@
 
 resource "null_resource" "flux_cluster_vars" {
   triggers = {
+    asdf_dir                   = coalesce(var.asdf_dir, ".asdf-flux_cluster_vars")
+    asdf_tools                 = "awscli kubectl"
     account_id                 = var.account_id
     azs                        = join(",", [for i, v in var.azs : "${i}=${v}"])
     cluster_context            = local.cluster_context
@@ -11,17 +13,16 @@ resource "null_resource" "flux_cluster_vars" {
     kubeconfig_parameter       = aws_ssm_parameter.kubeconfig.name
     name                       = var.name
     region                     = var.region
-    resource                   = "flux_cluster_vars"
     vpc_id                     = local.vpc_id
   }
 
   provisioner "local-exec" {
-    command     = "rm -rf .asdf-${self.triggers.resource} && git clone https://github.com/asdf-vm/asdf.git .asdf-${self.triggers.resource} --branch v0.11.2 && . .asdf-${self.triggers.resource}/asdf.sh && while read plugin version; do asdf plugin add $plugin || test $? = 2; done < .tool-versions; asdf install"
+    command     = "test -d ${self.triggers.asdf_dir} || git clone https://github.com/asdf-vm/asdf.git ${self.triggers.asdf_dir} --branch v0.11.2 && . ${self.triggers.asdf_dir}/asdf.sh && for plugin in ${self.triggers.asdf_tools}; do asdf plugin add $plugin || test $? = 2; asdf install $plugin; done"
     interpreter = ["/bin/bash", "-c"]
   }
 
   provisioner "local-exec" {
-    command = join("", concat([". .asdf-${self.triggers.resource}/asdf.sh && kubectl delete configmap -n flux-system cluster-vars --ignore-not-found --kubeconfig <(aws ssm get-parameter --region ${var.region} --name ${aws_ssm_parameter.kubeconfig.name} --output text --query Parameter.Value --with-decryption) --context ${self.triggers.cluster_context} && kubectl create configmap -n flux-system cluster-vars"], [
+    command = join("", concat([". ${self.triggers.asdf_dir}/asdf.sh && kubectl delete configmap -n flux-system cluster-vars --ignore-not-found --kubeconfig <(aws ssm get-parameter --region ${var.region} --name ${aws_ssm_parameter.kubeconfig.name} --output text --query Parameter.Value --with-decryption) --context ${self.triggers.cluster_context} && kubectl create configmap -n flux-system cluster-vars"], [
       " --from-literal=account_id=${var.account_id}",
       " --from-literal=account_id_string='\"${var.account_id}\"'",
       ], [for i, v in var.azs :
@@ -39,13 +40,13 @@ resource "null_resource" "flux_cluster_vars" {
 
   provisioner "local-exec" {
     when        = destroy
-    command     = "rm -rf .asdf-${self.triggers.resource} && git clone https://github.com/asdf-vm/asdf.git .asdf-${self.triggers.resource} --branch v0.11.2 && . .asdf-${self.triggers.resource}/asdf.sh && while read plugin version; do asdf plugin add $plugin || test $? = 2; done < .tool-versions; asdf install"
+    command     = "test -d ${self.triggers.asdf_dir} || git clone https://github.com/asdf-vm/asdf.git ${self.triggers.asdf_dir} --branch v0.11.2 && . ${self.triggers.asdf_dir}/asdf.sh && for plugin in ${self.triggers.asdf_tools}; do asdf plugin add $plugin || test $? = 2; asdf install $plugin; done"
     interpreter = ["/bin/bash", "-c"]
   }
 
   provisioner "local-exec" {
     when        = destroy
-    command     = ". .asdf-${self.triggers.resource}/asdf.sh && kubectl delete configmap -n flux-system cluster-vars --ignore-not-found --kubeconfig <(aws ssm get-parameter --region ${self.triggers.region} --name ${self.triggers.kubeconfig_parameter} --output text --query Parameter.Value --with-decryption) --context ${self.triggers.cluster_context}"
+    command     = ". ${self.triggers.asdf_dir}/asdf.sh && kubectl delete configmap -n flux-system cluster-vars --ignore-not-found --kubeconfig <(aws ssm get-parameter --region ${self.triggers.region} --name ${self.triggers.kubeconfig_parameter} --output text --query Parameter.Value --with-decryption) --context ${self.triggers.cluster_context}"
     interpreter = ["/bin/bash", "-c"]
   }
 

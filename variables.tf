@@ -15,6 +15,12 @@ variable "admin_user_arns" {
   description = "List of IAM users with full privileges to the cluster"
 }
 
+variable "asdf_dir" {
+  type        = string
+  default     = null
+  description = "Common asdf directory. If null then each null_resource creates own asdf copy: it might be important when run in Terraform Cloud."
+}
+
 variable "assume_role" {
   type        = string
   default     = null
