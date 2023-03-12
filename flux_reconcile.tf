@@ -3,10 +3,16 @@
 resource "null_resource" "flux_reconcile" {
   triggers = {
     flux_directory_checksum = null_resource.flux_push_artifact.triggers.flux_directory_checksum
+    resource                = "flux_reconcile"
   }
 
   provisioner "local-exec" {
-    command     = ". .asdf/asdf.sh && flux reconcile source oci flux-system --kubeconfig <(aws ssm get-parameter --region ${var.region} --name ${aws_ssm_parameter.kubeconfig.name} --output text --query Parameter.Value --with-decryption) --context ${local.cluster_context} && flux reconcile ks all --kubeconfig <(aws ssm get-parameter --region ${var.region} --name ${aws_ssm_parameter.kubeconfig.name} --output text --query Parameter.Value --with-decryption) --context ${local.cluster_context}"
+    command     = "rm -rf .asdf-${self.triggers.resource} && git clone https://github.com/asdf-vm/asdf.git .asdf-${self.triggers.resource} --branch v0.11.2 && . .asdf-${self.triggers.resource}/asdf.sh && while read plugin version; do asdf plugin add $plugin || test $? = 2; done < .tool-versions; asdf install"
+    interpreter = ["/bin/bash", "-c"]
+  }
+
+  provisioner "local-exec" {
+    command     = ". .asdf-${self.triggers.resource}/asdf.sh && flux reconcile source oci flux-system --kubeconfig <(aws ssm get-parameter --region ${var.region} --name ${aws_ssm_parameter.kubeconfig.name} --output text --query Parameter.Value --with-decryption) --context ${local.cluster_context} && flux reconcile ks all --kubeconfig <(aws ssm get-parameter --region ${var.region} --name ${aws_ssm_parameter.kubeconfig.name} --output text --query Parameter.Value --with-decryption) --context ${local.cluster_context}"
     interpreter = ["/bin/bash", "-c"]
   }
 

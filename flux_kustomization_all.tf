@@ -5,10 +5,16 @@ resource "null_resource" "flux_kustomization_all" {
     cluster_context      = local.cluster_context
     kubeconfig_parameter = aws_ssm_parameter.kubeconfig.name
     region               = var.region
+    resource             = "flux_kustomization_all"
   }
 
   provisioner "local-exec" {
-    command     = ". .asdf/asdf.sh && kubectl apply -f flux/all.yaml --server-side --force-conflicts --kubeconfig <(aws ssm get-parameter --region ${var.region} --name ${aws_ssm_parameter.kubeconfig.name} --output text --query Parameter.Value --with-decryption) --context ${local.cluster_context} && sleep 120"
+    command     = "rm -rf .asdf-${self.triggers.resource} && git clone https://github.com/asdf-vm/asdf.git .asdf-${self.triggers.resource} --branch v0.11.2 && . .asdf-${self.triggers.resource}/asdf.sh && while read plugin version; do asdf plugin add $plugin || test $? = 2; done < .tool-versions; asdf install"
+    interpreter = ["/bin/bash", "-c"]
+  }
+
+  provisioner "local-exec" {
+    command     = ". .asdf-${self.triggers.resource}/asdf.sh && kubectl apply -f flux/all.yaml --server-side --force-conflicts --kubeconfig <(aws ssm get-parameter --region ${var.region} --name ${aws_ssm_parameter.kubeconfig.name} --output text --query Parameter.Value --with-decryption) --context ${local.cluster_context} && sleep 120"
     interpreter = ["/bin/bash", "-c"]
   }
 
@@ -16,7 +22,13 @@ resource "null_resource" "flux_kustomization_all" {
 
   provisioner "local-exec" {
     when        = destroy
-    command     = ". .asdf/asdf.sh && kubectl get kustomization all -n flux-system --no-headers --kubeconfig <(aws ssm get-parameter --region ${self.triggers.region} --name ${self.triggers.kubeconfig_parameter} --output text --query Parameter.Value --with-decryption) --context ${self.triggers.cluster_context} | while read name _rest; do flux suspend ks $name --kubeconfig <(aws ssm get-parameter --region ${self.triggers.region} --name ${self.triggers.kubeconfig_parameter} --output text --query Parameter.Value --with-decryption) --context ${self.triggers.cluster_context}; done && kubectl get kustomization -n flux-system --no-headers --kubeconfig <(aws ssm get-parameter --region ${self.triggers.region} --name ${self.triggers.kubeconfig_parameter} --output text --query Parameter.Value --with-decryption) --context ${self.triggers.cluster_context} | grep -v -P '^(all|aws-load-balancer-controller|flux-system)' | while read name _rest; do kubectl delete kustomization $name -n flux-system --ignore-not-found --kubeconfig <(aws ssm get-parameter --region ${self.triggers.region} --name ${self.triggers.kubeconfig_parameter} --output text --query Parameter.Value --with-decryption) --context ${self.triggers.cluster_context}; done && sleep 120 && kubectl get kustomization -n flux-system --no-headers --kubeconfig <(aws ssm get-parameter --region ${self.triggers.region} --name ${self.triggers.kubeconfig_parameter} --output text --query Parameter.Value --with-decryption) --context ${self.triggers.cluster_context} | grep -v -P '^(all|flux-system)' | while read name _rest; do kubectl delete kustomization $name -n flux-system --ignore-not-found --kubeconfig <(aws ssm get-parameter --region ${self.triggers.region} --name ${self.triggers.kubeconfig_parameter} --output text --query Parameter.Value --with-decryption) --context ${self.triggers.cluster_context}; done && sleep 60 && kubectl delete -f flux/all.yaml --ignore-not-found --kubeconfig <(aws ssm get-parameter --region ${self.triggers.region} --name ${self.triggers.kubeconfig_parameter} --output text --query Parameter.Value --with-decryption) --context ${self.triggers.cluster_context} && sleep 60"
+    command     = "rm -rf .asdf-${self.triggers.resource} && git clone https://github.com/asdf-vm/asdf.git .asdf-${self.triggers.resource} --branch v0.11.2 && . .asdf-${self.triggers.resource}/asdf.sh && while read plugin version; do asdf plugin add $plugin || test $? = 2; done < .tool-versions; asdf install"
+    interpreter = ["/bin/bash", "-c"]
+  }
+
+  provisioner "local-exec" {
+    when        = destroy
+    command     = ". .asdf-${self.triggers.resource}/asdf.sh && kubectl get kustomization all -n flux-system --no-headers --kubeconfig <(aws ssm get-parameter --region ${self.triggers.region} --name ${self.triggers.kubeconfig_parameter} --output text --query Parameter.Value --with-decryption) --context ${self.triggers.cluster_context} | while read name _rest; do flux suspend ks $name --kubeconfig <(aws ssm get-parameter --region ${self.triggers.region} --name ${self.triggers.kubeconfig_parameter} --output text --query Parameter.Value --with-decryption) --context ${self.triggers.cluster_context}; done && kubectl get kustomization -n flux-system --no-headers --kubeconfig <(aws ssm get-parameter --region ${self.triggers.region} --name ${self.triggers.kubeconfig_parameter} --output text --query Parameter.Value --with-decryption) --context ${self.triggers.cluster_context} | grep -v -P '^(all|aws-load-balancer-controller|flux-system)' | while read name _rest; do kubectl delete kustomization $name -n flux-system --ignore-not-found --kubeconfig <(aws ssm get-parameter --region ${self.triggers.region} --name ${self.triggers.kubeconfig_parameter} --output text --query Parameter.Value --with-decryption) --context ${self.triggers.cluster_context}; done && sleep 120 && kubectl get kustomization -n flux-system --no-headers --kubeconfig <(aws ssm get-parameter --region ${self.triggers.region} --name ${self.triggers.kubeconfig_parameter} --output text --query Parameter.Value --with-decryption) --context ${self.triggers.cluster_context} | grep -v -P '^(all|flux-system)' | while read name _rest; do kubectl delete kustomization $name -n flux-system --ignore-not-found --kubeconfig <(aws ssm get-parameter --region ${self.triggers.region} --name ${self.triggers.kubeconfig_parameter} --output text --query Parameter.Value --with-decryption) --context ${self.triggers.cluster_context}; done && sleep 60 && kubectl delete -f flux/all.yaml --ignore-not-found --kubeconfig <(aws ssm get-parameter --region ${self.triggers.region} --name ${self.triggers.kubeconfig_parameter} --output text --query Parameter.Value --with-decryption) --context ${self.triggers.cluster_context} && sleep 60"
     interpreter = ["/bin/bash", "-c"]
   }
 
@@ -32,7 +44,6 @@ resource "null_resource" "flux_kustomization_all" {
     module.sg_cluster,
     module.sg_node_group,
     module.vpc,
-    null_resource.asdf_install,
     null_resource.flux_bootstrap,
     null_resource.flux_cluster_vars,
     null_resource.flux_ocirepository,

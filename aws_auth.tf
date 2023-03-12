@@ -61,14 +61,16 @@ locals {
 resource "null_resource" "aws_auth" {
   triggers = {
     aws_auth_checksum = sha256(local.aws_auth)
+    resource          = "aws_auth"
   }
 
   provisioner "local-exec" {
-    command     = ". .asdf/asdf.sh && kubectl apply -f - --server-side --kubeconfig <(aws ssm get-parameter --region ${var.region} --name ${aws_ssm_parameter.kubeconfig.name} --output text --query Parameter.Value --with-decryption) --context ${local.cluster_context} <<END\n${local.aws_auth}\nEND\n"
+    command     = "rm -rf .asdf-${self.triggers.resource} && git clone https://github.com/asdf-vm/asdf.git .asdf-${self.triggers.resource} --branch v0.11.2 && . .asdf-${self.triggers.resource}/asdf.sh && while read plugin version; do asdf plugin add $plugin || test $? = 2; done < .tool-versions; asdf install"
     interpreter = ["/bin/bash", "-c"]
   }
 
-  depends_on = [
-    null_resource.asdf_install,
-  ]
+  provisioner "local-exec" {
+    command     = ". .asdf-${self.triggers.resource}/asdf.sh && kubectl apply -f - --server-side --kubeconfig <(aws ssm get-parameter --region ${var.region} --name ${aws_ssm_parameter.kubeconfig.name} --output text --query Parameter.Value --with-decryption) --context ${local.cluster_context} <<END\n${local.aws_auth}\nEND\n"
+    interpreter = ["/bin/bash", "-c"]
+  }
 }
