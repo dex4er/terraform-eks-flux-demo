@@ -12,14 +12,14 @@ locals {
             "certificate-authority-data" : module.eks.cluster_certificate_authority_data,
             "server" : module.eks.cluster_endpoint
           },
-          "name" : "arn:aws:eks:eu-central-1:345707776530:cluster/terraform-eks-flux-demo"
+          "name" : local.cluster_context
         }
       ],
       "contexts" : [
         {
           "context" : {
-            "cluster" : "arn:aws:eks:eu-central-1:345707776530:cluster/terraform-eks-flux-demo",
-            "user" : "arn:aws:eks:eu-central-1:345707776530:cluster/terraform-eks-flux-demo"
+            "cluster" : local.cluster_context,
+            "user" : local.cluster_context
           },
           "name" : module.eks.cluster_arn
         }
