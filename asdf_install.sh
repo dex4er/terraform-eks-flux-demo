@@ -7,7 +7,7 @@ asdf_version=v0.11.3
 ## The existing directory is not updated or overwritten.
 
 if ! [[ -d ${asdf_dir} ]]; then
-  git clone https://github.com/asdf-vm/asdf.git ${asdf_dir} --branch ${asdf_version}
+  git clone https://github.com/asdf-vm/asdf.git ${asdf_dir} --branch ${asdf_version} --quiet -c advice.detachedHead=false
 fi
 
 ASDF_DATA_DIR=$(realpath "${asdf_dir}")

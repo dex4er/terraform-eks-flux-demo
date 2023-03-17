@@ -4,8 +4,19 @@
 
 resource "null_resource" "vpc_cleanup" {
   triggers = {
-    region = var.region
-    vpc_id = module.vpc.vpc_id
+    asdf_dir   = coalesce(var.asdf_dir, ".vpc_cleanup")
+    asdf_tools = "awscli"
+    region     = var.region
+    vpc_id     = module.vpc.vpc_id
+  }
+
+  provisioner "local-exec" {
+    when    = destroy
+    command = "bash ${path.module}/asdf_install.sh"
+    environment = {
+      asdf_dir   = self.triggers.asdf_dir
+      asdf_tools = self.triggers.asdf_tools
+    }
   }
 
   provisioner "local-exec" {
