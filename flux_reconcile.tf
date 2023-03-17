@@ -4,7 +4,9 @@ resource "null_resource" "flux_reconcile" {
   triggers = {
     asdf_dir                = coalesce(var.asdf_dir, ".asdf-flux_reconcile")
     asdf_tools              = "awscli flux2"
+    cluster_context         = local.cluster_context
     flux_directory_checksum = null_resource.flux_push_artifacts.triggers.flux_directory_checksum
+    kubeconfig_parameter    = aws_ssm_parameter.kubeconfig.name
     region                  = var.region
   }
 
