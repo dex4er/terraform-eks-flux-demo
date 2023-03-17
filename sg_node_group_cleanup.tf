@@ -4,13 +4,19 @@
 
 resource "null_resource" "sg_node_group_cleanup" {
   triggers = {
+    asdf_dir          = coalesce(var.asdf_dir, ".asdf-sg_node_group_cleanup")
     region            = var.region
     security_group_id = module.sg_node_group.security_group_id
   }
 
   provisioner "local-exec" {
     when    = destroy
-    command = "aws ec2 describe-network-interfaces --region ${self.triggers.region} --filters --query \"NetworkInterfaces[?Status == 'available' && Groups[?GroupId == '${self.triggers.security_group_id}']].NetworkInterfaceId\" --output text | xargs -rn1 aws ec2 delete-network-interface --region ${self.triggers.region} --network-interface-id"
+    command = "bash ${path.module}/sg_node_group_cleanup_destroy.sh"
+    environment = {
+      asdf_dir          = self.triggers.asdf_dir
+      region            = self.triggers.region
+      security_group_id = self.triggers.security_group_id
+    }
   }
 }
 

@@ -1,0 +1,8 @@
+enable=all
+source-path=SCRIPTDIR
+
+disable=SC1091 # Not following: foo: openBinaryFile: does not exist (No such file or directory)
+disable=SC2086 # Double quote to prevent globbing and word splitting.
+disable=SC2154 # foo is referenced but not assigned.
+disable=SC2248 # Prefer double quoting even when variables don't contain special characters.
+disable=SC2312 # Consider invoking this command separately to avoid masking its return value (or use '|| true' to ignore).
