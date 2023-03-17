@@ -4,7 +4,7 @@ resource "null_resource" "flux_reconcile" {
   triggers = {
     asdf_dir                = coalesce(var.asdf_dir, ".asdf-flux_reconcile")
     asdf_tools              = "awscli flux2"
-    flux_directory_checksum = null_resource.flux_push_artifact.triggers.flux_directory_checksum
+    flux_directory_checksum = null_resource.flux_push_artifacts.triggers.flux_directory_checksum
     region                  = var.region
   }
 
