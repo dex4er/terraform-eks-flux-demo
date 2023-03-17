@@ -16,15 +16,151 @@ The demo uses https://github.com/terraform-aws-modules> modules. All modules and
 resources and in main directory to make modifications easier so this project can
 be easily used as a base for other demos and experiments.
 
-## Usage
+## Architecture
 
-- Configure AWS:
+```mermaid
+flowchart LR
 
-```sh
-aws configure sso
+user{User}
+user:::person
+
+subgraph publicSubnet[Public Subnetwork]
+  subgraph eksNode[EKS Node]
+    subgraph hello[Hello World application]
+    end
+    kuhellott:::internalContainer
+  end
+
+  subgraph alb[ALB]
+  end
+  alb:::internalComponent
+end
+publicSubnet:::externalSystem
+
+subgraph intraSubnet[Intra Subnetwork]
+  subgraph eksControl[EKS Control Plane]
+  end
+  eksControl:::internalContainer
+end
+intraSubnet:::externalSystem
+
+user--HTTP-->alb
+
+alb--HTTP-->hello
+
+eksNode<--API-->eksControl
+
+classDef person fill:#08427b
+classDef internalContainer fill:#1168bd
+classDef internalComponent fill:#4b9bea
+classDef externalSystem fill:#999999
 ```
 
-or use [Granted](https://granted.dev/).
+## Prerequisities
+
+### AWS account
+
+If you don't use SSO then I recommend creating an IAM user with
+`AdministratorAccess` permissions.
+
+1. Go to <https://us-east-1.console.aws.amazon.com/iamv2/home?region=eu-central-1#/users>
+2. `[Add users]`
+3. User name: admin
+4. Attach policies directly: AdministratorAccess
+5. `[Next]`
+6. `[Create user]`
+7. Write down an ARN of the user: it might be like `arn:aws:iam::123456789012:user/admin`
+
+Create an access key for this user:
+
+1. Go to <https://us-east-1.console.aws.amazon.com/iamv2/home#/users/details/admin?section=security_credentials>
+2. `[Create access key]`
+3. `(*) Application running outside AWS`
+4. `[Next]`
+5. `[Create access key]`
+6. `[Download .csv file]` or copy-paste separate fields somewhere securely or
+   use it with `granted credentials add` command as later is described.
+
+The Terraform should be able to assume the dedicated role.
+
+1. Go to <https://us-east-1.console.aws.amazon.com/iamv2/home?region=eu-central-1#/roles>
+2. `[Create role]`
+3. Custom trust policy:
+
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "AllowAssumeRole",
+      "Effect": "Allow",
+      "Principal": {
+        "AWS": [
+          "arn:aws:iam::123456789012:root",
+          "arn:aws:iam::123456789012:user/admin"
+        ]
+      },
+      "Action": "sts:AssumeRole"
+    }
+  ]
+}
+```
+
+1. `[Next]`
+2. Add permissions: AdministratorAccess
+3. `[Next]`
+4. Role name: Admin
+5. `[Create role]`
+6. Write down an ARN of the role: it might be like `arn:aws:iam::123456789012:role/Admin`
+
+### asdf
+
+All required tools can be installed with <https://asdf-vm.com/>:
+
+```sh
+git clone https://github.com/asdf-vm/asdf.git ~/.asdf --branch v0.11.2
+. "$HOME/.asdf/asdf.sh"
+while read plugin version; do asdf plugin add $plugin || test $? = 2; done < .tool-versions
+asdf install
+```
+
+Additionally, I recommend using https://granted.dev/ for switching between AWS accounts:
+
+```sh
+asdf plugin add granted
+asdf install granted latest
+asdf global granted latest
+```
+
+then `~/.aws/config` might be:
+
+```ini
+[profile dex4er]
+output             = json
+region             = eu-central-1
+credential_process = granted credential-process --profile=dex4er
+```
+
+and credentials can be added with the command:
+
+```sh
+granted credentials add
+```
+
+```console
+? Profile Name: dex4er
+? Access Key ID: XXXXXXXXX
+? Secret Sccess Key: *****************
+Saved dex4er to secure storage
+```
+
+You can switch to your profile:
+
+```sh
+assume dex4er
+```
+
+## Usage
 
 - Check current context:
 
@@ -42,9 +178,12 @@ aws ec2 describe-availability-zones --region $AWS_REGION --query 'AvailabilityZo
 
 ```tf
 account_id                = "123456789012"
+admin_role_arns           = ["arn:aws:iam::123456789012:role/Admin"]
+admin_user_arns           = ["arn:aws:iam::123456789012:user/admin"]
 assume_role               = "arn:aws:iam::123456789012:role/Admin"
-azs                       = ["use2-az1", "use2-az2", "use2-az3"]
-region                    = "us-east-2"
+azs                       = ["euc-az1", "euc-az2", "euc-az3"]
+name                      = "terraform-eks-flux-demo"
+region                    = "eu-central-1"
 ```
 
 - Run Terraform:
@@ -54,10 +193,18 @@ terraform init
 terraform apply
 ```
 
+- Connect to the cluster:
+
+```sh
+terraform output
+# check for cluster_update_kubeconfig_command and run the command, ie.:
+aws eks update-kubeconfig --name terraform-eks-flux-demo --region eu-central-1 --role arn:aws:iam::123456789012:role/Admin
+```
+
 - Connect to ingress:
 
 ```sh
-kubectl get ingress -n podinfo
+kubectl get ingress -n hello-world
 curl http://$ADDRESS
 ```
 
@@ -96,3 +243,68 @@ of an external tool separately for each `null_resource`. It might be changed to
 the shared directory with `asdf_dir` variable when it is possible to run
 pre-apply commands (ie. Gitlab CI, GitHub Actions, Spacelift, etc.) or Terraform
 is run locally.
+
+## Terraform Cloud
+
+The project is ready to use with the Terraform Cloud. In this case, after the
+state will is no longer local and might be used by more developers.
+
+In this case the workspace should have Execution Mode: Remote. All variables from
+`terraform.tfvars` file should be added as "Workspace variables" (note: arrays
+should be added as HCL).
+
+Variables for AWS API (`AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY`) might be
+added as "Variable sets".
+
+## Spacelift
+
+The project is ready to use with Spacelift.
+
+Spacelift can use custom container images, so it is suggested to use such a
+container with preinstalled [asdf](https://asdf-vm.com/), ie.
+[dex4er/debian-asdf](https://hub.docker.com/r/dex4er/debian-asdf).
+
+In this case use customized workflow and add the commands to pre-Applying and pre-Performing scripts:
+
+```sh
+cp .tool-versions /root
+while read plugin version; do asdf plugin add $plugin || test $? = 2; done < .tool-versions
+asdf install
+```
+
+Beside `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY` (both not important if you
+use cloud integration) and `AWS_REGION` environment variables, you should create
+`/mnt/workspace/source/terraform.tfvars` mounted file with the content of your
+`terraform.tfvars` file. In this file add `asdf_dir = "/root/.asdf"` Terraform
+variable.
+
+### Updates
+
+Currently, the latest tag is used in the podinfo Deployment. It is suggested to
+add ImageUpdateAutomation and ImagePolicy for automated upgrades when
+OCIRegistry will be replaced with GitRegistry.
+
+Because Flux uses the OCI registry rather than the Git registry, there are no
+automated deployments after changes in the Git repository. In that case either
+switch to GitRepository as a source for Flux or call `terraform apply` after
+each change in a `/flux` directory.
+
+## TODO
+
+- It is better to switch to GitRepository as a source for Flux. For this demo,
+  it is "push" method rather than "pull" to avoid additional tasks with
+  connecting the cluster to GitHub.
+- The cluster should be moved to private subnetwork (raises the monthly cost by
+  ~$400 for a NAT gateway and service endpoints).
+- Nodes should use Bottlerocket OS rather than standard Amazon Linux.
+- It should be avoided docker.io as a OCI registry. `k8s-image-swapper` service
+  might help to automatize the cloning of images to private ECR.
+- Additional controllers are needed if PersistentVolumes will be used then
+  another StorageClass might be used in place of the default.
+- AWS Node Termination Handler should be installed for safer handling of spot
+  instances.
+- There is no `metrics-server` so HorizontalPodAutoscaler doesn't work yet.
+- The cluster misses Prometheus. External AWS Prometheus instance might be used
+  for longer-term storage.
+- It might be considered using Istio or Cilium for better observability.
+- It is a good idea to use Velero backup if some persistent volumes will exist.
