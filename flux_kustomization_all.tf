@@ -63,6 +63,8 @@ resource "null_resource" "flux_kustomization_all" {
     module.sg_cluster,
     module.sg_node_group,
     module.vpc,
+    null_resource.aws_auth,
+    null_resource.cluster_autoscaler_priority_expander,
     null_resource.flux_bootstrap,
     null_resource.flux_cluster_vars,
     null_resource.flux_ocirepository,
