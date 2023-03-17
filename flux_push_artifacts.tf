@@ -6,10 +6,10 @@ data "archive_file" "flux" {
   output_path = ".flux.zip"
 }
 
-resource "null_resource" "flux_push_artifact" {
+resource "null_resource" "flux_push_artifacts" {
   triggers = {
     account_id                 = var.account_id
-    asdf_dir                   = coalesce(var.asdf_dir, ".asdf-flux_push_artifact")
+    asdf_dir                   = coalesce(var.asdf_dir, ".asdf-flux_push_artifacts")
     asdf_tools                 = "awscli flux2 go-containerregistry"
     flux_system_repository_url = local.flux_system_repository_url
     flux_directory_checksum    = data.archive_file.flux.output_base64sha256

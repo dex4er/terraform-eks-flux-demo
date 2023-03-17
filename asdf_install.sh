@@ -12,12 +12,12 @@ fi
 
 ASDF_DATA_DIR=$(realpath "${asdf_dir}")
 export ASDF_DATA_DIR
-. ${asdf_dir}/asdf.sh
+. "${ASDF_DATA_DIR}/asdf.sh"
 
 ## Some plugins like awscli don't work with multiple asdf instances
 ## then the trick is to run plugin from separate current directory.
 
-cd ${asdf_dir}
+cd "${ASDF_DATA_DIR}"
 
 for plugin in ${asdf_tools}; do
   asdf plugin add ${plugin} || test $? = 2

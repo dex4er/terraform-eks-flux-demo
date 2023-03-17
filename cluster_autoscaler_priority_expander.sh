@@ -4,7 +4,7 @@ set -eu
 
 ASDF_DATA_DIR=$(realpath "${asdf_dir}")
 export ASDF_DATA_DIR
-. ${asdf_dir}/asdf.sh
+. ${ASDF_DATA_DIR}/asdf.sh
 
 export AWS_REGION=${region}
 
