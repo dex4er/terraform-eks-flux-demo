@@ -11,8 +11,10 @@ resource "null_resource" "flux_push_artifacts" {
     account_id                 = var.account_id
     asdf_dir                   = coalesce(var.asdf_dir, ".asdf-flux_push_artifacts")
     asdf_tools                 = "awscli flux2 go-containerregistry"
+    cluster_context            = local.cluster_context
     flux_system_repository_url = local.flux_system_repository_url
     flux_directory_checksum    = data.archive_file.flux.output_base64sha256
+    kubeconfig_parameter       = aws_ssm_parameter.kubeconfig.name
     region                     = var.region
   }
 

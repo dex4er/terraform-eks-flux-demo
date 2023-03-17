@@ -21,10 +21,11 @@ resource "null_resource" "flux_ocirepository" {
   provisioner "local-exec" {
     command = "bash ${path.module}/flux_ocirepository.sh"
     environment = {
-      asdf_dir             = self.triggers.asdf_dir
-      cluster_context      = self.triggers.cluster_context
-      kubeconfig_parameter = self.triggers.kubeconfig_parameter
-      region               = self.triggers.region
+      asdf_dir                   = self.triggers.asdf_dir
+      cluster_context            = self.triggers.cluster_context
+      flux_system_repository_url = self.triggers.flux_system_repository_url
+      kubeconfig_parameter       = self.triggers.kubeconfig_parameter
+      region                     = self.triggers.region
     }
   }
 
