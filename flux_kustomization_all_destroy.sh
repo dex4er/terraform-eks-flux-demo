@@ -10,7 +10,7 @@ export AWS_REGION=${region}
 
 set -x
 
-kubeconfig=$(axws ssm get-parameter --name ${kubeconfig_parameter} --output text --query Parameter.Value --with-decryption)
+kubeconfig=$(aws ssm get-parameter --name ${kubeconfig_parameter} --output text --query Parameter.Value --with-decryption)
 
 kubectl apply -f flux/all.yaml \
   --server-side \
