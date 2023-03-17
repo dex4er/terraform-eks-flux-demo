@@ -13,7 +13,8 @@ set -x
 flux create source oci flux-system \
   --url=oci://${flux_system_repository_url} \
   --tag=latest \
-  --provider=aws |
+  --provider=aws \
+  --export |
   kubectl apply -f - \
     --server-side \
     --force-conflicts \
