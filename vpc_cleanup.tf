@@ -19,8 +19,15 @@ resource "shell_script" "vpc_cleanup" {
   working_directory = path.module
 
   lifecycle_commands {
-    create = "true"
-    update = "true"
+    create = <<-EOT
+      echo '{"checksum":"${sha256(jsonencode(local.vpc_cleanup_environment))}"}'
+    EOT
+    update = <<-EOT
+      echo '{"checksum":"${sha256(jsonencode(local.vpc_cleanup_environment))}"}'
+    EOT
+    read   = <<-EOT
+      echo '{"checksum":"${sha256(jsonencode(local.vpc_cleanup_environment))}"}'
+    EOT
     delete = file("${path.module}/vpc_cleanup_destroy.sh")
   }
 }

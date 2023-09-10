@@ -20,8 +20,17 @@ resource "shell_script" "flux_bootstrap" {
   working_directory = path.module
 
   lifecycle_commands {
-    create = file("${path.module}/flux_bootstrap.sh")
-    update = file("${path.module}/flux_bootstrap.sh")
+    create = <<-EOT
+      ${file("${path.module}/flux_bootstrap.sh")}
+      echo '{"checksum":"${sha256(jsonencode(local.flux_bootstrap_environment))}"}'
+    EOT
+    update = <<-EOT
+      ${file("${path.module}/flux_bootstrap.sh")}
+      echo '{"checksum":"${sha256(jsonencode(local.flux_bootstrap_environment))}"}'
+    EOT
+    read   = <<-EOT
+      echo '{"checksum":"${sha256(jsonencode(local.flux_bootstrap_environment))}"}'
+    EOT
     delete = file("${path.module}/flux_bootstrap_destroy.sh")
   }
 

@@ -40,8 +40,17 @@ resource "shell_script" "flux_cluster_vars" {
   working_directory = path.module
 
   lifecycle_commands {
-    create = file("${path.module}/flux_cluster_vars.sh")
-    update = file("${path.module}/flux_cluster_vars.sh")
+    create = <<-EOT
+      ${file("${path.module}/flux_cluster_vars_destroy.sh")}
+      echo '{"checksum":"${sha256(jsonencode(local.flux_cluster_vars_environment))}"}'
+    EOT
+    update = <<-EOT
+      ${file("${path.module}/flux_cluster_vars_destroy.sh")}
+      echo '{"checksum":"${sha256(jsonencode(local.flux_cluster_vars_environment))}"}'
+    EOT
+    read   = <<-EOT
+      echo '{"checksum":"${sha256(jsonencode(local.flux_cluster_vars_environment))}"}'
+    EOT
     delete = file("${path.module}/flux_cluster_vars_destroy.sh")
   }
 
