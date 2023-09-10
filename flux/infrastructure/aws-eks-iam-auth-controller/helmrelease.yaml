@@ -10,7 +10,6 @@ spec:
   releaseName: aws-eks-iam-auth-controller
   targetNamespace: aws-eks-iam-auth-controller
   storageNamespace: aws-eks-iam-auth-controller
-  serviceAccountName: helm-controller
   chart:
     spec:
       chart: rustrial-aws-eks-iam-auth-controller

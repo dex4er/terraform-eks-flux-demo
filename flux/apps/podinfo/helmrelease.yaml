@@ -9,7 +9,6 @@ spec:
   releaseName: podinfo
   targetNamespace: podinfo
   storageNamespace: podinfo
-  serviceAccountName: helm-controller
   chart:
     spec:
       interval: 1m

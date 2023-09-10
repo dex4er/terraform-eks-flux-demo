@@ -10,7 +10,6 @@ spec:
   releaseName: aws-load-balancer-controller
   targetNamespace: kube-system
   storageNamespace: kube-system
-  serviceAccountName: helm-controller
   chart:
     spec:
       interval: 1m

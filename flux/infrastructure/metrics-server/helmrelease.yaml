@@ -10,7 +10,6 @@ spec:
   releaseName: metrics-server
   targetNamespace: kube-system
   storageNamespace: kube-system
-  serviceAccountName: helm-controller
   chart:
     spec:
       chart: metrics-server
