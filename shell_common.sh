@@ -2,7 +2,9 @@
 
 set -eu
 
-asdf_version=v0.11.3
+## Input variables
+
+asdf_version=v0.12.0
 
 ## The existing directory is not updated or overwritten.
 
@@ -17,9 +19,20 @@ export ASDF_DATA_DIR
 ## Some plugins like awscli don't work with multiple asdf instances
 ## then the trick is to run plugin from separate current directory.
 
-cd "${ASDF_DATA_DIR}"
+pushd "${ASDF_DATA_DIR}" >/dev/null
 
 for plugin in ${asdf_tools}; do
   asdf plugin add ${plugin} || test $? = 2
   asdf install ${plugin}
 done
+
+popd >/dev/null
+
+if [[ -n ${profile} ]]; then
+  export AWS_PROFILE=${profile}
+else
+  unset AWS_PROFILE
+fi
+export AWS_REGION=${region}
+
+set -x

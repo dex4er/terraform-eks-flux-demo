@@ -1,17 +1,12 @@
 #!/bin/bash
 
-set -eu
+asdf_tools="awscli envsubst kustomize kubectl"
+. shell_common.sh
 
-ASDF_DATA_DIR=$(realpath "${asdf_dir}")
-export ASDF_DATA_DIR
-. ${ASDF_DATA_DIR}/asdf.sh
-
-export AWS_REGION=${region}
-
-set -x
-
-kubectl apply -k flux/flux-system \
-  --server-side \
-  --force-conflicts \
-  --kubeconfig <(aws ssm get-parameter --name ${kubeconfig_parameter} --output text --query Parameter.Value --with-decryption) \
-  --context ${cluster_context}
+kustomize build flux/flux-system |
+  envsubst |
+  kubectl apply -f - \
+    --server-side \
+    --force-conflicts \
+    --kubeconfig <(aws ssm get-parameter --name ${kubeconfig_parameter} --output text --query Parameter.Value --with-decryption) \
+    --context ${cluster_context}

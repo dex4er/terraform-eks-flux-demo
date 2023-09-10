@@ -5,13 +5,13 @@ resource "aws_iam_instance_profile" "this" {
 
   role = module.iam_role_node_group.iam_role_name
 
-  name = "${var.name}-node-group-${each.key}"
+  name = "${var.cluster_name}-node-group-${each.key}"
   path = "/"
 
   tags = {
-    Name      = "${var.name}-node-group-${each.key}"
-    Cluster   = var.name
-    NodeGroup = "${var.name}-node-group-${each.key}"
+    Name      = "${var.cluster_name}-node-group-${each.key}"
+    Cluster   = var.cluster_name
+    NodeGroup = "${var.cluster_name}-node-group-${each.key}"
     Object    = "aws_iam_instance_profile.this"
   }
 }

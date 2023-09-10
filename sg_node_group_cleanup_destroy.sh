@@ -1,14 +1,7 @@
 #!/bin/bash
 
-set -eu
-
-ASDF_DATA_DIR=$(realpath "${asdf_dir}")
-export ASDF_DATA_DIR
-. ${ASDF_DATA_DIR}/asdf.sh
-
-export AWS_REGION=${region}
-
-set -x
+asdf_tools="awscli"
+. shell_common.sh
 
 aws ec2 describe-network-interfaces \
   --filters \

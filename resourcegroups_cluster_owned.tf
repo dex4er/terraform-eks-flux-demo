@@ -2,7 +2,7 @@
 ## `kubernetes.io/cluster/NAME=owned` tag.
 
 resource "aws_resourcegroups_group" "cluster-owned" {
-  name = "${var.name}-owned"
+  name = "${var.cluster_name}-owned"
 
   resource_query {
     query = jsonencode({
@@ -11,7 +11,7 @@ resource "aws_resourcegroups_group" "cluster-owned" {
       ],
       "TagFilters" : [
         {
-          "Key" : "kubernetes.io/cluster/${var.name}",
+          "Key" : "kubernetes.io/cluster/${var.cluster_name}",
           "Values" : ["owned"]
         }
       ]
@@ -19,7 +19,7 @@ resource "aws_resourcegroups_group" "cluster-owned" {
   }
 
   tags = {
-    Name   = "${var.name}-cluster-owned"
+    Name   = "${var.cluster_name}-cluster-owned"
     Object = "aws_resourcegroups_group.cluster-owned"
   }
 }

@@ -2,7 +2,7 @@
 ## resources.
 
 resource "aws_resourcegroups_group" "project" {
-  name = var.name
+  name = var.cluster_name
 
   resource_query {
     query = jsonencode({
@@ -12,14 +12,14 @@ resource "aws_resourcegroups_group" "project" {
       "TagFilters" : [
         {
           "Key" : "Project",
-          "Values" : [var.name]
+          "Values" : [var.cluster_name]
         }
       ]
     })
   }
 
   tags = {
-    Name   = var.name
+    Name   = var.cluster_name
     Object = "aws_resourcegroups_group.project"
   }
 }

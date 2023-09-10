@@ -21,7 +21,7 @@ module "vpce" {
       service_type    = "Gateway"
       route_table_ids = module.vpc.private_route_table_ids
       tags = {
-        Name = "${var.name}-s3"
+        Name = "${var.cluster_name}-s3"
       }
     }
     },
@@ -30,14 +30,14 @@ module "vpce" {
       {
         service             = service
         private_dns_enabled = true
-        tags                = { Name = "${var.name}-${replace(service, ".", "-")}" }
+        tags                = { Name = "${var.cluster_name}-${replace(service, ".", "-")}" }
       }
   })
 
   tags = {
-    Name   = var.name
+    Name   = var.cluster_name
     Object = "module.vpce"
-    VPC    = var.name
+    VPC    = var.cluster_name
     Reach  = "private"
   }
 }

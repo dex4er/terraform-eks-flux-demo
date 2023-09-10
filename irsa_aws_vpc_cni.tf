@@ -21,7 +21,7 @@ module "irsa_aws_vpc_cni" {
   }
 
   tags = {
-    Name   = "${var.name}-irsa-aws-vpc-cni"
+    Name   = "${var.cluster_name}-irsa-aws-vpc-cni"
     Object = "module.irsa_aws_vpc_cni"
   }
 }

@@ -5,7 +5,7 @@ module "iam_role_cluster" {
   source  = "terraform-aws-modules/iam/aws//modules/iam-assumable-role"
   version = "~> 5.12"
 
-  role_name = "${var.name}-cluster"
+  role_name = "${var.cluster_name}-cluster"
   role_path = "/"
 
   role_description = "EKS Cluster node group IAM role"
@@ -25,7 +25,7 @@ module "iam_role_cluster" {
   force_detach_policies = true
 
   tags = {
-    Name   = "${var.name}-cluster"
+    Name   = "${var.cluster_name}-cluster"
     Object = "module.iam_role_cluster"
   }
 }

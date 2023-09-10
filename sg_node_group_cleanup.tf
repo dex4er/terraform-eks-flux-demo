@@ -2,34 +2,29 @@
 ## if EC2 instances are terminated. Removing them manually on `terraform
 ## destroy` allows to destroy security group too.
 
-resource "null_resource" "sg_node_group_cleanup" {
-  triggers = {
-    asdf_dir          = coalesce(var.asdf_dir, ".asdf-sg_node_group_cleanup")
-    asdf_tools        = "awscli"
+locals {
+  sg_node_group_cleanup_environment = {
+    asdf_dir          = var.asdf_dir
+    profile           = var.profile
     region            = var.region
     security_group_id = module.sg_node_group.security_group_id
   }
+}
 
-  provisioner "local-exec" {
-    when    = destroy
-    command = "bash ${path.module}/asdf_install.sh"
-    environment = {
-      asdf_dir   = self.triggers.asdf_dir
-      asdf_tools = self.triggers.asdf_tools
-    }
-  }
+resource "shell_script" "sg_node_group_cleanup" {
+  triggers = local.sg_node_group_cleanup_environment
 
-  provisioner "local-exec" {
-    when    = destroy
-    command = "bash ${path.module}/sg_node_group_cleanup_destroy.sh"
-    environment = {
-      asdf_dir          = self.triggers.asdf_dir
-      region            = self.triggers.region
-      security_group_id = self.triggers.security_group_id
-    }
+  environment = local.sg_node_group_cleanup_environment
+
+  working_directory = path.module
+
+  lifecycle_commands {
+    create = "true"
+    update = "true"
+    delete = file("${path.module}/sg_node_group_cleanup_destroy.sh")
   }
 }
 
 locals {
-  sg_node_group_id = null_resource.sg_node_group_cleanup.triggers.security_group_id
+  sg_node_group_id = shell_script.sg_node_group_cleanup.triggers.security_group_id
 }

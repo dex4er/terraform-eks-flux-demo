@@ -5,9 +5,9 @@ module "iam_policy_cluster_encryption" {
   source  = "terraform-aws-modules/iam/aws//modules/iam-policy"
   version = "~> 5.12"
 
-  name        = "${var.name}-cluster-encryption"
+  name        = "${var.cluster_name}-cluster-encryption"
   path        = "/"
-  description = "${var.name} cluster encryption key IAM policy"
+  description = "${var.cluster_name} cluster encryption key IAM policy"
 
   policy = jsonencode({
     Version = "2012-10-17"
@@ -21,13 +21,13 @@ module "iam_policy_cluster_encryption" {
           "kms:DescribeKey",
         ]
         Effect   = "Allow"
-        Resource = ["arn:aws:kms:${var.region}:${var.account_id}:alias/${var.name}/${var.name}-cluster"]
+        Resource = ["arn:aws:kms:${var.region}:${var.account_id}:alias/${var.cluster_name}/${var.cluster_name}-cluster"]
       },
     ]
   })
 
   tags = {
-    Name   = "${var.name}-cluster-encryption"
+    Name   = "${var.cluster_name}-cluster-encryption"
     Object = "module.iam_policy_cluster_encryption"
   }
 }

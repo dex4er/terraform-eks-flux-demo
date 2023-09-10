@@ -4,19 +4,22 @@ locals {
   cluster_addons = {
     coredns = {
       ## https://docs.aws.amazon.com/eks/latest/userguide/managing-coredns.html
-      version           = "v1.8.7-eksbuild.4"
-      resolve_conflicts = "OVERWRITE"
+      version                     = "v1.9.3-eksbuild.6"
+      resolve_conflicts_on_create = "OVERWRITE"
+      resolve_conflicts_on_update = "OVERWRITE"
     }
     kube-proxy = {
       ## https://docs.aws.amazon.com/eks/latest/userguide/managing-kube-proxy.html
-      version           = "v1.24.7-eksbuild.2"
-      resolve_conflicts = "OVERWRITE"
+      version                     = "v1.24.15-minimal-eksbuild.2"
+      resolve_conflicts_on_create = "OVERWRITE"
+      resolve_conflicts_on_update = "OVERWRITE"
     }
     vpc-cni = {
       ## https://docs.aws.amazon.com/eks/latest/userguide/managing-vpc-cni.html
-      version                  = "v1.12.2-eksbuild.1"
-      resolve_conflicts        = "OVERWRITE"
-      service_account_role_arn = module.irsa_aws_vpc_cni.iam_role_arn
+      version                     = "v1.14.0-eksbuild.3"
+      resolve_conflicts_on_create = "OVERWRITE"
+      resolve_conflicts_on_update = "OVERWRITE"
+      service_account_role_arn    = module.irsa_aws_vpc_cni.iam_role_arn
     }
   }
 }
@@ -27,13 +30,14 @@ resource "aws_eks_addon" "this" {
   cluster_name = module.eks.cluster_name
   addon_name   = each.key
 
-  addon_version            = each.value.version
-  resolve_conflicts        = lookup(each.value, "resolve_conflicts", null)
-  service_account_role_arn = lookup(each.value, "service_account_role_arn", null)
+  addon_version               = each.value.version
+  resolve_conflicts_on_create = lookup(each.value, "resolve_conflicts_on_create", null)
+  resolve_conflicts_on_update = lookup(each.value, "resolve_conflicts_on_update", null)
+  service_account_role_arn    = lookup(each.value, "service_account_role_arn", null)
 
   tags = {
-    Name         = "${var.name}-addon-${each.key}"
-    Cluster      = var.name
+    Name         = "${var.cluster_name}-addon-${each.key}"
+    Cluster      = var.cluster_name
     ClusterAddon = each.key
     Object       = "aws_eks_addon.this"
   }

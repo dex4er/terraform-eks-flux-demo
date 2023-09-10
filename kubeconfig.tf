@@ -2,7 +2,7 @@
 ## it without storing it locally.
 
 locals {
-  cluster_context = "arn:aws:eks:${var.region}:${var.account_id}:cluster/${var.name}"
+  cluster_context = "arn:aws:eks:${var.region}:${var.account_id}:cluster/${var.cluster_name}"
   kubeconfig = yamlencode(
     {
       "apiVersion" : "v1",
@@ -53,12 +53,12 @@ locals {
 }
 
 resource "aws_ssm_parameter" "kubeconfig" {
-  name  = "${var.name}-kubeconfig"
+  name  = "${var.cluster_name}-kubeconfig"
   type  = "SecureString"
   value = local.kubeconfig
 
   tags = {
-    Name   = "${var.name}-kubeconfig"
+    Name   = "${var.cluster_name}-kubeconfig"
     Object = "aws_ssm_parameter.kubeconfig"
   }
 }

@@ -2,34 +2,29 @@
 ## interfaces but they're leftovers from working EKS cluster and they'll hold
 ## `terraform destroy` for long time otherway.
 
-resource "null_resource" "vpc_cleanup" {
-  triggers = {
-    asdf_dir   = coalesce(var.asdf_dir, ".vpc_cleanup")
-    asdf_tools = "awscli"
-    region     = var.region
-    vpc_id     = module.vpc.vpc_id
+locals {
+  vpc_cleanup_environment = {
+    asdf_dir = var.asdf_dir
+    profile  = var.profile
+    region   = var.region
+    vpc_id   = module.vpc.vpc_id
   }
+}
 
-  provisioner "local-exec" {
-    when    = destroy
-    command = "bash ${path.module}/asdf_install.sh"
-    environment = {
-      asdf_dir   = self.triggers.asdf_dir
-      asdf_tools = self.triggers.asdf_tools
-    }
-  }
+resource "shell_script" "vpc_cleanup" {
+  triggers = local.vpc_cleanup_environment
 
-  provisioner "local-exec" {
-    when    = destroy
-    command = "bash ${path.module}/vpc_cleanup_destroy.sh"
-    environment = {
-      asdf_dir = self.triggers.asdf_dir
-      region   = self.triggers.region
-      vpc_id   = self.triggers.vpc_id
-    }
+  environment = local.vpc_cleanup_environment
+
+  working_directory = path.module
+
+  lifecycle_commands {
+    create = "true"
+    update = "true"
+    delete = file("${path.module}/vpc_cleanup_destroy.sh")
   }
 }
 
 locals {
-  vpc_id = null_resource.vpc_cleanup.triggers.vpc_id
+  vpc_id = shell_script.vpc_cleanup.triggers.vpc_id
 }

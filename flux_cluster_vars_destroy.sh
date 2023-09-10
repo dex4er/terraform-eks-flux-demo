@@ -1,14 +1,7 @@
 #!/bin/bash
 
-set -eu
-
-ASDF_DATA_DIR=$(realpath "${asdf_dir}")
-export ASDF_DATA_DIR
-. ${ASDF_DATA_DIR}/asdf.sh
-
-export AWS_REGION=${region}
-
-set -x
+asdf_tools="awscli kubectl"
+. shell_common.sh
 
 kubectl delete configmap -n flux-system cluster-vars \
   --ignore-not-found \

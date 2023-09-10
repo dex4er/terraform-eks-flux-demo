@@ -1,51 +1,28 @@
 ## Bootstrap Flux. Because it is server-side applying it can't be added in one
 ## step with Flux repositories and kustomizations.
 
-resource "null_resource" "flux_bootstrap" {
-  triggers = {
-    asdf_dir             = coalesce(var.asdf_dir, ".asdf-flux_bootstrap")
-    asdf_tools           = "awscli flux2 kubectl"
-    cluster_context      = local.cluster_context
-    kubeconfig_parameter = aws_ssm_parameter.kubeconfig.name
-    region               = var.region
+locals {
+  flux_bootstrap_environment = {
+    asdf_dir                = var.asdf_dir
+    cluster_context         = local.cluster_context
+    flux_git_repository_url = var.flux_git_repository_url
+    kubeconfig_parameter    = aws_ssm_parameter.kubeconfig.name
+    profile                 = coalesce(var.profile, "")
+    region                  = var.region
   }
+}
 
-  provisioner "local-exec" {
-    command = "bash ${path.module}/asdf_install.sh"
-    environment = {
-      asdf_dir   = self.triggers.asdf_dir
-      asdf_tools = self.triggers.asdf_tools
-    }
-  }
+resource "shell_script" "flux_bootstrap" {
+  triggers = local.flux_bootstrap_environment
 
-  provisioner "local-exec" {
-    command = "bash ${path.module}/flux_bootstrap.sh"
-    environment = {
-      asdf_dir             = self.triggers.asdf_dir
-      cluster_context      = self.triggers.cluster_context
-      kubeconfig_parameter = self.triggers.kubeconfig_parameter
-      region               = self.triggers.region
-    }
-  }
+  environment = local.flux_bootstrap_environment
 
-  provisioner "local-exec" {
-    when    = destroy
-    command = "bash ${path.module}/asdf_install.sh"
-    environment = {
-      asdf_dir   = self.triggers.asdf_dir
-      asdf_tools = self.triggers.asdf_tools
-    }
-  }
+  working_directory = path.module
 
-  provisioner "local-exec" {
-    when    = destroy
-    command = "bash ${path.module}/flux_bootstrap_destroy.sh"
-    environment = {
-      asdf_dir             = self.triggers.asdf_dir
-      cluster_context      = self.triggers.cluster_context
-      kubeconfig_parameter = self.triggers.kubeconfig_parameter
-      region               = self.triggers.region
-    }
+  lifecycle_commands {
+    create = file("${path.module}/flux_bootstrap.sh")
+    update = file("${path.module}/flux_bootstrap.sh")
+    delete = file("${path.module}/flux_bootstrap_destroy.sh")
   }
 
   depends_on = [

@@ -1,4 +1,4 @@
-## Self managed groups with defined template
+## EKS managed groups with defined template
 
 locals {
   node_groups = {
@@ -34,10 +34,6 @@ locals {
       pre_bootstrap_user_data = <<-EOT
       yum install -y bind-utils htop lsof mc strace tcpdump
       EOT
-
-      bootstrap_extra_args = "--container-runtime containerd"
-
-      kubelet_extra_args = ""
 
       post_bootstrap_user_data = <<-EOT
       EOT
@@ -101,17 +97,7 @@ module "eks_node_group" {
     Name = "${module.eks.cluster_name}-node-group-${each.key}"
   }
 
-  pre_bootstrap_user_data = each.value.pre_bootstrap_user_data
-  bootstrap_extra_args = join(" ", [
-    each.value.bootstrap_extra_args,
-    "--dns-cluster-ip", cidrhost(local.cluster_service_cidr, 10),
-    "--kubelet-extra-args", "\"${join(" ", compact(flatten([
-      each.value.kubelet_extra_args,
-      "--max-pods=${each.value.max_pods > 0 ? each.value.max_pods : "$(/etc/eks/max-pods-calculator.sh --instance-type-from-imds --cni-version 1.10.0 --show-max-allowed)"}",
-      "--node-labels=eks.amazonaws.com/capacityType=${each.value.capacity_type},eks.amazonaws.com/nodegroup=${each.key},${join(",", [for k, v in each.value.labels : "${k}=${v}"])}",
-      length(each.value.taints) > 0 ? "--register-with-taints=${join(",", [for k, v in each.value.taints : "${k}=${v}"])}" : "",
-    ])))}\"",
-  ])
+  pre_bootstrap_user_data  = each.value.pre_bootstrap_user_data
   post_bootstrap_user_data = each.value.post_bootstrap_user_data
 
   min_size     = each.value.min_size
@@ -182,29 +168,10 @@ module "eks_node_group" {
 
   service_linked_role_arn = local.service_linked_role_arn
 
-  autoscaling_group_tags = merge(
-    {
-      "k8s.io/cluster-autoscaler/enabled" : "true",
-      "k8s.io/cluster-autoscaler/${module.eks.cluster_name}" : "owned",
-      "k8s.io/cluster-autoscaler/node-template/label/eks.amazonaws.com/capacityType" = each.value.capacity_type
-    },
-    { for k, v in each.value.labels :
-      "k8s.io/cluster-autoscaler/node-template/label/${k}" => v
-    },
-    { for k, v in each.value.taints :
-      "k8s.io/cluster-autoscaler/node-template/taint/${k}" => v
-    },
-    {
-      "k8s.io/cluster-autoscaler/node-template/resources/cpu"    = try(try(each.value.resources.cpu, local.instance_resources[each.value.instance_type].cpu), "")
-      "k8s.io/cluster-autoscaler/node-template/resources/memory" = try(try(each.value.resources.memory, local.instance_resources[each.value.instance_type].memory), "")
-      "k8s.io/cluster-autoscaler/node-template/resources/pods"   = try(try(each.value.max_pods, local.instance_resources[each.value.instance_type].pods), "")
-    },
-  )
-
   tags = {
-    Name      = "${var.name}-node-group-${each.key}"
-    Cluster   = var.name
-    NodeGroup = "${var.name}-node-group-${each.key}"
+    Name      = "${var.cluster_name}-node-group-${each.key}"
+    Cluster   = var.cluster_name
+    NodeGroup = "${var.cluster_name}-node-group-${each.key}"
     Object    = "module.eks_node_group"
   }
 }
@@ -218,10 +185,8 @@ resource "time_sleep" "eks_default_node_group_delay" {
   create_duration = "2m"
 
   triggers = {
-    default_node_group = module.eks_node_group[local.default_node_group].autoscaling_group_name
+    ## It makes a dependency on the default node group but we need more static string
+    ## ID before colon is the same as cluster name.
+    default_node_group = try(module.eks.eks_managed_node_groups[local.default_node_group].node_group_id, var.cluster_name)
   }
-
-  depends_on = [
-    null_resource.aws_auth,
-  ]
 }

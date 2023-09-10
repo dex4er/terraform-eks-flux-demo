@@ -2,11 +2,11 @@
 
 resource "aws_iam_service_linked_role" "autoscaling" {
   aws_service_name = "autoscaling.amazonaws.com"
-  custom_suffix    = var.name
+  custom_suffix    = var.cluster_name
   description      = "Allows EC2 Auto Scaling to use or manage AWS services and resources on your behalf."
 
   tags = {
-    Name   = "AWSServiceRoleForAutoScaling_${var.name}"
+    Name   = "AWSServiceRoleForAutoScaling_${var.cluster_name}"
     Object = "aws_iam_service_linked_role.autoscaling"
   }
 }

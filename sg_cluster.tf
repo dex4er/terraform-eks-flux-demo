@@ -5,7 +5,7 @@ module "sg_cluster" {
   source  = "terraform-aws-modules/security-group/aws"
   version = "~> 5.1"
 
-  name = "${var.name}-cluster"
+  name = "${var.cluster_name}-cluster"
 
   use_name_prefix = false
 
@@ -36,7 +36,7 @@ module "sg_cluster" {
   ]
 
   tags = {
-    Name   = "${var.name}-cluster"
+    Name   = "${var.cluster_name}-cluster"
     Object = "module.sg_cluster"
   }
 }

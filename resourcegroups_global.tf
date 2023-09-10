@@ -5,7 +5,7 @@ resource "aws_resourcegroups_group" "project_global" {
 
   provider = aws.global
 
-  name = var.name
+  name = var.cluster_name
 
   resource_query {
     query = jsonencode({
@@ -15,14 +15,14 @@ resource "aws_resourcegroups_group" "project_global" {
       "TagFilters" : [
         {
           "Key" : "Project",
-          "Values" : [var.name]
+          "Values" : [var.cluster_name]
         }
       ]
     })
   }
 
   tags = {
-    Name   = var.name
+    Name   = var.cluster_name
     Object = "aws_resourcegroups_group.project_global"
   }
 }

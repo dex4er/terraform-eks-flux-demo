@@ -20,7 +20,7 @@ module "irsa_aws_load_balancer_controller" {
   }
 
   tags = {
-    Name   = "${var.name}-irsa-aws-load-balancer-controller"
+    Name   = "${var.cluster_name}-irsa-aws-load-balancer-controller"
     Object = "module.irsa_aws_load_balancer_controller"
   }
 }

@@ -8,9 +8,9 @@ module "iam_policy_cluster_cloudwatch" {
   source  = "terraform-aws-modules/iam/aws//modules/iam-policy"
   version = "~> 5.12"
 
-  name        = "${var.name}-cluster-cloudwatch"
+  name        = "${var.cluster_name}-cluster-cloudwatch"
   path        = "/"
-  description = "${var.name} cluster CloudWatch IAM policy"
+  description = "${var.cluster_name} cluster CloudWatch IAM policy"
 
   policy = jsonencode({
     Version = "2012-10-17"
@@ -19,13 +19,13 @@ module "iam_policy_cluster_cloudwatch" {
         Sid      = "DenyCreateLogGroup"
         Action   = ["logs:CreateLogGroup"]
         Effect   = "Deny"
-        Resource = "arn:aws:logs:${var.region}:${var.account_id}:log-group:/aws/eks/${var.name}/cluster:*"
+        Resource = "arn:aws:logs:${var.region}:${var.account_id}:log-group:/aws/eks/${var.cluster_name}/cluster:*"
       },
     ]
   })
 
   tags = {
-    Name   = "${var.name}-cluster-cloudwatch"
+    Name   = "${var.cluster_name}-cluster-cloudwatch"
     Object = "module.iam_policy_cluster_cloudwatch"
   }
 }

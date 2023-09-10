@@ -1,15 +1,46 @@
 #!/bin/bash
 
-set -eu
+asdf_tools="awscli flux2 kubectl"
+kustomization_to_remove_later="flux-system|aws-load-balancer-controller"
+. shell_common.sh
 
-ASDF_DATA_DIR=$(realpath "${asdf_dir}")
-export ASDF_DATA_DIR
-. ${ASDF_DATA_DIR}/asdf.sh
+kubeconfig=$(aws ssm get-parameter --name ${kubeconfig_parameter} --output text --query Parameter.Value --with-decryption)
 
-export AWS_REGION=${region}
+kubectl get kustomization all -n flux-system \
+  --no-headers \
+  --kubeconfig <(echo "${kubeconfig}") \
+  --context ${cluster_context} |
+  while read -r name _rest; do
+    flux suspend ks ${name} \
+      --kubeconfig <(echo "${kubeconfig}") \
+      --context ${cluster_context}
+  done
 
-set -x
+kubectl get kustomization -n flux-system \
+  --no-headers \
+  --kubeconfig <(echo "${kubeconfig}") \
+  --context ${cluster_context} |
+  grep -v -P "^(${kustomization_to_remove_later})" |
+  while read -r name _rest; do
+    kubectl delete kustomization ${name} -n flux-system --ignore-not-found --kubeconfig <(echo "${kubeconfig}") --context ${cluster_context}
+  done
+
+sleep 120
+
+kubectl get kustomization -n flux-system \
+  --no-headers \
+  --kubeconfig <(echo "${kubeconfig}") \
+  --context ${cluster_context} |
+  grep -v -P "^flux-system" |
+  while read -r name _rest; do
+    kubectl delete kustomization ${name} -n flux-system \
+      --ignore-not-found \
+      --kubeconfig <(echo "${kubeconfig}") \
+      --context ${cluster_context}
+  done
+
+sleep 60
 
 flux uninstall --keep-namespace=true --silent \
-  --kubeconfig <(aws ssm get-parameter --name ${kubeconfig_parameter} --output text --query Parameter.Value --with-decryption) \
+  --kubeconfig <(echo "${kubeconfig}") \
   --context ${cluster_context}

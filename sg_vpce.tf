@@ -8,7 +8,7 @@ module "sg_vpce" {
   version = "~> 5.1"
 
   use_name_prefix = false
-  name            = "${var.name}-vpce"
+  name            = "${var.cluster_name}-vpce"
 
   description = "Security group for VPC endpoint access"
   vpc_id      = local.vpc_id
@@ -30,7 +30,7 @@ module "sg_vpce" {
   ]
 
   tags = {
-    Name   = "${var.name}-vpce"
+    Name   = "${var.cluster_name}-vpce"
     Object = "module.sg_vpce"
   }
 }

@@ -9,7 +9,7 @@ EKS cluster has features:
   and master nodes in intra network
 - encrypted at rest
 - has customized nodes in self-managed node group
-- enabled autoscaler and AWS load balancer controller
+- enabled AWS load balancer controller
 - exposes podinfo application
 
 The demo uses <https://github.com/terraform-aws-modules> modules. All modules and
@@ -135,10 +135,10 @@ asdf global granted latest
 then `~/.aws/config` might be:
 
 ```ini
-[profile dex4er]
+[profile default]
 output             = json
 region             = eu-central-1
-credential_process = granted credential-process --profile=dex4er
+credential_process = granted credential-process --profile=default
 ```
 
 and credentials can be added with the command:
@@ -148,16 +148,16 @@ granted credentials add
 ```
 
 ```console
-? Profile Name: dex4er
+? Profile Name: default
 ? Access Key ID: XXXXXXXXX
 ? Secret Sccess Key: *****************
-Saved dex4er to secure storage
+Saved default to secure storage
 ```
 
 You can switch to your profile:
 
 ```sh
-assume dex4er
+assume default
 ```
 
 ## Usage
@@ -177,13 +177,15 @@ aws ec2 describe-availability-zones --region $AWS_REGION --query 'AvailabilityZo
 - Create `terraform.tfvars` file, ie.:
 
 ```tf
-account_id                = "123456789012"
-admin_role_arns           = ["arn:aws:iam::123456789012:role/Admin"]
-admin_user_arns           = ["arn:aws:iam::123456789012:user/admin"]
-assume_role               = "arn:aws:iam::123456789012:role/Admin"
-azs                       = ["euc-az1", "euc-az2", "euc-az3"]
-name                      = "terraform-eks-flux-demo"
-region                    = "eu-central-1"
+account_id              = "123456789012"
+admin_role_arns         = ["arn:aws:iam::123456789012:role/Admin"]
+admin_user_arns         = ["arn:aws:iam::123456789012:user/admin"]
+assume_role             = "arn:aws:iam::123456789012:role/Admin"
+azs                     = ["euc1-az1", "euc1-az2", "euc1-az3"]
+cluster_name            = "eks-flux-demo"
+flux_git_repository_url = "https://github.com/dex4er/terraform-eks-flux-demo.git"
+profile                 = "default"
+region                  = "eu-central-1"
 ```
 
 - Run Terraform:
@@ -198,7 +200,7 @@ terraform apply
 ```sh
 terraform output
 # check for cluster_update_kubeconfig_command and run the command, ie.:
-aws eks update-kubeconfig --name terraform-eks-flux-demo --region eu-central-1 --role arn:aws:iam::123456789012:role/Admin
+aws eks update-kubeconfig --name eks-flux-demo --region eu-central-1 --role arn:aws:iam::123456789012:role/Admin
 ```
 
 - Connect to ingress:
@@ -219,7 +221,7 @@ orphaned resources:
 3. Removing AWS resource controllers.
 4. Uninstalling Flux.
 
-It should happen during destroying of `null_resource`.flux_kustomization_all`.
+It should happen during destroying of `shell_script.flux_bootstrap`.
 
 ## Note
 
@@ -235,14 +237,11 @@ servers and service endpoints. It might be switched to private IPs with
 `cluster_in_private_subnet` variable.
 
 The demo avoids Kubernetes Provider as it leads to many problems when the
-cluster is not available or about to replace or destroy. `local-exec` is used
-instead as an experiment if it is possible to communicate with Kubernetes
-without a provider. Unfortunately, it is problematic to use additional tools in
-Terraform Cloud runs so a current solution is suboptimal: it installs each copy
-of an external tool separately for each `null_resource`. It might be changed to
-the shared directory with `asdf_dir` variable when it is possible to run
-pre-apply commands (ie. Gitlab CI, GitHub Actions, Spacelift, etc.) or Terraform
-is run locally.
+cluster is not available or about to replace or destroy. `shell_script` is
+used instead as an experiment if it is possible to communicate with
+Kubernetes without a provider. It might be changed to the shared directory
+with `asdf_dir` variable when it is possible to run pre-apply commands (ie.
+Gitlab CI, GitHub Actions, Spacelift, etc.) or Terraform is run locally.
 
 ## Terraform Cloud
 
@@ -291,9 +290,6 @@ each change in a `/flux` directory.
 
 ## TODO
 
-- It is better to switch to GitRepository as a source for Flux. For this demo,
-  it is "push" method rather than "pull" to avoid additional tasks with
-  connecting the cluster to GitHub.
 - The cluster should be moved to private subnetwork (raises the monthly cost by
   ~$400 for a NAT gateway and service endpoints).
 - Nodes should use Bottlerocket OS rather than standard Amazon Linux.

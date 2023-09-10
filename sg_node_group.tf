@@ -5,7 +5,7 @@ module "sg_node_group" {
   source  = "terraform-aws-modules/security-group/aws"
   version = "~> 5.1"
 
-  name = "${var.name}-node-group"
+  name = "${var.cluster_name}-node-group"
 
   use_name_prefix = false
 
@@ -98,7 +98,7 @@ module "sg_node_group" {
   ]
 
   tags = {
-    Name   = "${var.name}-node-group"
+    Name   = "${var.cluster_name}-node-group"
     Object = "module.sg_node_group"
   }
 }
