@@ -17,7 +17,10 @@ locals {
       ## Node group only in first AZ
       azs = [local.azs_ids[0]]
 
-      instance_type = "m5.large"
+      instance_types = [
+        "m5.large",
+        "m5n.large",
+      ]
 
       ebs_optimized = false
 
@@ -29,7 +32,7 @@ locals {
       ami_owner        = "amazon"
 
       ## https://github.com/awslabs/amazon-eks-ami/releases
-      ami_name = "amazon-eks-node-1.24-v20230217"
+      # ami_name = "amazon-eks-node-1.24-v20230825"
 
       pre_bootstrap_user_data = <<-EOT
       yum install -y bind-utils htop lsof mc strace tcpdump
@@ -40,18 +43,16 @@ locals {
 
       min_size     = 1
       max_size     = 4
-      desired_size = 1
+      desired_size = 2
 
       capacity_type = "SPOT"
-
-      instance_refresh_percentage = 90
     }
   }
 }
 
 module "eks_node_group" {
-  ## https://github.com/terraform-aws-modules/terraform-aws-eks/tree/master/modules/self-managed-node-group
-  source  = "terraform-aws-modules/eks/aws//modules/self-managed-node-group"
+  ## https://github.com/terraform-aws-modules/terraform-aws-eks/tree/master/modules/eks-managed-node-group
+  source  = "terraform-aws-modules/eks/aws//modules/eks-managed-node-group"
   version = "~> 19.10"
 
   for_each = { for k, v in local.node_groups : k => v if v.create }
@@ -66,30 +67,20 @@ module "eks_node_group" {
 
   cluster_version = module.eks.cluster_version
 
-  create_iam_instance_profile = false
-  iam_instance_profile_arn    = aws_iam_instance_profile.this[each.key].arn
-
-  iam_role_attach_cni_policy = true
+  create_iam_role            = false
+  iam_role_arn               = module.iam_role_node_group.iam_role_arn
+  iam_role_attach_cni_policy = false
 
   subnet_ids = [for i, v in each.value.azs : local.subnets_ids_by_azs[v]]
 
   cluster_primary_security_group_id = module.eks.cluster_primary_security_group_id
   vpc_security_group_ids            = [local.sg_node_group_id]
 
-  instance_type = each.value.instance_type
-  ebs_optimized = each.value.ebs_optimized
+  instance_types = each.value.instance_types
+  ebs_optimized  = each.value.ebs_optimized
 
-  ami_id                 = data.aws_ami.eks_node_group[each.key].image_id
+  ami_id                 = lookup(each.value, "ami_name", null) != null ? data.aws_ami.eks_node_group[each.key].image_id : null
   create_launch_template = true
-
-  instance_refresh = {
-    strategy = "Rolling"
-    preferences = {
-      instance_warmup        = 120
-      min_healthy_percentage = each.value.instance_refresh_percentage
-      skip_matching          = true
-    }
-  }
 
   launch_template_use_name_prefix = false
   launch_template_name            = "${module.eks.cluster_name}-node-group-${each.key}"
@@ -103,15 +94,6 @@ module "eks_node_group" {
   min_size     = each.value.min_size
   max_size     = each.value.max_size
   desired_size = each.value.desired_size
-
-  use_mixed_instances_policy = each.value.capacity_type == "SPOT"
-  mixed_instances_policy = {
-    instances_distribution = {
-      on_demand_base_capacity                  = 0
-      on_demand_percentage_above_base_capacity = 0
-      spot_allocation_strategy                 = "capacity-optimized-prioritized"
-    }
-  }
 
   block_device_mappings = {
     xvda = {
@@ -141,32 +123,6 @@ module "eks_node_group" {
     http_put_response_hop_limit = 2
     instance_metadata_tags      = "disabled"
   }
-
-  enabled_metrics = [
-    "GroupAndWarmPoolDesiredCapacity",
-    "GroupAndWarmPoolTotalCapacity",
-    "GroupDesiredCapacity",
-    "GroupInServiceCapacity",
-    "GroupInServiceInstances",
-    "GroupMaxSize",
-    "GroupMinSize",
-    "GroupPendingCapacity",
-    "GroupPendingInstances",
-    "GroupStandbyCapacity",
-    "GroupStandbyInstances",
-    "GroupTerminatingCapacity",
-    "GroupTerminatingInstances",
-    "GroupTotalCapacity",
-    "GroupTotalInstances",
-    "WarmPoolDesiredCapacity",
-    "WarmPoolMinSize",
-    "WarmPoolPendingCapacity",
-    "WarmPoolTerminatingCapacity",
-    "WarmPoolTotalCapacity",
-    "WarmPoolWarmedCapacity",
-  ]
-
-  service_linked_role_arn = local.service_linked_role_arn
 
   tags = {
     Name      = "${var.cluster_name}-node-group-${each.key}"

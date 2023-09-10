@@ -1,7 +1,7 @@
 ## Find out AMIs for node groups
 
 data "aws_ami" "eks_node_group" {
-  for_each = local.node_groups
+  for_each = { for k, v in local.node_groups : k => v if lookup(v, "ami_name", null) != null }
 
   most_recent = true
 

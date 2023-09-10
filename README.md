@@ -178,8 +178,6 @@ aws ec2 describe-availability-zones --region $AWS_REGION --query 'AvailabilityZo
 
 ```tf
 account_id              = "123456789012"
-admin_role_arns         = ["arn:aws:iam::123456789012:role/Admin"]
-admin_user_arns         = ["arn:aws:iam::123456789012:user/admin"]
 assume_role             = "arn:aws:iam::123456789012:role/Admin"
 azs                     = ["euc1-az1", "euc1-az2", "euc1-az3"]
 cluster_name            = "eks-flux-demo"

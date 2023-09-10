@@ -6,6 +6,7 @@ locals {
   cluster_vars = join("\n", concat([
     "account_id=${var.account_id}",
     "account_id_string=\"${var.account_id}\"",
+    "assume_role=${coalesce(var.assume_role, local.caller_identity)}"
     ], [for i, v in var.azs :
     "azs_id_${i}=${v}"
     ], [for i, v in var.azs :
