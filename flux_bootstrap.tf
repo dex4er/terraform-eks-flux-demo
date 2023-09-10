@@ -1,37 +1,26 @@
 ## Bootstrap Flux. Because it is server-side applying it can't be added in one
 ## step with Flux repositories and kustomizations.
 
-locals {
-  flux_bootstrap_environment = {
+resource "shell_script" "flux_bootstrap" {
+  environment = {
     asdf_dir                = var.asdf_dir
     cluster_context         = local.cluster_context
     flux_git_repository_url = var.flux_git_repository_url
     kubeconfig_parameter    = aws_ssm_parameter.kubeconfig.name
     profile                 = coalesce(var.profile, "")
     region                  = var.region
+    script_checksum         = sha256(file("${path.module}/flux_bootstrap.sh"))
   }
-}
-
-resource "shell_script" "flux_bootstrap" {
-  triggers = local.flux_bootstrap_environment
-
-  environment = local.flux_bootstrap_environment
 
   working_directory = path.module
 
   lifecycle_commands {
-    create = <<-EOT
-      ${file("${path.module}/flux_bootstrap.sh")}
-      echo '{"checksum":"${sha256(jsonencode(local.flux_bootstrap_environment))}"}'
-    EOT
-    update = <<-EOT
-      ${file("${path.module}/flux_bootstrap.sh")}
-      echo '{"checksum":"${sha256(jsonencode(local.flux_bootstrap_environment))}"}'
-    EOT
+    create = ". ${path.module}/flux_bootstrap.sh"
+    update = ". ${path.module}/flux_bootstrap.sh"
     read   = <<-EOT
-      echo '{"checksum":"${sha256(jsonencode(local.flux_bootstrap_environment))}"}'
+      echo "{\"checksum\":\"$script_checksum\"}"
     EOT
-    delete = file("${path.module}/flux_bootstrap_destroy.sh")
+    delete = ". ${path.module}/flux_bootstrap_destroy.sh"
   }
 
   depends_on = [

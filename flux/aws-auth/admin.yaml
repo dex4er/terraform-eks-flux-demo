@@ -3,7 +3,7 @@ kind: IAMIdentityMapping
 metadata:
   name: admin
 spec:
-  arn: ${assume_role}
+  arn: ${admin_role_arn}
   groups:
     - system:masters
   username: admin

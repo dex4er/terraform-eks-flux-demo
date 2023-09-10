@@ -3,7 +3,7 @@ kind: IAMIdentityMapping
 metadata:
   name: cluster-node-group
 spec:
-  arn: arn:aws:iam::${account_id}:role/${cluster_name}-cluster-node-group
+  arn: arn:aws:iam::${account_id}:role/${cluster_name}-node-group
   groups:
     - system:bootstrappers
     - system:nodes

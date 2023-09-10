@@ -1,5 +1,7 @@
 awscli 2.13.17
+envsubst 1.4.2
 flux2 2.1.0
 go-containerregistry 0.16.1
 kubectl 1.24.15
+kustomize 5.0.3
 terraform 1.5.7
