@@ -1,0 +1,31 @@
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: aws-eks-iam-auth-controller
+  namespace: flux-system
+spec:
+  interval: 1m
+  timeout: 5m
+  maxHistory: 2
+  releaseName: aws-eks-iam-auth-controller
+  targetNamespace: aws-eks-iam-auth-controller
+  storageNamespace: aws-eks-iam-auth-controller
+  serviceAccountName: helm-controller
+  chart:
+    spec:
+      chart: rustrial-aws-eks-iam-auth-controller
+      version: 0.1.9 ## curl -qsS https://rustrial.github.io/aws-eks-iam-auth-controller/index.yaml | yq .entries.rustrial-aws-eks-iam-auth-controller.0.version
+      sourceRef:
+        kind: HelmRepository
+        name: aws-eks-iam-auth-controller
+      reconcileStrategy: ChartVersion
+  install:
+    crds: CreateReplace
+  upgrade:
+    crds: CreateReplace
+  values:
+    ## https://github.com/rustrial/aws-eks-iam-auth-controller/blob/main/charts/rustrial-aws-eks-iam-auth-controller/values.yaml
+
+    env:
+      - name: RUST_LOG
+        value: info

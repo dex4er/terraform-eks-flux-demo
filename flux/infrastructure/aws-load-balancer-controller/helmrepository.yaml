@@ -4,5 +4,5 @@ metadata:
   name: eks-charts
   namespace: kube-system
 spec:
-  interval: 10m
+  interval: 1h
   url: https://aws.github.io/eks-charts/

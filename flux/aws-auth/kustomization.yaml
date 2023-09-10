@@ -1,0 +1,16 @@
+## aws-auth configuration
+##
+##
+## This is the most important ConfigMap in the cluster. Misconfiguration
+## might cause loosing the access to the cluster or breaking it completely.
+##
+##
+## Warning! Deleting configuration for cluster-node-groups will break all
+## nodes then all pods running on the nodes!
+
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: flux-system
+resources:
+  - cluster-node-group.yaml
+  - admin.yaml

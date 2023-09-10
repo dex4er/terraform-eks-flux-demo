@@ -1,0 +1,8 @@
+## The manifest with all infrastructure-level applications.
+
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - aws-eks-iam-auth-controller
+  - aws-load-balancer-controller
+  - metrics-server

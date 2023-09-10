@@ -4,23 +4,23 @@ metadata:
   name: podinfo
 spec:
   interval: 1m
-  timeout: 2m
+  timeout: 5m
   maxHistory: 2
+  releaseName: podinfo
+  targetNamespace: podinfo
+  storageNamespace: podinfo
+  serviceAccountName: helm-controller
   chart:
     spec:
       interval: 1m
       chart: podinfo
-      ## https://github.com/stefanprodan/podinfo/blob/master/charts/podinfo/Chart.yaml#L2
-      version: 6.3.3
+      version: 6.4.1 ## curl -qsS https://stefanprodan.github.io/podinfo/index.yaml | yq .entries.podinfo.0.version
       sourceRef:
         kind: HelmRepository
         name: podinfo
-      reconcileStrategy: Revision
+      reconcileStrategy: ChartVersion
   values:
     ## https://github.com/stefanprodan/podinfo/blob/master/charts/podinfo/values.yaml
-
-    image:
-      tag: 6.3.0
 
     hpa:
       enabled: false

@@ -1,0 +1,10 @@
+## Kubernetes Metrics Server
+##
+## It is critical service that makes `kubectl top` command and
+## HorizontalPodAutoscaler working.
+
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - helmrepository.yaml
+  - helmrelease.yaml

@@ -1,0 +1,10 @@
+apiVersion: iamauthenticator.k8s.aws/v1alpha1
+kind: IAMIdentityMapping
+metadata:
+  name: cluster-node-group
+spec:
+  arn: arn:aws:iam::${account_id}:role/${cluster_name}-cluster-node-group
+  groups:
+    - system:bootstrappers
+    - system:nodes
+  username: "system:node:{{EC2PrivateDNSName}}"

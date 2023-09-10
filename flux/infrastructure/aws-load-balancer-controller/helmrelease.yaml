@@ -5,18 +5,21 @@ metadata:
   namespace: kube-system
 spec:
   interval: 1m
-  timeout: 2m
+  timeout: 5m
   maxHistory: 2
+  releaseName: aws-load-balancer-controller
+  targetNamespace: kube-system
+  storageNamespace: kube-system
+  serviceAccountName: helm-controller
   chart:
     spec:
       interval: 1m
       chart: aws-load-balancer-controller
-      ## https://github.com/kubernetes-sigs/aws-load-balancer-controller/blob/main/helm/aws-load-balancer-controller/Chart.yaml#L4
-      version: 1.4.6
+      version: 1.6.0 ## curl -qsS https://aws.github.io/eks-charts/index.yaml | yq .entries.aws-load-balancer-controller.0.version
       sourceRef:
         kind: HelmRepository
         name: eks-charts
-      reconcileStrategy: Revision
+      reconcileStrategy: ChartVersion
   install:
     crds: CreateReplace
   upgrade:

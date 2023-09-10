@@ -1,7 +1,13 @@
+## Main kustomization.yaml (manifest) for the cluster.
+##
+## It applies the content of the `flux-system` directory and additional
+## FluxCD Kustomizations (applications) from this directory.
+
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 namespace: flux-system
 resources:
-  - aws-load-balancer-controller
   - flux-system
-  - podinfo
+  - apps.yaml
+  - aws-auth.yaml
+  - infrastructure.yaml
