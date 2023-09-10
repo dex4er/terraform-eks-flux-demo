@@ -10,7 +10,7 @@ locals {
     }
     kube-proxy = {
       ## https://docs.aws.amazon.com/eks/latest/userguide/managing-kube-proxy.html
-      version                     = "v1.24.15-minimal-eksbuild.2"
+      version                     = "v1.24.10-eksbuild.2"
       resolve_conflicts_on_create = "OVERWRITE"
       resolve_conflicts_on_update = "OVERWRITE"
     }
