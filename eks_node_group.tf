@@ -143,6 +143,6 @@ resource "time_sleep" "eks_default_node_group_delay" {
   triggers = {
     ## It makes a dependency on the default node group but we need more static string
     ## ID before colon is the same as cluster name.
-    default_node_group = try(module.eks.eks_managed_node_groups[local.default_node_group].node_group_id, var.cluster_name)
+    default_node_group = try(module.eks_node_group[local.default_node_group].node_group_id, module.eks.cluster_name)
   }
 }
