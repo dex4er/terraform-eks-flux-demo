@@ -12,7 +12,7 @@ spec:
       interval: 1m
       chart: cluster-autoscaler
       ## https://github.com/kubernetes/autoscaler/blob/master/charts/cluster-autoscaler/Chart.yaml#L14
-      version: "9.26.0"
+      version: 9.26.0
       sourceRef:
         kind: HelmRepository
         name: autoscaler
@@ -33,7 +33,7 @@ spec:
                   operator: In
                   values:
                     - aws-cluster-autoscaler
-            topologyKey: "kubernetes.io/hostname"
+            topologyKey: kubernetes.io/hostname
 
     autoDiscovery:
       clusterName: ${cluster_name}

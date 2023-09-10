@@ -11,7 +11,7 @@ spec:
       interval: 1m
       chart: podinfo
       ## https://github.com/stefanprodan/podinfo/blob/master/charts/podinfo/Chart.yaml#L2
-      version: "6.3.3"
+      version: 6.3.3
       sourceRef:
         kind: HelmRepository
         name: podinfo
@@ -52,4 +52,4 @@ spec:
                   operator: In
                   values:
                     - podinfo
-            topologyKey: "kubernetes.io/hostname"
+            topologyKey: kubernetes.io/hostname

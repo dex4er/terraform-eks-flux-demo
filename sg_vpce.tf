@@ -5,7 +5,7 @@ module "sg_vpce" {
 
   ## https://github.com/terraform-aws-modules/terraform-aws-security-group
   source  = "terraform-aws-modules/security-group/aws"
-  version = "4.17.1"
+  version = "~> 5.1"
 
   use_name_prefix = false
   name            = "${var.name}-vpce"

@@ -12,7 +12,7 @@ EKS cluster has features:
 - enabled autoscaler and AWS load balancer controller
 - exposes podinfo application
 
-The demo uses https://github.com/terraform-aws-modules> modules. All modules and
+The demo uses <https://github.com/terraform-aws-modules> modules. All modules and
 resources and in main directory to make modifications easier so this project can
 be easily used as a base for other demos and experiments.
 

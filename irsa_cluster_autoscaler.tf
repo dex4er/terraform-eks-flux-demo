@@ -3,7 +3,7 @@
 module "irsa_cluster_autoscaler" {
   ## https://github.com/terraform-aws-modules/terraform-aws-iam/tree/master/modules/iam-role-for-service-accounts-eks
   source  = "terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts-eks"
-  version = "5.12.0"
+  version = "~> 5.12"
 
   role_name          = "${module.eks.cluster_name}-irsa-cluster-autoscaler"
   role_path          = "/"

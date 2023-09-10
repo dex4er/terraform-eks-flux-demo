@@ -1,5 +1,5 @@
-awscli 2.11.0
-flux2 0.40.2
-go-containerregistry 0.13.0
-kubectl 1.24.10
-terraform 1.4.0
+awscli 2.13.17
+flux2 2.1.0
+go-containerregistry 0.16.1
+kubectl 1.24.15
+terraform 1.5.7

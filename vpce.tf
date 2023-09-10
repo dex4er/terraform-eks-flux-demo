@@ -9,7 +9,7 @@ module "vpce" {
 
   ## https://github.com/terraform-aws-modules/terraform-aws-vpc/tree/master/modules/vpc-endpoints
   source  = "terraform-aws-modules/vpc/aws//modules/vpc-endpoints"
-  version = "3.19.0"
+  version = "~> 5.1"
 
   vpc_id             = local.vpc_id
   security_group_ids = [module.sg_vpce[0].security_group_id]

@@ -8,7 +8,7 @@ locals {
 module "kms_cluster" {
   ## https://github.com/terraform-aws-modules/terraform-aws-kms
   source  = "terraform-aws-modules/kms/aws"
-  version = "1.5.0"
+  version = "~> 2.0"
 
   description = "${var.name} cluster encryption key"
 

@@ -12,7 +12,7 @@ spec:
       interval: 1m
       chart: aws-load-balancer-controller
       ## https://github.com/kubernetes-sigs/aws-load-balancer-controller/blob/main/helm/aws-load-balancer-controller/Chart.yaml#L4
-      version: "1.4.6"
+      version: 1.4.6
       sourceRef:
         kind: HelmRepository
         name: eks-charts

@@ -3,7 +3,7 @@
 module "ecr_flux_system" {
   ## https://github.com/terraform-aws-modules/terraform-aws-ecr
   source  = "terraform-aws-modules/ecr/aws"
-  version = "1.6.0"
+  version = "~> 1.6"
 
   repository_name = "${var.name}-flux-system"
 

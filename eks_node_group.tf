@@ -56,7 +56,7 @@ locals {
 module "eks_node_group" {
   ## https://github.com/terraform-aws-modules/terraform-aws-eks/tree/master/modules/self-managed-node-group
   source  = "terraform-aws-modules/eks/aws//modules/self-managed-node-group"
-  version = "19.10.0"
+  version = "~> 19.10"
 
   for_each = { for k, v in local.node_groups : k => v if v.create }
 

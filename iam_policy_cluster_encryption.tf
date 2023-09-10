@@ -3,7 +3,7 @@
 module "iam_policy_cluster_encryption" {
   ## https://github.com/terraform-aws-modules/terraform-aws-iam/tree/master/modules/iam-policy
   source  = "terraform-aws-modules/iam/aws//modules/iam-policy"
-  version = "5.12.0"
+  version = "~> 5.12"
 
   name        = "${var.name}-cluster-encryption"
   path        = "/"
