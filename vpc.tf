@@ -11,15 +11,15 @@ module "vpc" {
 
   name = var.cluster_name
 
-  cidr = "10.99.0.0/18"
+  cidr = var.cidr
 
   ## To get predictable AZ use zone IDs rather than zone names
   azs = var.azs
 
   ## It is for private cluster with ELBs in public and master nodes in intra range
-  public_subnets  = ["10.99.11.0/24", "10.99.12.0/24", "10.99.13.0/24"]
-  private_subnets = ["10.99.21.0/24", "10.99.22.0/24", "10.99.23.0/24"]
-  intra_subnets   = ["10.99.31.0/24", "10.99.32.0/24", "10.99.33.0/24"]
+  public_subnets  = [cidrsubnet(var.cidr, 6, 11), cidrsubnet(var.cidr, 6, 12), cidrsubnet(var.cidr, 6, 13)]
+  private_subnets = [cidrsubnet(var.cidr, 6, 21), cidrsubnet(var.cidr, 6, 22), cidrsubnet(var.cidr, 6, 23)]
+  intra_subnets   = [cidrsubnet(var.cidr, 6, 31), cidrsubnet(var.cidr, 6, 32), cidrsubnet(var.cidr, 6, 33)]
 
   ## https://github.com/terraform-aws-modules/terraform-aws-vpc#nat-gateway-scenarios
   ## One NAT Gateway per subnet: we have single AZ node groups
@@ -65,4 +65,9 @@ locals {
   subnets_public_ids_by_azs  = { for i, v in var.azs : v => module.vpc.public_subnets[i] }
   subnets_private_ids_by_azs = { for i, v in var.azs : v => module.vpc.private_subnets[i] }
   subnets_ids_by_azs         = var.cluster_in_private_subnet ? local.subnets_private_ids_by_azs : local.subnets_public_ids_by_azs
+}
+
+output "vpc" {
+  description = "Outputs from VPC module"
+  value       = module.vpc
 }

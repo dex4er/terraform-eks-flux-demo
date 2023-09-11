@@ -25,6 +25,12 @@ variable "azs" {
   description = "List of AZs. AZ ids are preferred rather than names."
 }
 
+variable "cidr" {
+  type        = string
+  description = "CIDR for VPC. It should be /18 then subnets will be /24 (18+6)."
+  default     = "10.99.0.0/18"
+}
+
 variable "cluster_name" {
   type        = string
   description = "Name of the cluster and prefix of created AWS resources"
