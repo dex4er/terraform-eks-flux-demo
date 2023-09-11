@@ -2,36 +2,31 @@
 ## interfaces but they're leftovers from working EKS cluster and they'll hold
 ## `terraform destroy` for long time otherway.
 
-locals {
-  vpc_cleanup_environment = {
+resource "shell_script" "vpc_cleanup" {
+  triggers = {
+    vpc_id = module.vpc.vpc_id
+  }
+
+  environment = {
     asdf_dir = var.asdf_dir
     profile  = var.profile
     region   = var.region
     vpc_id   = module.vpc.vpc_id
   }
-}
-
-resource "shell_script" "vpc_cleanup" {
-  triggers = local.vpc_cleanup_environment
-
-  environment = local.vpc_cleanup_environment
 
   working_directory = path.module
 
   lifecycle_commands {
-    create = <<-EOT
-      echo '{"checksum":"${sha256(jsonencode(local.vpc_cleanup_environment))}"}'
-    EOT
-    update = <<-EOT
-      echo '{"checksum":"${sha256(jsonencode(local.vpc_cleanup_environment))}"}'
-    EOT
+    create = ":"
+    update = ":"
     read   = <<-EOT
-      echo '{"checksum":"${sha256(jsonencode(local.vpc_cleanup_environment))}"}'
+      echo "{\"vpc_id\":\"$vpc_id\"}"
     EOT
-    delete = file("${path.module}/vpc_cleanup_destroy.sh")
+    delete = ". ${path.module}/vpc_cleanup_destroy.sh"
   }
 }
 
 locals {
+  ## Makes dependency on this resource so it should be destroyed in right time
   vpc_id = shell_script.vpc_cleanup.triggers.vpc_id
 }
