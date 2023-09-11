@@ -146,3 +146,8 @@ resource "time_sleep" "eks_default_node_group_delay" {
     default_node_group = try(module.eks_node_group[local.default_node_group].node_group_id, module.eks.cluster_name)
   }
 }
+
+output "eks_node_group" {
+  description = "Outputs from EKS managed node groups module"
+  value       = module.eks_node_group
+}

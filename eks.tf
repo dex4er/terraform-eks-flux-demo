@@ -60,3 +60,8 @@ module "eks" {
     Object  = "module.eks"
   }
 }
+
+output "eks" {
+  description = "Outputs from EKS module"
+  value       = module.eks
+}
