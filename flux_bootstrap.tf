@@ -7,7 +7,7 @@ resource "shell_script" "flux_bootstrap" {
     cluster_context         = local.cluster_context
     flux_git_repository_url = var.flux_git_repository_url
     kubeconfig_parameter    = aws_ssm_parameter.kubeconfig.name
-    profile                 = coalesce(var.profile, "")
+    profile                 = var.profile != null ? var.profile : ""
     region                  = var.region
     script_checksum         = sha256(file("${path.module}/flux_bootstrap.sh"))
   }
