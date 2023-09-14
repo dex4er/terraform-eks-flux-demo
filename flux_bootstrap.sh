@@ -9,8 +9,11 @@ kubectl apply -k https://github.com/fluxcd/flux2/manifests/install?ref=v2.1.0 \
   --kubeconfig <(${aws} ssm get-parameter --name ${kubeconfig_parameter} --output text --query Parameter.Value --with-decryption) \
   --context ${cluster_context}
 
-cat flux/flux-system/gitrepository.yaml flux/flux-system.yaml |
-  envsubst |
+for f in flux/flux-system/gitrepository.yaml flux/flux-system.yaml; do
+  echo "---"
+  cat ${f} |
+    envsubst
+done |
   kubectl apply -f - \
     --server-side \
     --force-conflicts \
