@@ -10,6 +10,7 @@ EKS cluster has features:
 - encrypted at rest
 - has customized nodes in self-managed node group
 - enabled AWS load balancer controller
+- enabled metrics-server
 - exposes podinfo application
 
 The demo uses <https://github.com/terraform-aws-modules> modules. All modules and
@@ -297,7 +298,6 @@ each change in a `/flux` directory.
   another StorageClass might be used in place of the default.
 - AWS Node Termination Handler should be installed for safer handling of spot
   instances.
-- There is no `metrics-server` so HorizontalPodAutoscaler doesn't work yet.
 - The cluster misses Prometheus. External AWS Prometheus instance might be used
   for longer-term storage.
 - It might be considered using Istio or Cilium for better observability.
