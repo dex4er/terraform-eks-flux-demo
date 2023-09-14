@@ -4,7 +4,7 @@ set -eu
 
 ## Input variables
 
-asdf_version=v0.12.0
+asdf_version=v0.13.1
 
 ## The existing directory is not updated or overwritten.
 
@@ -28,11 +28,17 @@ done
 
 popd >/dev/null
 
-if [[ -n ${profile} ]]; then
+if [[ -n ${profile-} ]]; then
   export AWS_PROFILE=${profile}
 else
   unset AWS_PROFILE
 fi
 export AWS_REGION=${region}
+
+aws="aws --region ${region}"
+
+if [[ -n ${profile-} ]]; then
+  aws="${aws} --profile ${profile}"
+fi
 
 set -x

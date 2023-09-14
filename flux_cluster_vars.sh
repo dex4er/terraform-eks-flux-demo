@@ -10,5 +10,5 @@ kubectl create configmap -n flux-system cluster-vars \
   kubectl apply -f - \
     --server-side \
     --force-conflicts \
-    --kubeconfig <(aws ssm get-parameter --name ${kubeconfig_parameter} --output text --query Parameter.Value --with-decryption) \
+    --kubeconfig <(${aws} ssm get-parameter --name ${kubeconfig_parameter} --output text --query Parameter.Value --with-decryption) \
     --context ${cluster_context}
