@@ -6,7 +6,17 @@ kustomization_to_remove_later="flux-system|aws-load-balancer-controller"
 
 kubeconfig=$(${aws} ssm get-parameter --name ${kubeconfig_parameter} --output text --query Parameter.Value --with-decryption)
 
-kubectl get kustomization all -n flux-system \
+kubectl get gitrepository flux-system -n flux-system \
+  --no-headers \
+  --kubeconfig <(echo "${kubeconfig}") \
+  --context ${cluster_context} |
+  while read -r name _rest; do
+    flux suspend source git ${name} \
+      --kubeconfig <(echo "${kubeconfig}") \
+      --context ${cluster_context}
+  done
+
+kubectl get kustomization flux-system -n flux-system \
   --no-headers \
   --kubeconfig <(echo "${kubeconfig}") \
   --context ${cluster_context} |
