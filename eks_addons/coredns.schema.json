@@ -1,0 +1,140 @@
+{
+  "$ref": "#/definitions/Coredns",
+  "$schema": "http://json-schema.org/draft-06/schema#",
+  "definitions": {
+    "Coredns": {
+      "additionalProperties": false,
+      "properties": {
+        "affinity": {
+          "default": {
+            "affinity": {
+              "nodeAffinity": {
+                "requiredDuringSchedulingIgnoredDuringExecution": {
+                  "nodeSelectorTerms": [
+                    {
+                      "matchExpressions": [
+                        {
+                          "key": "kubernetes.io/os",
+                          "operator": "In",
+                          "values": ["linux"]
+                        },
+                        {
+                          "key": "kubernetes.io/arch",
+                          "operator": "In",
+                          "values": ["amd64", "arm64"]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              },
+              "podAntiAffinity": {
+                "preferredDuringSchedulingIgnoredDuringExecution": [
+                  {
+                    "podAffinityTerm": {
+                      "labelSelector": {
+                        "matchExpressions": [
+                          {
+                            "key": "k8s-app",
+                            "operator": "In",
+                            "values": ["kube-dns"]
+                          }
+                        ]
+                      },
+                      "topologyKey": "kubernetes.io/hostname"
+                    },
+                    "weight": 100
+                  }
+                ]
+              }
+            }
+          },
+          "description": "Affinity of the coredns pods",
+          "type": ["object", "null"]
+        },
+        "computeType": {
+          "type": "string"
+        },
+        "corefile": {
+          "description": "Entire corefile contents to use with installation",
+          "type": "string"
+        },
+        "nodeSelector": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "type": "object"
+        },
+        "podAnnotations": {
+          "default": {
+            "cluster-autoscaler.kubernetes.io/safe-to-evict": "false",
+            "karpenter.sh/do-not-evict": "true"
+          },
+          "properties": {},
+          "title": "The podAnnotations Schema",
+          "type": "object"
+        },
+        "podLabels": {
+          "properties": {},
+          "title": "The podLabels Schema",
+          "type": "object"
+        },
+        "replicaCount": {
+          "type": "integer"
+        },
+        "resources": {
+          "$ref": "#/definitions/Resources"
+        },
+        "tolerations": {
+          "default": [
+            {
+              "key": "CriticalAddonsOnly",
+              "operator": "Exists"
+            },
+            {
+              "key": "node-role.kubernetes.io/master",
+              "operator": "NoSchedule"
+            }
+          ],
+          "description": "Tolerations of the coredns pod",
+          "items": {
+            "type": "object"
+          },
+          "type": "array"
+        },
+        "topologySpreadConstraints": {
+          "description": "The coredns pod topology spread constraints",
+          "type": "array"
+        }
+      },
+      "title": "Coredns",
+      "type": "object"
+    },
+    "Limits": {
+      "additionalProperties": false,
+      "properties": {
+        "cpu": {
+          "type": "string"
+        },
+        "memory": {
+          "type": "string"
+        }
+      },
+      "title": "Limits",
+      "type": "object"
+    },
+    "Resources": {
+      "additionalProperties": false,
+      "properties": {
+        "limits": {
+          "$ref": "#/definitions/Limits"
+        },
+        "requests": {
+          "$ref": "#/definitions/Limits"
+        }
+      },
+      "title": "Resources",
+      "type": "object"
+    }
+  }
+}

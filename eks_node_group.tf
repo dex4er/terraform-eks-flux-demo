@@ -43,7 +43,7 @@ locals {
 
       min_size     = 1
       max_size     = 4
-      desired_size = 2
+      desired_size = 3
 
       capacity_type = "SPOT"
     }

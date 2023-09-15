@@ -1,0 +1,59 @@
+{
+  "$ref": "#/definitions/KubeProxy",
+  "$schema": "http://json-schema.org/draft-06/schema#",
+  "definitions": {
+    "Ipvs": {
+      "additionalProperties": false,
+      "properties": {
+        "scheduler": {
+          "type": "string"
+        }
+      },
+      "title": "Ipvs",
+      "type": "object"
+    },
+    "KubeProxy": {
+      "additionalProperties": false,
+      "properties": {
+        "ipvs": {
+          "$ref": "#/definitions/Ipvs"
+        },
+        "mode": {
+          "enum": ["iptables", "ipvs"],
+          "type": "string"
+        },
+        "resources": {
+          "$ref": "#/definitions/Resources"
+        }
+      },
+      "title": "KubeProxy",
+      "type": "object"
+    },
+    "Limits": {
+      "additionalProperties": false,
+      "properties": {
+        "cpu": {
+          "type": "string"
+        },
+        "memory": {
+          "type": "string"
+        }
+      },
+      "title": "Limits",
+      "type": "object"
+    },
+    "Resources": {
+      "additionalProperties": false,
+      "properties": {
+        "limits": {
+          "$ref": "#/definitions/Limits"
+        },
+        "requests": {
+          "$ref": "#/definitions/Limits"
+        }
+      },
+      "title": "Resources",
+      "type": "object"
+    }
+  }
+}
