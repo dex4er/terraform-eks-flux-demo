@@ -2,7 +2,7 @@
 
 locals {
   node_groups = {
-    default-1 = {
+    default-1-25-v20230825 = {
       create  = true
       default = true
 
@@ -32,7 +32,7 @@ locals {
       ami_owner        = "amazon"
 
       ## https://github.com/awslabs/amazon-eks-ami/releases
-      # ami_name = "amazon-eks-node-1.24-v20230825"
+      # ami_name = "amazon-eks-node-1.25-v20230825"
 
       pre_bootstrap_user_data = <<-EOT
       yum install -y bind-utils htop lsof mc strace tcpdump
