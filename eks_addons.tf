@@ -11,14 +11,14 @@ locals {
     }
     kube-proxy = {
       ## https://docs.aws.amazon.com/eks/latest/userguide/managing-kube-proxy.html
-      version                     = "v1.24.10-eksbuild.2"
+      version                     = "v1.25.11-eksbuild.2"
       resolve_conflicts_on_create = "OVERWRITE"
       resolve_conflicts_on_update = "OVERWRITE"
       configuration_values        = jsonencode(yamldecode(file("${path.module}/eks_addons/kube-proxy.configuration.yaml")))
     }
     vpc-cni = {
       ## https://docs.aws.amazon.com/eks/latest/userguide/managing-vpc-cni.html
-      version                     = "v1.14.0-eksbuild.3"
+      version                     = "v1.15.0-eksbuild.2"
       resolve_conflicts_on_create = "OVERWRITE"
       resolve_conflicts_on_update = "OVERWRITE"
       service_account_role_arn    = module.irsa_aws_vpc_cni.iam_role_arn

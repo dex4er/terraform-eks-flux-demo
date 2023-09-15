@@ -114,6 +114,10 @@
           "format": "boolean",
           "type": "string"
         },
+        "DISABLE_POD_V6": {
+          "format": "boolean",
+          "type": "string"
+        },
         "ENABLE_BANDWIDTH_PLUGIN": {
           "format": "boolean",
           "type": "string"
@@ -137,6 +141,10 @@
           "type": "string"
         },
         "INTROSPECTION_BIND_ADDRESS": {
+          "type": "string"
+        },
+        "IP_COOLDOWN_PERIOD": {
+          "format": "integer",
           "type": "string"
         },
         "MAX_ENI": {
@@ -209,6 +217,14 @@
       "properties": {
         "enableCloudWatchLogs": {
           "format": "boolean",
+          "type": "string"
+        },
+        "healthProbeBindAddr": {
+          "format": "integer",
+          "type": "string"
+        },
+        "metricsBindAddr": {
+          "format": "integer",
           "type": "string"
         }
       },
