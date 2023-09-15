@@ -95,6 +95,9 @@ module "eks_node_group" {
   max_size     = each.value.max_size
   desired_size = each.value.desired_size
 
+  labels = each.value.labels
+  taints = each.value.taints
+
   block_device_mappings = {
     xvda = {
       device_name = "/dev/xvda"
