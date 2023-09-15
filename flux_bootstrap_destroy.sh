@@ -1,7 +1,7 @@
 #!/bin/bash
 
 asdf_tools="awscli flux2 kubectl"
-kustomization_to_remove_later="flux-system|aws-load-balancer-controller"
+kustomization_to_remove_later="flux-system|infrastructure"
 . shell_common.sh
 
 kubeconfig=$(${aws} ssm get-parameter --name ${kubeconfig_parameter} --output text --query Parameter.Value --with-decryption)
