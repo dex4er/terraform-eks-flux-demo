@@ -8,3 +8,5 @@ spec:
   ref:
     branch: main
   url: ${flux_git_repository_url}
+  secretRef:
+    name: flux-system

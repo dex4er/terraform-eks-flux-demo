@@ -11,6 +11,17 @@ kubectl apply -k https://github.com/fluxcd/flux2/manifests/install?ref=v2.1.0 \
   --kubeconfig <(echo "${kubeconfig}") \
   --context ${cluster_context}
 
+kubectl create secret generic -n flux-system flux-system \
+  --from-literal=password="${flux_git_repository_password-}" \
+  --from-literal=username="${flux_git_repository_username-}" \
+  --output=yaml \
+  --dry-run=client |
+  kubectl apply -f - \
+    --server-side \
+    --force-conflicts \
+    --kubeconfig <(echo "${kubeconfig}") \
+    --context ${cluster_context}
+
 for f in flux/flux-system/gitrepository.yaml flux/flux-system.yaml; do
   echo "---"
   cat ${f} |

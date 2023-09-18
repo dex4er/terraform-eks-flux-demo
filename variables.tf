@@ -37,9 +37,22 @@ variable "cluster_in_private_subnet" {
   default     = false
 }
 
+variable "flux_git_repository_password" {
+  type        = string
+  description = "Password for Git repository"
+  default     = null
+  sensitive   = true
+}
+
 variable "flux_git_repository_url" {
   type        = string
   description = "URL of this Git repository"
+}
+
+variable "flux_git_repository_username" {
+  type        = string
+  description = "Username for Git repository"
+  default     = null
 }
 
 variable "profile" {
