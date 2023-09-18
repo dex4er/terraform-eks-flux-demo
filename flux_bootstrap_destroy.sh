@@ -30,7 +30,7 @@ kubectl get kustomization -n flux-system \
   --no-headers \
   --kubeconfig <(echo "${kubeconfig}") \
   --context ${cluster_context} |
-  grep -v -P "^(${kustomization_to_remove_later})" |
+  grep -v -E "^(${kustomization_to_remove_later})" |
   while read -r name _rest; do
     kubectl delete kustomization ${name} -n flux-system --ignore-not-found --kubeconfig <(echo "${kubeconfig}") --context ${cluster_context}
   done
@@ -41,7 +41,7 @@ kubectl get kustomization -n flux-system \
   --no-headers \
   --kubeconfig <(echo "${kubeconfig}") \
   --context ${cluster_context} |
-  grep -v -P "^flux-system" |
+  grep -v -E "^flux-system" |
   while read -r name _rest; do
     kubectl delete kustomization ${name} -n flux-system \
       --ignore-not-found \
