@@ -51,6 +51,11 @@ kubectl get kustomization -n flux-system \
 
 sleep 60
 
+kubectl delete secret -n flux-system flux-system \
+  --ignore-not-found \
+  --kubeconfig <(echo "${kubeconfig}") \
+  --context ${cluster_context}
+
 flux uninstall --keep-namespace=true --silent \
   --kubeconfig <(echo "${kubeconfig}") \
   --context ${cluster_context}
