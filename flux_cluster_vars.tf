@@ -50,7 +50,9 @@ resource "shell_script" "flux_cluster_vars" {
     module.irsa_aws_load_balancer_controller,
     module.irsa_aws_vpc_cni,
     module.kms_cluster,
+    module.sg_cluster,
     module.sg_node_group,
+    module.sg_vpce,
     module.vpc,
   ]
 }
