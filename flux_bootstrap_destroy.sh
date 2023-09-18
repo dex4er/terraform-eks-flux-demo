@@ -35,7 +35,7 @@ kubectl get kustomization -n flux-system \
     kubectl delete kustomization ${name} -n flux-system --ignore-not-found --kubeconfig <(echo "${kubeconfig}") --context ${cluster_context}
   done
 
-sleep 120
+sleep 180
 
 kubectl get kustomization -n flux-system \
   --no-headers \
