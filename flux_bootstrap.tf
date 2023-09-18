@@ -25,5 +25,6 @@ resource "shell_script" "flux_bootstrap" {
 
   depends_on = [
     aws_eks_addon.this,
+    shell_script.flux_cluster_vars,
   ]
 }

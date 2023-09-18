@@ -40,8 +40,4 @@ resource "shell_script" "flux_cluster_vars" {
     EOT
     delete = ". ${path.module}/flux_cluster_vars_destroy.sh"
   }
-
-  depends_on = [
-    shell_script.flux_bootstrap,
-  ]
 }
