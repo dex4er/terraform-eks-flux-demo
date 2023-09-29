@@ -20,6 +20,7 @@ locals {
 
       # ## Node group only in first AZ
       # azs = [local.azs_ids[0]]
+      azs = local.azs_ids
 
       instance_types = [
         ## 2vcpu, 8192mem
