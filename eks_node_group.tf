@@ -2,12 +2,9 @@
 
 locals {
   node_groups = {
-    default-1-25-v20230825 = {
+    default-20230922-1 = {
       create  = true
       default = true
-
-      use_name_prefix                 = false
-      launch_template_use_name_prefix = false
 
       labels = {
         "nodegroup"         = "default"
@@ -34,9 +31,10 @@ locals {
 
       ebs_optimized = false
 
-      disk_size  = 25
-      iops       = null
-      throughput = null
+      device_name = "/dev/sda1"
+      disk_size   = 25
+      # iops        = null
+      # throughput  = null
 
       ami_architecture = "x86_64"
       ami_owner        = "amazon"
@@ -45,14 +43,14 @@ locals {
       # ami_name = "amazon-eks-node-1.25-v20230825"
 
       ## https://ubuntu.com/server/docs/cloud-images/amazon-ec2
-      ## $ aws --region eu-central-1 ec2 describe-images --owners 099720109477 --filters "Name=name,Values=ubuntu-eks/k8s_1.24/images/hvm-ssd/ubuntu-focal-20.04-amd64-server-*" --query 'reverse(sort_by(Images, &Name))[0].Name' --output text | cat
-      ami_name = "ubuntu-eks/k8s_1.24/images/hvm-ssd/ubuntu-focal-20.04-amd64-server-20230922"
+      ## $ aws --region eu-central-1 ec2 describe-images --owners 099720109477 --filters "Name=name,Values=ubuntu-eks/k8s_1.25/images/hvm-ssd/ubuntu-focal-20.04-amd64-server-*" --query 'reverse(sort_by(Images, &Name))[0].Name' --output text | cat
+      ami_name = "ubuntu-eks/k8s_1.25/images/hvm-ssd/ubuntu-focal-20.04-amd64-server-20230922"
 
-      pre_bootstrap_user_data = <<-EOT
-      EOT
+      # pre_bootstrap_user_data = <<-EOT
+      # EOT
 
-      post_bootstrap_user_data = <<-EOT
-      EOT
+      # post_bootstrap_user_data = <<-EOT
+      # EOT
 
       min_size     = 1
       max_size     = 4
@@ -99,8 +97,13 @@ module "eks_node_group" {
     Name = "${module.eks.cluster_name}-node-group-${each.key}"
   }
 
-  pre_bootstrap_user_data  = each.value.pre_bootstrap_user_data
-  post_bootstrap_user_data = each.value.post_bootstrap_user_data
+  enable_bootstrap_user_data = true
+  bootstrap_extra_args = join(" ", compact([
+    lookup(each.value, "bootstrap_extra_args", ""),
+    "--dns-cluster-ip", cidrhost(local.cluster_service_cidr, 10),
+  ]))
+  pre_bootstrap_user_data  = lookup(each.value, "pre_bootstrap_user_data", "")
+  post_bootstrap_user_data = lookup(each.value, "post_bootstrap_user_data", "")
 
   min_size     = each.value.min_size
   max_size     = each.value.max_size
@@ -110,13 +113,13 @@ module "eks_node_group" {
   taints = each.value.taints
 
   block_device_mappings = {
-    xvda = {
-      device_name = "/dev/xvda"
+    root = {
+      device_name = lookup(each.value, "device_name", "/dev/xvda")
       ebs = {
         volume_size           = each.value.disk_size
         volume_type           = "gp3"
-        iops                  = each.value.iops
-        throughput            = each.value.throughput
+        iops                  = lookup(each.value, "iops", null)
+        throughput            = lookup(each.value, "throughput", null)
         encrypted             = true
         kms_key_id            = "arn:aws:kms:${var.region}:${var.account_id}:alias/aws/ebs"
         delete_on_termination = true
