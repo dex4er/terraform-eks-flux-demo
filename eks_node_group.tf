@@ -6,21 +6,30 @@ locals {
       create  = true
       default = true
 
+      use_name_prefix                 = false
+      launch_template_use_name_prefix = false
+
       labels = {
-        "node-group/default" = "true"
+        "nodegroup"         = "default"
+        "nodegroup/default" = "true"
       }
 
       taints = {}
 
-      max_pods = 29
+      # max_pods = 29
 
-      ## Node group only in first AZ
-      azs = [local.azs_ids[0]]
+      # ## Node group only in first AZ
+      # azs = [local.azs_ids[0]]
 
       instance_types = [
-        "m5.large",
-        "m5n.large",
+        ## 2vcpu, 8192mem
+        "t3a.large",
+        "t3.large",
+        "m6a.large",
+        "m6i.large",
       ]
+
+      capacity_type = "SPOT"
 
       ebs_optimized = false
 
@@ -34,8 +43,11 @@ locals {
       ## https://github.com/awslabs/amazon-eks-ami/releases
       # ami_name = "amazon-eks-node-1.25-v20230825"
 
+      ## https://ubuntu.com/server/docs/cloud-images/amazon-ec2
+      ## $ aws --region eu-central-1 ec2 describe-images --owners 099720109477 --filters "Name=name,Values=ubuntu-eks/k8s_1.24/images/hvm-ssd/ubuntu-focal-20.04-amd64-server-*" --query 'reverse(sort_by(Images, &Name))[0].Name' --output text | cat
+      ami_name = "ubuntu-eks/k8s_1.24/images/hvm-ssd/ubuntu-focal-20.04-amd64-server-20230922"
+
       pre_bootstrap_user_data = <<-EOT
-      yum install -y bind-utils htop lsof mc strace tcpdump
       EOT
 
       post_bootstrap_user_data = <<-EOT
@@ -44,8 +56,6 @@ locals {
       min_size     = 1
       max_size     = 4
       desired_size = 3
-
-      capacity_type = "SPOT"
     }
   }
 }
