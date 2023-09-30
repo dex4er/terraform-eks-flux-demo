@@ -1,0 +1,10 @@
+## Podinfo microservice to test our internal communication.
+## It is more advanced version of echoserver.
+
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - namespace.yaml
+  - persistentvolume.yaml
+  - persistentvolumeclaim.yaml
+  - statefulset.yaml
