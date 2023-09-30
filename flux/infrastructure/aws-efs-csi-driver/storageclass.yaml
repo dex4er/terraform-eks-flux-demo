@@ -5,3 +5,4 @@ metadata:
 provisioner: efs.csi.aws.com
 mountOptions:
   - tls
+  - iam

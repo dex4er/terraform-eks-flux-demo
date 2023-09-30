@@ -18,12 +18,11 @@ spec:
       containers:
         - name: alpine
           image: alpine
-          command: ["/bin/sh"]
+          command:
+            - /bin/sh
           args:
-            [
-              "-c",
-              "while true; do echo $(date -u) >> /efs-data/out.txt; sleep 5; done",
-            ]
+            - -c
+            - while true; do echo $(date -u) >> /efs-data/out.txt; sleep 5; done
           volumeMounts:
             - name: efs-data
               mountPath: /efs-data
