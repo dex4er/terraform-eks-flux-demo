@@ -1,0 +1,6 @@
+# yaml-language-server: $schema=./aws-efs-csi-driver.schema.json
+
+## $ aws eks describe-addon-configuration --addon-name aws-efs-csi-driver --addon-version v1.6.0-eksbuild.1 | jq -r .configurationSchema | jq . > eks_addons/aws-efs-csi-driver.schema.json
+
+node: {}
+controller: {}
