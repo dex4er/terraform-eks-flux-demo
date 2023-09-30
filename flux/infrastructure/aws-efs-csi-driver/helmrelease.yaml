@@ -1,0 +1,62 @@
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: aws-efs-csi-driver
+  namespace: kube-system
+spec:
+  interval: 1m
+  timeout: 5m
+  maxHistory: 2
+  releaseName: aws-efs-csi-driver
+  targetNamespace: kube-system
+  storageNamespace: kube-system
+  chart:
+    spec:
+      interval: 1m
+      chart: aws-efs-csi-driver
+      version: 2.5.0 ## curl -qsS https://kubernetes-sigs.github.io/aws-efs-csi-driver/index.yaml | yq .entries.aws-efs-csi-driver.0.version
+      sourceRef:
+        kind: HelmRepository
+        name: aws-efs-csi-driver
+      reconcileStrategy: ChartVersion
+  values:
+    ## https://github.com/kubernetes-sigs/aws-efs-csi-driver/blob/master/charts/aws-efs-csi-driver/values.yaml
+
+    image:
+      repository: public.ecr.aws/efs-csi-driver/amazon/aws-efs-csi-driver
+
+    controller:
+      resources:
+        limits:
+          memory: 128Mi
+        requests:
+          cpu: 100m
+          memory: 128Mi
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - podAffinityTerm:
+                labelSelector:
+                  matchLabels:
+                    app: efs-csi-controller
+                    app.kubernetes.io/name: aws-efs-csi-driver
+                namespaces:
+                  - kube-system
+                topologyKey: kubernetes.io/hostname
+              weight: 1
+      serviceAccount:
+        name: efs-csi-controller
+        annotations:
+          eks.amazonaws.com/role-arn: arn:aws:iam::${account_id}:role/${cluster_name}-irsa-aws-efs-csi-driver
+
+    node:
+      resources:
+        limits:
+          memory: 128Mi
+        requests:
+          cpu: 100m
+          memory: 128Mi
+      serviceAccount:
+        name: efs-csi-node
+        annotations:
+          eks.amazonaws.com/role-arn: arn:aws:iam::${account_id}:role/${cluster_name}-irsa-aws-efs-csi-driver

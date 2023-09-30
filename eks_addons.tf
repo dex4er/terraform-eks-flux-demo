@@ -2,14 +2,6 @@
 
 locals {
   cluster_addons = {
-    aws-efs-csi-driver = {
-      ## https://docs.aws.amazon.com/eks/latest/userguide/efs-csi.html
-      version                     = "v1.6.0-eksbuild.1"
-      resolve_conflicts_on_create = "OVERWRITE"
-      resolve_conflicts_on_update = "OVERWRITE"
-      service_account_role_arn    = module.irsa_aws_efs_csi_driver.iam_role_arn
-      configuration_values        = jsonencode(yamldecode(file("${path.module}/eks_addons/aws-efs-csi-driver.configuration.yaml")))
-    }
     coredns = {
       ## https://docs.aws.amazon.com/eks/latest/userguide/managing-coredns.html
       version                     = "v1.9.3-eksbuild.6"

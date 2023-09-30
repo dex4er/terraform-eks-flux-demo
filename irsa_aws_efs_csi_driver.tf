@@ -15,7 +15,7 @@ module "irsa_aws_efs_csi_driver" {
   oidc_providers = {
     (module.eks.cluster_name) = {
       provider_arn               = module.eks.oidc_provider_arn
-      namespace_service_accounts = ["kube-system:efs-csi-controller-sa", "kube-system:efs-csi-node-sa"]
+      namespace_service_accounts = ["kube-system:efs-csi-controller", "kube-system:efs-csi-node"]
     }
   }
 
