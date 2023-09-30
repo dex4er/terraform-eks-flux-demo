@@ -10,7 +10,7 @@ spec:
   accessModes:
     - ReadWriteMany
   persistentVolumeReclaimPolicy: Retain
-  storageClassName: efs
+  storageClassName: efs-static
   csi:
     driver: efs.csi.aws.com
     volumeHandle: ${efs_id}
