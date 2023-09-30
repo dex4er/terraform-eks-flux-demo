@@ -30,4 +30,4 @@ spec:
       volumes:
         - name: efs-data
           persistentVolumeClaim:
-            claimName: efs
+            claimName: efs-demo
