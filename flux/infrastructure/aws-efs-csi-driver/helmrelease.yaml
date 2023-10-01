@@ -27,6 +27,10 @@ spec:
       repository: public.ecr.aws/efs-csi-driver/amazon/aws-efs-csi-driver
 
     controller:
+      tags:
+        Cluster: ${cluster_name}
+        ManagedBy: aws-efs-csi-driver
+        Project: ${cluster_name}
       resources:
         limits:
           memory: 128Mi
@@ -48,7 +52,7 @@ spec:
       serviceAccount:
         name: efs-csi-controller
         annotations:
-          eks.amazonaws.com/role-arn: arn:aws:iam::${account_id}:role/${cluster_name}-irsa-aws-efs-csi-driver
+          eks.amazonaws.com/role-arn: arn:aws:iam::${account_id}:role/${cluster_name}-irsa-aws-efs-csi-controller
 
     node:
       resources:
@@ -60,4 +64,4 @@ spec:
       serviceAccount:
         name: efs-csi-node
         annotations:
-          eks.amazonaws.com/role-arn: arn:aws:iam::${account_id}:role/${cluster_name}-irsa-aws-efs-csi-driver
+          eks.amazonaws.com/role-arn: arn:aws:iam::${account_id}:role/${cluster_name}-irsa-aws-efs-csi-node

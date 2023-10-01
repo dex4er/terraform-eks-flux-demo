@@ -13,7 +13,8 @@ locals {
     "azs_name_${i}=${data.aws_availability_zones.this[i].names[0]}"
     ], [
     "cluster_name=${var.cluster_name}",
-    "efs_id=${module.efs.id}",
+    "efs_dynamic_id=${module.efs["dynamic"].id}",
+    "efs_static_id=${module.efs["static"].id}",
     "flux_git_repository_url=${var.flux_git_repository_url}",
     "region=${var.region}",
     "vpc_id=${local.vpc_id}",

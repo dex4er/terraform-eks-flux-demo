@@ -3,14 +3,16 @@ module "efs" {
   source  = "terraform-aws-modules/efs/aws"
   version = "~> 1.3"
 
-  name           = var.cluster_name
-  creation_token = var.cluster_name
+  for_each = toset(["dynamic", "static"])
+
+  name           = "${var.cluster_name}-${each.key}"
+  creation_token = "${var.cluster_name}-${each.key}"
   encrypted      = true
 
   mount_targets = { for k, v in zipmap(var.azs, module.vpc.public_subnets) : k => { subnet_id = v } }
 
-  security_group_name        = "${var.cluster_name}-efs"
-  security_group_description = "EFS security group"
+  security_group_name        = "${var.cluster_name}-efs-${each.key}"
+  security_group_description = "EFS security group ${each.key}"
   security_group_vpc_id      = module.vpc.vpc_id
   security_group_rules = {
     vpc = {
@@ -19,8 +21,10 @@ module "efs" {
     }
   }
 
+  enable_backup_policy = false
+
   tags = {
-    Name   = var.cluster_name
+    Name   = "${var.cluster_name}-${each.key}"
     Object = "module.efs"
   }
 }

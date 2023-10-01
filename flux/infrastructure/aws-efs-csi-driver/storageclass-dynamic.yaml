@@ -1,0 +1,16 @@
+kind: StorageClass
+apiVersion: storage.k8s.io/v1
+metadata:
+  name: efs-dynamic
+provisioner: efs.csi.aws.com
+mountOptions:
+  - iam
+parameters:
+  provisioningMode: efs-ap
+  fileSystemId: ${efs_dynamic_id}
+  directoryPerms: "700"
+  gidRangeStart: "100001"
+  gidRangeEnd: "101000"
+  subPathPattern: "$${.PVC.namespace}/$${.PVC.name}"
+  ensureUniqueDirectory: "false"
+  reuseAccessPoint: "true"

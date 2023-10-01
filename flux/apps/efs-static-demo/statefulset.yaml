@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: efs-static-demo
+  namespace: efs-static-demo
+spec:
+  selector:
+    matchLabels:
+      app: efs-static-demo
+  serviceName: efs-static-demo
+  replicas: 3
+  template:
+    metadata:
+      labels:
+        app: efs-static-demo
+    spec:
+      terminationGracePeriodSeconds: 10
+      containers:
+        - name: alpine
+          image: alpine
+          command:
+            - /bin/sh
+          args:
+            - -c
+            - while true; do echo $(date -u) >> /efs-data/out.txt; sleep 5; done
+          volumeMounts:
+            - name: efs-data
+              mountPath: /efs-data
+      volumes:
+        - name: efs-data
+          persistentVolumeClaim:
+            claimName: efs-static-demo

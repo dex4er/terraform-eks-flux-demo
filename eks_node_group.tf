@@ -2,7 +2,7 @@
 
 locals {
   node_groups = {
-    default-20230922-1 = {
+    default-20230922-2 = {
       create  = true
       default = true
 

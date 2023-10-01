@@ -1,8 +1,0 @@
-apiVersion: source.toolkit.fluxcd.io/v1beta2
-kind: HelmRepository
-metadata:
-  name: eks-charts
-  namespace: kube-system
-spec:
-  interval: 1h
-  url: https://aws.github.io/eks-charts/

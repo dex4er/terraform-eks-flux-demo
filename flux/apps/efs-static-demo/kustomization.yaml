@@ -1,0 +1,9 @@
+## Demo
+
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - namespace.yaml
+  - persistentvolume.yaml
+  - persistentvolumeclaim.yaml
+  - statefulset.yaml
