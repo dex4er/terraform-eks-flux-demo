@@ -5,4 +5,5 @@ kind: Kustomization
 resources:
   - aws-efs-csi-driver
   - aws-eks-iam-auth-controller
+  - aws-load-balancer-controller
   - metrics-server

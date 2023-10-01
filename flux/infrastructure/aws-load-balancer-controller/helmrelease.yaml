@@ -1,0 +1,45 @@
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: aws-load-balancer-controller
+  namespace: kube-system
+spec:
+  interval: 1m
+  timeout: 5m
+  maxHistory: 2
+  releaseName: aws-load-balancer-controller
+  targetNamespace: kube-system
+  storageNamespace: kube-system
+  chart:
+    spec:
+      interval: 1m
+      chart: aws-load-balancer-controller
+      version: 1.6.0 ## curl -qsS https://aws.github.io/eks-charts/index.yaml | yq .entries.aws-load-balancer-controller.0.version
+      sourceRef:
+        kind: HelmRepository
+        name: eks-charts
+      reconcileStrategy: ChartVersion
+  install:
+    crds: CreateReplace
+  upgrade:
+    crds: CreateReplace
+  values:
+    ## https://github.com/kubernetes-sigs/aws-load-balancer-controller/blob/main/helm/aws-load-balancer-controller/values.yaml
+
+    serviceAccount:
+      annotations:
+        eks.amazonaws.com/role-arn: arn:aws:iam::${account_id}:role/${cluster_name}-irsa-aws-load-balancer-controller
+
+    enableCertManager: false
+
+    ## To see which policies are available for use, you can use the aws command line tool:
+    ## aws elb describe-load-balancer-policies --query 'PolicyDescriptions[].PolicyName'
+    defaultSSLPolicy: ELBSecurityPolicy-TLS-1-2-2017-01
+
+    clusterName: ${cluster_name}
+    region: ${region}
+    vpcId: ${vpc_id}
+
+    defaultTags:
+      kubernetes.io/cluster/${cluster_name}: owned
+      ManagedBy: AWS Load Balancer Controller
