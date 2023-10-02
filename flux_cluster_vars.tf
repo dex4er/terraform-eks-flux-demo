@@ -45,6 +45,7 @@ resource "shell_script" "flux_cluster_vars" {
 
   depends_on = [
     aws_eks_addon.this,
+    module.efs,
     module.eks_node_group,
     module.eks,
     module.iam_role_cluster,
