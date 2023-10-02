@@ -49,6 +49,8 @@ resource "shell_script" "flux_cluster_vars" {
     module.eks,
     module.iam_role_cluster,
     module.iam_role_node_group,
+    module.irsa_aws_efs_csi_controller,
+    module.irsa_aws_efs_csi_node,
     module.irsa_aws_load_balancer_controller,
     module.irsa_aws_vpc_cni,
     module.kms_cluster,
