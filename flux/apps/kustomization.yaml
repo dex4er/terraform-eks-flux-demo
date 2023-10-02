@@ -5,4 +5,3 @@ kind: Kustomization
 resources:
   - efs-dynamic-demo
   - efs-static-demo
-  - podinfo
