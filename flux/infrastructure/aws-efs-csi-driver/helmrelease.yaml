@@ -29,7 +29,7 @@ spec:
     controller:
       tags:
         Cluster: ${cluster_name}
-        ManagedBy: aws-efs-csi-driver
+        ManagedBy: Amazon EFS CSI Driver
         Project: ${cluster_name}
       resources:
         limits:

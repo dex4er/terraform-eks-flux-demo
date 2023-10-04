@@ -1,4 +1,4 @@
-## IRSA for aws-efs-csi-driver
+## IRSA for Amazon EFS CSI Driver
 
 module "irsa_aws_efs_csi_controller" {
   ## https://github.com/terraform-aws-modules/terraform-aws-iam/tree/master/modules/iam-role-for-service-accounts-eks
@@ -7,7 +7,7 @@ module "irsa_aws_efs_csi_controller" {
 
   role_name          = "${module.eks.cluster_name}-irsa-aws-efs-csi-controller"
   role_path          = "/"
-  role_description   = "AWS EFS CSI controller IAM role in ${var.cluster_name} cluster"
+  role_description   = "Amazon EFS CSI Driver controller IAM role in ${var.cluster_name} cluster"
   policy_name_prefix = "${module.eks.cluster_name}-irsa-"
 
   attach_efs_csi_policy = true
@@ -55,7 +55,7 @@ module "iam_policy_aws_efs_csi_node" {
   version = "~> 5.28"
 
   name_prefix = "${module.eks.cluster_name}-irsa-aws-efs-csi-node-"
-  description = "IAM policy for AWS EFS CSI node IAM role in ${var.cluster_name} cluster"
+  description = "IAM policy for Amazon EFS CSI Driver node IAM role in ${var.cluster_name} cluster"
 
   policy = data.aws_iam_policy_document.iam_policy_aws_efs_csi_node.json
 
