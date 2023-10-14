@@ -8,8 +8,8 @@ spec:
   timeout: 2m
   maxHistory: 2
   releaseName: karpenter
-  targetNamespace: kube-system
-  storageNamespace: kube-system
+  targetNamespace: karpenter
+  storageNamespace: karpenter
   serviceAccountName: helm-controller
   chart:
     spec:
