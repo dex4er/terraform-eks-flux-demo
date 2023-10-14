@@ -12,8 +12,9 @@ spec:
     aws::owners: amazon
     aws::name: ubuntu-eks/k8s_1.25/images/hvm-ssd/ubuntu-focal-20.04-amd64-server-20231007
   tags:
-    AmiName: ubuntu-eks/k8s_1.25/images/hvm-ssd/ubuntu-focal-20.04-amd64-server-20231006
+    AmiName: ubuntu-eks/k8s_1.25/images/hvm-ssd/ubuntu-focal-20.04-amd64-server-20231007
     Cluster: ${cluster_name}
+    Name: ${cluster_name}-default-20231007-1
     Nodegroup: default
     karpenter.sh/discovery: ${cluster_name}
   metadataOptions:

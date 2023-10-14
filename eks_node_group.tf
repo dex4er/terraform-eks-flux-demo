@@ -99,9 +99,9 @@ module "eks_node_group" {
   create_launch_template = true
 
   launch_template_use_name_prefix = false
-  launch_template_name            = "${module.eks.cluster_name}-node-group-${each.key}"
+  launch_template_name            = "${module.eks.cluster_name}-${each.key}"
   launch_template_tags = {
-    Name = "${module.eks.cluster_name}-node-group-${each.key}"
+    Name = "${module.eks.cluster_name}-${each.key}"
   }
 
   enable_bootstrap_user_data = true
@@ -149,25 +149,20 @@ module "eks_node_group" {
   }
 
   tags = {
-    Name      = "${var.cluster_name}-node-group-${each.key}"
+    Name      = "${var.cluster_name}-${each.key}"
     Cluster   = var.cluster_name
-    NodeGroup = "${var.cluster_name}-node-group-${each.key}"
+    NodeGroup = "${var.cluster_name}-${each.key}"
     Object    = "module.eks_node_group"
   }
 }
 
-locals {
-  default_node_groups = { for k, v in local.node_groups : k => v if v.create && v.default }
-  default_node_group  = element(sort(keys(local.default_node_groups)), length(local.default_node_groups) - 1)
-}
-
 resource "time_sleep" "eks_default_node_group_delay" {
-  create_duration = "1m"
+  create_duration = "5m"
 
   triggers = {
-    ## It makes a dependency on the default node group but we need more static string
-    ## ID before colon is the same as cluster name.
-    cluster_name = try(module.eks_node_group[local.default_node_group].node_group_id, module.eks.cluster_name)
+    ## Adds additional delay after cluster is created so addons won't be
+    ## installed before nodegroups will be ready.
+    cluster_name = module.eks.cluster_name
   }
 }
 
