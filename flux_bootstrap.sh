@@ -5,7 +5,7 @@ asdf_tools="awscli envsubst kubectl kustomize"
 
 kubeconfig=$(${aws} ssm get-parameter --name ${kubeconfig_parameter} --output text --query Parameter.Value --with-decryption)
 
-kubectl apply -k https://github.com/fluxcd/flux2/manifests/install?ref=v2.1.0 \
+kubectl apply -k https://github.com/fluxcd/flux2/manifests/crds?ref=v2.1.0 \
   --server-side \
   --force-conflicts \
   --kubeconfig <(echo "${kubeconfig}") \
@@ -22,11 +22,16 @@ kubectl create secret generic -n flux-system flux-system \
     --kubeconfig <(echo "${kubeconfig}") \
     --context ${cluster_context}
 
-for f in flux/flux-system/gitrepository.yaml flux/flux-system.yaml; do
-  echo "---"
-  cat ${f} |
-    envsubst
-done |
+kustomize build flux/flux-system |
+  envsubst |
+  kubectl apply -f - \
+    --server-side \
+    --force-conflicts \
+    --kubeconfig <(echo "${kubeconfig}") \
+    --context ${cluster_context}
+
+cat flux/flux-system.yaml |
+  envsubst |
   kubectl apply -f - \
     --server-side \
     --force-conflicts \
