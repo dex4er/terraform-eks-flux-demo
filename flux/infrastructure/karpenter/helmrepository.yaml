@@ -2,7 +2,7 @@ apiVersion: source.toolkit.fluxcd.io/v1beta2
 kind: HelmRepository
 metadata:
   name: karpenter
-  namespace: karpenter
+  namespace: flux-system
 spec:
   type: oci
   interval: 10m
