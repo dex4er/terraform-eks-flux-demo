@@ -7,7 +7,7 @@ spec:
   interval: 1m
   timeout: 2m
   maxHistory: 2
-  releaseName: aws-load-balancer-controller
+  releaseName: karpenter
   targetNamespace: kube-system
   storageNamespace: kube-system
   serviceAccountName: helm-controller
