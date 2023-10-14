@@ -29,7 +29,7 @@ spec:
         # iops: 3000
         # throughput: 125
         encrypted: true
-        # kmsKeyID: "arn:aws:kms:${region}:${account_id}:alias/aws/ebs"
+        kmsKeyID: "arn:aws:kms:${region}:${account_id}:alias/aws/ebs"
         deleteOnTermination: true
   userData: |
     #!/bin/bash
