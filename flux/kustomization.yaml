@@ -11,3 +11,4 @@ resources:
   - apps.yaml
   - aws-auth.yaml
   - infrastructure.yaml
+  - nodegroups.yaml

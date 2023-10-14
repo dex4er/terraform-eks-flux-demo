@@ -1,0 +1,97 @@
+apiVersion: karpenter.k8s.aws/v1alpha1
+kind: AWSNodeTemplate
+metadata:
+  name: default-20231007-1
+spec:
+  subnetSelector:
+    karpenter.sh/discovery: ${cluster_name}
+  securityGroupSelector:
+    karpenter.sh/discovery: ${cluster_name}
+  amiFamily: Ubuntu
+  amiSelector:
+    aws::owners: amazon
+    aws::name: ubuntu-eks/k8s_1.25/images/hvm-ssd/ubuntu-focal-20.04-amd64-server-20231007
+  tags:
+    AmiName: ubuntu-eks/k8s_1.25/images/hvm-ssd/ubuntu-focal-20.04-amd64-server-20231006
+    Cluster: ${cluster_name}
+    Nodegroup: default
+    karpenter.sh/discovery: ${cluster_name}
+  metadataOptions:
+    httpEndpoint: enabled
+    httpProtocolIPv6: disabled
+    httpPutResponseHopLimit: 2
+    httpTokens: required
+  blockDeviceMappings:
+    - deviceName: /dev/sda1
+      ebs:
+        volumeSize: 30Gi
+        volumeType: gp3
+        # iops: 3000
+        # throughput: 125
+        encrypted: true
+        # kmsKeyID: "arn:aws:kms:${region}:${account_id}:alias/aws/ebs"
+        deleteOnTermination: true
+  userData: |
+    #!/bin/bash
+    echo "$(jq '.registryPullQPS=0' /etc/kubernetes/kubelet/kubelet-config.json)" > /etc/kubernetes/kubelet/kubelet-config.json
+  detailedMonitoring: true
+---
+apiVersion: karpenter.sh/v1alpha5
+kind: Provisioner
+metadata:
+  name: default-20231007-1
+spec:
+  providerRef:
+    name: default-20231007-1
+  labels:
+    nodegroup: default
+    nodegroup/default: "true"
+  requirements:
+    - key: karpenter.k8s.aws/instance-category
+      operator: In
+      values:
+        - t
+        - m
+    # - key: karpenter.k8s.aws/instance-cpu
+    #   operator: In
+    #   values:
+    #     - "2"
+    # - key: karpenter.k8s.aws/instance-memory
+    #   operator: In
+    #   values:
+    #     - "8192"
+    - key: karpenter.k8s.aws/instance-size
+      operator: NotIn
+      values:
+        - nano
+        - micro
+        # - 12xlarge
+        # - 16xlarge
+        # - 18xlarge
+        # - 24xlarge
+    # - key: topology.kubernetes.io/zone
+    #   operator: In
+    #   values:
+    #     - ${azs_name_0}
+    - key: kubernetes.io/arch
+      operator: In
+      values:
+        - amd64
+        # - arm64
+    - key: karpenter.sh/capacity-type
+      operator: In
+      values:
+        - spot
+        - on-demand
+  kubeletConfiguration:
+    clusterDNS:
+      - ${cluster_dns_ip}
+    containerRuntime: containerd
+    # maxPods: 29
+  limits:
+    resources:
+      cpu: 10k
+  consolidation:
+    enabled: true
+  ttlSecondsUntilExpired: 3600
+  weight: 1

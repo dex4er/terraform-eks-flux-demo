@@ -2,16 +2,18 @@
 
 locals {
   node_groups = {
-    default-20230922-1 = {
+    initial-20231007-1 = {
       create  = true
       default = true
 
       labels = {
-        "nodegroup"         = "default"
-        "nodegroup/default" = "true"
+        "nodegroup"         = "initial"
+        "nodegroup/initial" = "true"
       }
 
-      taints = {}
+      taints = {
+        "CriticalAddonsOnly" = "true:NoSchedule"
+      }
 
       # max_pods = 29
 
@@ -20,11 +22,12 @@ locals {
       azs = local.azs_ids
 
       instance_types = [
-        ## 2vcpu, 8192mem
-        "t3a.large",
-        "t3.large",
-        "m6a.large",
-        "m6i.large",
+        ## 2vCPU, 2GiB RAM
+        "t3.small",
+        "t3a.small",
+        ## 2vCPU, 4GiB RAM
+        "t3.medium",
+        "t3a.medium",
       ]
 
       capacity_type = "SPOT"
@@ -44,7 +47,7 @@ locals {
 
       ## https://ubuntu.com/server/docs/cloud-images/amazon-ec2
       ## $ aws --region eu-central-1 ec2 describe-images --owners 099720109477 --filters "Name=name,Values=ubuntu-eks/k8s_1.25/images/hvm-ssd/ubuntu-focal-20.04-amd64-server-*" --query 'reverse(sort_by(Images, &Name))[0].Name' --output text | cat
-      ami_name = "ubuntu-eks/k8s_1.25/images/hvm-ssd/ubuntu-focal-20.04-amd64-server-20230922"
+      ami_name = "ubuntu-eks/k8s_1.25/images/hvm-ssd/ubuntu-focal-20.04-amd64-server-20231007"
 
       # pre_bootstrap_user_data = <<-EOT
       # EOT
@@ -52,9 +55,9 @@ locals {
       # post_bootstrap_user_data = <<-EOT
       # EOT
 
-      min_size     = 1
+      min_size     = 2
       max_size     = 4
-      desired_size = 3
+      desired_size = 2
     }
   }
 }

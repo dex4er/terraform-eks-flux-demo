@@ -39,17 +39,27 @@ module "vpc" {
   default_security_group_tags = { Name = "${var.cluster_name}-default" }
 
   ## https://aws.amazon.com/premiumsupport/knowledge-center/eks-vpc-subnet-discovery/
-  public_subnet_tags = {
-    Reach                                       = "public"
-    "kubernetes.io/cluster/${var.cluster_name}" = "shared"
-    "kubernetes.io/role/elb"                    = 1
-  }
+  public_subnet_tags = merge(
+    {
+      Reach                                       = "public"
+      "kubernetes.io/cluster/${var.cluster_name}" = "shared"
+      "kubernetes.io/role/elb"                    = 1
+    },
+    var.cluster_in_private_subnet ? {} : {
+      "karpenter.sh/discovery" = var.cluster_name
+    }
+  )
 
-  private_subnet_tags = {
-    Reach                                       = "private"
-    "kubernetes.io/cluster/${var.cluster_name}" = "shared"
-    "kubernetes.io/role/internal-elb"           = 1
-  }
+  private_subnet_tags = merge(
+    {
+      Reach                                       = "private"
+      "kubernetes.io/cluster/${var.cluster_name}" = "shared"
+      "kubernetes.io/role/internal-elb"           = 1
+    },
+    var.cluster_in_private_subnet ? {
+      "karpenter.sh/discovery" = var.cluster_name
+    } : {}
+  )
 
   intra_subnet_tags = {
     Reach = "intra"

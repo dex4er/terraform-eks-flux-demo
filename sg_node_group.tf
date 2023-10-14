@@ -98,7 +98,8 @@ module "sg_node_group" {
   ]
 
   tags = {
-    Name   = "${var.cluster_name}-node-group"
-    Object = "module.sg_node_group"
+    Name                     = "${var.cluster_name}-node-group"
+    Object                   = "module.sg_node_group"
+    "karpenter.sh/discovery" = var.cluster_name
   }
 }
