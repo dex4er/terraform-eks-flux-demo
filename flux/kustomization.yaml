@@ -10,5 +10,6 @@ resources:
   - flux-system
   - apps.yaml
   - aws-auth.yaml
+  - aws-load-balancer-controller.yaml
   - infrastructure.yaml
   - nodegroups.yaml

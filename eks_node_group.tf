@@ -59,9 +59,9 @@ locals {
       # post_bootstrap_user_data = <<-EOT
       # EOT
 
-      min_size     = 2
+      min_size     = 3
       max_size     = 4
-      desired_size = 2
+      desired_size = 3
     }
   }
 }
@@ -74,7 +74,7 @@ module "eks_node_group" {
   for_each = { for k, v in local.node_groups : k => v if v.create }
 
   use_name_prefix = false
-  name            = "${module.eks.cluster_name}-node-group-${each.key}"
+  name            = "${module.eks.cluster_name}-${each.key}"
 
   cluster_name = module.eks.cluster_name
 
@@ -162,12 +162,12 @@ locals {
 }
 
 resource "time_sleep" "eks_default_node_group_delay" {
-  create_duration = "2m"
+  create_duration = "1m"
 
   triggers = {
     ## It makes a dependency on the default node group but we need more static string
     ## ID before colon is the same as cluster name.
-    default_node_group = try(module.eks_node_group[local.default_node_group].node_group_id, module.eks.cluster_name)
+    cluster_name = try(module.eks_node_group[local.default_node_group].node_group_id, module.eks.cluster_name)
   }
 }
 

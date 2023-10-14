@@ -34,7 +34,7 @@ variable "cluster_name" {
 variable "cluster_in_private_subnet" {
   type        = bool
   description = "By default cluster is created in public subnet to lower montly costs of NAT gateway and service endpoints"
-  default     = false
+  default     = true
 }
 
 variable "flux_git_repository_password" {

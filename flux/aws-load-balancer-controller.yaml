@@ -1,21 +1,21 @@
-## FluxCD application for infrastructure-level resources in the Kubernetes
-## cluster.
+## FluxCD application for aws-load-balancer-controller.
 ##
-## It defines substituted variables that can be used in the base directory.
+## Helm releases that installs Services calls its webhook so it must be
+## installed before others.
 
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: infrastructure
+  name: aws-load-balancer-controller
   namespace: flux-system
 spec:
   dependsOn:
-    - name: aws-load-balancer-controller
+    - name: flux-system
   interval: 1m
   sourceRef:
     kind: GitRepository
     name: flux-system
-  path: /flux/infrastructure
+  path: /flux/aws-load-balancer-controller
   prune: true
   postBuild:
     substituteFrom:
