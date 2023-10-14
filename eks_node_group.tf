@@ -12,7 +12,11 @@ locals {
       }
 
       taints = {
-        "CriticalAddonsOnly" = "true:NoSchedule"
+        CriticalAddonsOnly = {
+          key    = "CriticalAddonsOnly"
+          value  = "true"
+          effect = "NO_SCHEDULE"
+        }
       }
 
       # max_pods = 29

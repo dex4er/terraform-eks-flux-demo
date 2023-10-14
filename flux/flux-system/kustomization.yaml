@@ -3,3 +3,20 @@ kind: Kustomization
 resources:
   - https://github.com/fluxcd/flux2/manifests/install?ref=v2.1.0
   - gitrepository.yaml
+patches:
+  - patch: |
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: all
+      spec:
+        template:
+          spec:
+            tolerations:
+              - effect: NoSchedule
+                key: CriticalAddonsOnly
+                operator: Equal
+                value: "true"
+    target:
+      kind: Deployment
+      labelSelector: app.kubernetes.io/part-of=flux
