@@ -47,6 +47,11 @@ spec:
     enabled = true
     [settings.kubernetes]
     registry-qps = 0
+    [settings.bootstrap-containers.hello]
+    source = "public.ecr.aws/stefansundin/bottlerocket-bootstrap-exec-user-data:latest"
+    mode = "always"
+    essential = false
+    user-data = "IyEvYmluL2Jhc2gKc2V0IC1leApESVNLPS8uYm90dGxlcm9ja2V0L3Jvb3Rmcy9kZXYvbnZtZTJuMQpQQVJUSVRJT05TX0NSRUFURUQ9Ly5ib3R0bGVyb2NrZXQvYm9vdHN0cmFwLWNvbnRhaW5lcnMvY3VycmVudC9jcmVhdGVkCkJBU0VfTU9VTlRfUE9JTlQ9Ly5ib3R0bGVyb2NrZXQvcm9vdGZzL3Zhci9saWIvY29udGFpbmVyZAppZiBbICEgLWYgJHtQQVJUSVRJT05TX0NSRUFURUR9IF07IHRoZW4KICBta2ZzLmV4dDQgLUYgJHtESVNLfQogIHRvdWNoICR7UEFSVElUSU9OU19DUkVBVEVEfQpmaQpta2RpciAtcCAke0JBU0VfTU9VTlRfUE9JTlR9Cm1vdW50ICR7RElTS30gJHtCQVNFX01PVU5UX1BPSU5UfQo="
   detailedMonitoring: true
 ---
 apiVersion: karpenter.sh/v1alpha5
@@ -70,18 +75,9 @@ spec:
         - m5d
         - m6id
     # - key: karpenter.k8s.aws/instance-size
-    #   operator: NotIn
-    #   values:
-    #     - nano
-    #     - micro
-    # - 12xlarge
-    # - 16xlarge
-    # - 18xlarge
-    # - 24xlarge
-    # - key: topology.kubernetes.io/zone
     #   operator: In
     #   values:
-    #     - ${azs_name_0}
+    #     - metal
     - key: kubernetes.io/arch
       operator: In
       values:
