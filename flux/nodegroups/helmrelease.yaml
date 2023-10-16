@@ -14,7 +14,7 @@ spec:
   chart:
     spec:
       interval: 1m
-      chart: ./chart
+      chart: flux/nodegroups/chart
       sourceRef:
         kind: GitRepository
         name: flux-system
