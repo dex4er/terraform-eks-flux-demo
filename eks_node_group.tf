@@ -2,7 +2,7 @@
 
 locals {
   node_groups = {
-    initial-20231007-1 = {
+    initial-1 = {
       create  = true
       default = true
 
@@ -38,11 +38,30 @@ locals {
 
       ebs_optimized = false
 
-      device_name = "/dev/sda1"
-      disk_size   = 25
-      # iops        = null
-      # throughput  = null
+      block_device_mappings = {
+        boot = {
+          device_name = "/dev/xvda"
+          ebs = {
+            volume_size           = 2
+            volume_type           = "gp3"
+            encrypted             = true
+            kms_key_id            = "arn:aws:kms:${var.region}:${var.account_id}:alias/aws/ebs"
+            delete_on_termination = true
+          }
+        }
+        ephemeral = {
+          device_name = "/dev/xvdb"
+          ebs = {
+            volume_size           = 30
+            volume_type           = "gp3"
+            encrypted             = true
+            kms_key_id            = "arn:aws:kms:${var.region}:${var.account_id}:alias/aws/ebs"
+            delete_on_termination = true
+          }
+        }
+      }
 
+      platform         = "bottlerocket"
       ami_architecture = "x86_64"
       ami_owner        = "amazon"
 
@@ -51,7 +70,16 @@ locals {
 
       ## https://ubuntu.com/server/docs/cloud-images/amazon-ec2
       ## $ aws --region eu-central-1 ec2 describe-images --owners 099720109477 --filters "Name=name,Values=ubuntu-eks/k8s_1.25/images/hvm-ssd/ubuntu-focal-20.04-amd64-server-*" --query 'reverse(sort_by(Images, &Name))[0].Name' --output text | cat
-      ami_name = "ubuntu-eks/k8s_1.25/images/hvm-ssd/ubuntu-focal-20.04-amd64-server-20231007"
+      # ami_name = "ubuntu-eks/k8s_1.25/images/hvm-ssd/ubuntu-focal-20.04-amd64-server-20231007"
+
+      ## $ aws --region eu-central-1 ec2 describe-images --owners amazon --filters "Name=name,Values=bottlerocket-aws-k8s-1.25-x86_64-*" --query 'reverse(sort_by(Images, &Name))[0].Name' --output text | cat
+      ami_name = "bottlerocket-aws-k8s-1.25-x86_64-v1.15.1-264e294c"
+
+      bootstrap_extra_args = <<-EOT
+        registry-qps = 0
+        [settings.host-containers.admin]
+        enabled = true
+      EOT
 
       # pre_bootstrap_user_data = <<-EOT
       # EOT
@@ -95,6 +123,7 @@ module "eks_node_group" {
   instance_types = each.value.instance_types
   ebs_optimized  = each.value.ebs_optimized
 
+  platform               = lookup(each.value, "platform", null)
   ami_id                 = lookup(each.value, "ami_name", null) != null ? data.aws_ami.eks_node_group[each.key].image_id : null
   create_launch_template = true
 
@@ -105,10 +134,17 @@ module "eks_node_group" {
   }
 
   enable_bootstrap_user_data = true
-  bootstrap_extra_args = join(" ", compact([
-    lookup(each.value, "bootstrap_extra_args", ""),
-    "--dns-cluster-ip", cidrhost(local.cluster_service_cidr, 10),
-  ]))
+  bootstrap_extra_args = lookup(each.value, "platform", null) == "bottlerocket" ? join("\n", compact(
+    [
+      "\"cluster-dns-ip\" = \"${cidrhost(local.cluster_service_cidr, 10)}\"",
+      lookup(each.value, "bootstrap_extra_args", "")
+    ]
+    )) : join(" ", compact(
+    [
+      lookup(each.value, "bootstrap_extra_args", ""),
+      "--dns-cluster-ip=${cidrhost(local.cluster_service_cidr, 10)}",
+    ]
+  ))
   pre_bootstrap_user_data  = lookup(each.value, "pre_bootstrap_user_data", "")
   post_bootstrap_user_data = lookup(each.value, "post_bootstrap_user_data", "")
 
@@ -119,20 +155,7 @@ module "eks_node_group" {
   labels = each.value.labels
   taints = each.value.taints
 
-  block_device_mappings = {
-    root = {
-      device_name = lookup(each.value, "device_name", "/dev/xvda")
-      ebs = {
-        volume_size           = each.value.disk_size
-        volume_type           = "gp3"
-        iops                  = lookup(each.value, "iops", null)
-        throughput            = lookup(each.value, "throughput", null)
-        encrypted             = true
-        kms_key_id            = "arn:aws:kms:${var.region}:${var.account_id}:alias/aws/ebs"
-        delete_on_termination = true
-      }
-    }
-  }
+  block_device_mappings = each.value.block_device_mappings
 
   network_interfaces = [
     {
