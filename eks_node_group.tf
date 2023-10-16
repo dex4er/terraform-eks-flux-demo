@@ -199,6 +199,7 @@ module "eks_node_group" {
 
   tags = {
     Name      = "${var.cluster_name}-${each.key}"
+    AmiName   = lookup(each.value, "ami_name", null)
     Cluster   = var.cluster_name
     NodeGroup = "${var.cluster_name}-${each.key}"
     Object    = "module.eks_node_group"
