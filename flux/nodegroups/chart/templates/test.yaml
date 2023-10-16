@@ -8,12 +8,12 @@ spec:
   securityGroupSelector:
     karpenter.sh/discovery: {{ .Values.cluster_name }}
   amiFamily: Bottlerocket
-  amiSelector:
-    aws::owners: amazon
-    ## $ aws --region eu-central-1 ec2 describe-images --owners amazon --filters "Name=name,Values=bottlerocket-aws-k8s-1.25-x86_64-*" --query 'reverse(sort_by(Images, &Name))[0].Name' --output text | cat
-    aws::name: bottlerocket-aws-k8s-1.25-x86_64-v1.15.1-264e294c
+  # amiSelector:
+  #   aws::owners: amazon
+  #   ## $ aws --region eu-central-1 ec2 describe-images --owners amazon --filters "Name=name,Values=bottlerocket-aws-k8s-1.25-x86_64-*" --query 'reverse(sort_by(Images, &Name))[0].Name' --output text | cat
+  #   aws::name: bottlerocket-aws-k8s-1.25-x86_64-v1.15.1-264e294c
   tags:
-    AmiName: bottlerocket-aws-k8s-1.25-x86_64-v1.15.1-264e294c
+    # AmiName: bottlerocket-aws-k8s-1.25-x86_64-v1.15.1-264e294c
     Cluster: {{ .Values.cluster_name }}
     Name: {{ .Values.cluster_name }}-test
     Nodegroup: test
