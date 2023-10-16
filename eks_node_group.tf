@@ -76,9 +76,10 @@ locals {
       ami_name = "bottlerocket-aws-k8s-1.25-x86_64-v1.15.1-264e294c"
 
       bootstrap_extra_args = <<-EOT
-        registry-qps = 0
         [settings.host-containers.admin]
         enabled = true
+        [settings.kubernetes]
+        registry-qps = 0
       EOT
 
       # pre_bootstrap_user_data = <<-EOT

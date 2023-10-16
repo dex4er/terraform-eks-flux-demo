@@ -44,7 +44,16 @@ spec:
         deleteOnTermination: true
     - deviceName: /dev/xvdb
       ebs:
-        volumeSize: 40Gi
+        volumeSize: 20Gi
+        volumeType: gp3
+        # iops: 3000
+        # throughput: 125
+        encrypted: true
+        kmsKeyID: "arn:aws:kms:{{ .Values.region }}:{{ .Values.account_id }}:alias/aws/ebs"
+        deleteOnTermination: true
+    - deviceName: /dev/xvdc
+      ebs:
+        volumeSize: 20Gi
         volumeType: gp3
         # iops: 3000
         # throughput: 125
@@ -52,11 +61,16 @@ spec:
         kmsKeyID: "arn:aws:kms:{{ .Values.region }}:{{ .Values.account_id }}:alias/aws/ebs"
         deleteOnTermination: true
   detailedMonitoring: true
-  userData: |
+  userData: |-
     [settings.host-containers.admin]
     enabled = true
     [settings.kubernetes]
     registry-qps = 0
+    [settings.bootstrap-containers.bootstrap]
+    source = "public.ecr.aws/stefansundin/bottlerocket-bootstrap-exec-user-data:latest"
+    mode = "always"
+    essential = false
+    user-data = "{{ .Files.Get "bootstrap/default.sh" | b64enc }}"
 ---
 apiVersion: karpenter.sh/v1alpha5
 kind: Provisioner
