@@ -1,0 +1,26 @@
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: nodegroups
+  namespace: flux-system
+spec:
+  interval: 1m
+  timeout: 2m
+  maxHistory: 2
+  releaseName: nodegroups
+  targetNamespace: karpenter
+  storageNamespace: karpenter
+  serviceAccountName: helm-controller
+  chart:
+    spec:
+      interval: 1m
+      chart: ./chart
+      sourceRef:
+        kind: GitRepository
+        name: flux-system
+      reconcileStrategy: Revision
+  values:
+    account_id: ${account_id_string}
+    region: ${region}
+    cluster_name: ${cluster_name}
+    cluster_dns_ip: ${cluster_dns_ip}

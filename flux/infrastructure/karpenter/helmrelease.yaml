@@ -19,7 +19,7 @@ spec:
       sourceRef:
         kind: HelmRepository
         name: karpenter
-      reconcileStrategy: Revision
+      reconcileStrategy: ChartVersion
   install:
     crds: CreateReplace
   upgrade:

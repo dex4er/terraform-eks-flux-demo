@@ -1,0 +1,6 @@
+apiVersion: v2
+name: nodegroups
+description: Configuration of nodegroups
+type: application
+version: 0.20231016.1
+appVersion: 0.20231016.1

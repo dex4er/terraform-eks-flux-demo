@@ -1,0 +1,26 @@
+{
+  "$schema": "http://json-schema.org/draft-06/schema#",
+  "$ref": "#/definitions/Values",
+  "definitions": {
+    "Values": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "account_id": {
+          "type": "string"
+        },
+        "region": {
+          "type": "string"
+        },
+        "cluster_name": {
+          "type": "string"
+        },
+        "cluster_dns_ip": {
+          "type": "string"
+        }
+      },
+      "required": ["account_id", "cluster_dns_ip", "cluster_name", "region"],
+      "title": "Values"
+    }
+  }
+}

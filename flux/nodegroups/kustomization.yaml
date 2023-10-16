@@ -1,0 +1,9 @@
+## Nodegroups created by Karpenter
+##
+## This is a Helm chart because of embedding the bootstrap scripts into
+## user-data as base64 field.
+
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - helmrelease.yaml

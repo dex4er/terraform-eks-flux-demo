@@ -1,12 +1,12 @@
 apiVersion: karpenter.k8s.aws/v1alpha1
 kind: AWSNodeTemplate
 metadata:
-  name: default
+  name: test
 spec:
   subnetSelector:
-    karpenter.sh/discovery: ${cluster_name}
+    karpenter.sh/discovery: {{ .Values.cluster_name }}
   securityGroupSelector:
-    karpenter.sh/discovery: ${cluster_name}
+    karpenter.sh/discovery: {{ .Values.cluster_name }}
   amiFamily: Bottlerocket
   amiSelector:
     aws::owners: amazon
@@ -14,25 +14,16 @@ spec:
     aws::name: bottlerocket-aws-k8s-1.25-x86_64-v1.15.1-264e294c
   tags:
     AmiName: bottlerocket-aws-k8s-1.25-x86_64-v1.15.1-264e294c
-    Cluster: ${cluster_name}
-    Name: ${cluster_name}-default
-    Nodegroup: default
-    karpenter.sh/discovery: ${cluster_name}
+    Cluster: {{ .Values.cluster_name }}
+    Name: {{ .Values.cluster_name }}-test
+    Nodegroup: test
+    karpenter.sh/discovery: {{ .Values.cluster_name }}
   metadataOptions:
     httpEndpoint: enabled
     httpProtocolIPv6: disabled
     httpPutResponseHopLimit: 2
     httpTokens: required
   blockDeviceMappings:
-    # - deviceName: /dev/sda1
-    #   ebs:
-    #     volumeSize: 30Gi
-    #     volumeType: gp3
-    #     # iops: 3000
-    #     # throughput: 125
-    #     encrypted: true
-    #     kmsKeyID: "arn:aws:kms:${region}:${account_id}:alias/aws/ebs"
-    #     deleteOnTermination: true
     - deviceName: /dev/xvda
       ebs:
         volumeSize: 2Gi
@@ -40,57 +31,53 @@ spec:
         # iops: 3000
         # throughput: 125
         encrypted: true
-        kmsKeyID: "arn:aws:kms:${region}:${account_id}:alias/aws/ebs"
+        kmsKeyID: "arn:aws:kms:{{ .Values.region }}:{{ .Values.account_id }}:alias/aws/ebs"
         deleteOnTermination: true
     - deviceName: /dev/xvdb
       ebs:
-        volumeSize: 40Gi
+        volumeSize: 100Gi
         volumeType: gp3
         # iops: 3000
         # throughput: 125
         encrypted: true
-        kmsKeyID: "arn:aws:kms:${region}:${account_id}:alias/aws/ebs"
+        kmsKeyID: "arn:aws:kms:{{ .Values.region }}:{{ .Values.account_id }}:alias/aws/ebs"
         deleteOnTermination: true
-  detailedMonitoring: true
-  userData: |
+  userData: |-
     [settings.host-containers.admin]
     enabled = true
     [settings.kubernetes]
     registry-qps = 0
+    [settings.bootstrap-containers.bootstrap]
+    source = "public.ecr.aws/stefansundin/bottlerocket-bootstrap-exec-user-data:latest"
+    mode = "always"
+    essential = false
+    user-data = "{{ .Files.Get "bootstrap/test.sh" | b64enc }}"
+  detailedMonitoring: true
 ---
 apiVersion: karpenter.sh/v1alpha5
 kind: Provisioner
 metadata:
-  name: default
+  name: test
 spec:
   providerRef:
-    name: default
+    name: test
   labels:
-    nodegroup: default
-    nodegroup/default: "true"
+    nodegroup: test
+    nodegroup/test: "true"
+  taints:
+    - key: nodegroup/test
+      value: "true"
+      effect: NoSchedule
   requirements:
-    - key: karpenter.k8s.aws/instance-category
+    - key: karpenter.k8s.aws/instance-family
       operator: In
       values:
-        - t
-        - m
-    # - key: karpenter.k8s.aws/instance-cpu
+        - m5d
+        - m6id
+    # - key: karpenter.k8s.aws/instance-size
     #   operator: In
     #   values:
-    #     - "2"
-    # - key: karpenter.k8s.aws/instance-memory
-    #   operator: In
-    #   values:
-    #     - "8192"
-    - key: karpenter.k8s.aws/instance-size
-      operator: In
-      values:
-        - small
-        - medium
-    # - key: topology.kubernetes.io/zone
-    #   operator: In
-    #   values:
-    #     - ${azs_name_0}
+    #     - metal
     - key: kubernetes.io/arch
       operator: In
       values:
@@ -103,12 +90,12 @@ spec:
         - on-demand
   kubeletConfiguration:
     clusterDNS:
-      - ${cluster_dns_ip}
+      - {{ .Values.cluster_dns_ip }}
     containerRuntime: containerd
     # maxPods: 29
   # limits:
   #   resources:
-  #     cpu: 2k
+  #     cpu: 10k
   consolidation:
     enabled: true
   ttlSecondsUntilExpired: 3600
