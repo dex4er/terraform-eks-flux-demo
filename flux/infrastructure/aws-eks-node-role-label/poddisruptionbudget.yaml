@@ -1,0 +1,11 @@
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: aws-eks-node-role-label
+  labels:
+    app: aws-eks-node-role-label
+spec:
+  minAvailable: 0
+  selector:
+    matchLabels:
+      app: aws-eks-node-role-label
