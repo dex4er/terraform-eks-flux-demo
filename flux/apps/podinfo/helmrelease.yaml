@@ -2,6 +2,7 @@ apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
 metadata:
   name: podinfo
+  namespace: flux-system
 spec:
   interval: 1m
   timeout: 5m
@@ -9,6 +10,7 @@ spec:
   releaseName: podinfo
   targetNamespace: podinfo
   storageNamespace: podinfo
+  serviceAccountName: helm-controller
   chart:
     spec:
       interval: 1m
@@ -20,6 +22,8 @@ spec:
       reconcileStrategy: ChartVersion
   values:
     ## https://github.com/stefanprodan/podinfo/blob/master/charts/podinfo/values.yaml
+
+    replicaCount: 3
 
     hpa:
       enabled: false
@@ -38,9 +42,15 @@ spec:
     resources:
       requests:
         cpu: 10m
-        memory: 256Mi
+        memory: 10Gi
       limits:
-        memory: 256Mi
+        memory: 10Gi
+
+    tolerations:
+      - effect: NoSchedule
+        key: nodegroup/test
+        operator: Equal
+        value: "true"
 
     affinity:
       podAntiAffinity:

@@ -1,0 +1,115 @@
+apiVersion: karpenter.k8s.aws/v1alpha1
+kind: AWSNodeTemplate
+metadata:
+  name: default
+spec:
+  subnetSelector:
+    karpenter.sh/discovery: ${cluster_name}
+  securityGroupSelector:
+    karpenter.sh/discovery: ${cluster_name}
+  amiFamily: Bottlerocket
+  amiSelector:
+    aws::owners: amazon
+    ## $ aws --region eu-central-1 ec2 describe-images --owners amazon --filters "Name=name,Values=bottlerocket-aws-k8s-1.25-x86_64-*" --query 'reverse(sort_by(Images, &Name))[0].Name' --output text | cat
+    aws::name: bottlerocket-aws-k8s-1.25-x86_64-v1.15.1-264e294c
+  tags:
+    AmiName: bottlerocket-aws-k8s-1.25-x86_64-v1.15.1-264e294c
+    Cluster: ${cluster_name}
+    Name: ${cluster_name}-default
+    Nodegroup: default
+    karpenter.sh/discovery: ${cluster_name}
+  metadataOptions:
+    httpEndpoint: enabled
+    httpProtocolIPv6: disabled
+    httpPutResponseHopLimit: 2
+    httpTokens: required
+  blockDeviceMappings:
+    # - deviceName: /dev/sda1
+    #   ebs:
+    #     volumeSize: 30Gi
+    #     volumeType: gp3
+    #     # iops: 3000
+    #     # throughput: 125
+    #     encrypted: true
+    #     kmsKeyID: "arn:aws:kms:${region}:${account_id}:alias/aws/ebs"
+    #     deleteOnTermination: true
+    - deviceName: /dev/xvda
+      ebs:
+        volumeSize: 2Gi
+        volumeType: gp3
+        # iops: 3000
+        # throughput: 125
+        encrypted: true
+        kmsKeyID: "arn:aws:kms:${region}:${account_id}:alias/aws/ebs"
+        deleteOnTermination: true
+    - deviceName: /dev/xvdb
+      ebs:
+        volumeSize: 40Gi
+        volumeType: gp3
+        # iops: 3000
+        # throughput: 125
+        encrypted: true
+        kmsKeyID: "arn:aws:kms:${region}:${account_id}:alias/aws/ebs"
+        deleteOnTermination: true
+  detailedMonitoring: true
+  userData: |
+    [settings.host-containers.admin]
+    enabled = true
+    [settings.kubernetes]
+    registry-qps = 0
+---
+apiVersion: karpenter.sh/v1alpha5
+kind: Provisioner
+metadata:
+  name: default
+spec:
+  providerRef:
+    name: default
+  labels:
+    nodegroup: default
+    nodegroup/default: "true"
+  requirements:
+    - key: karpenter.k8s.aws/instance-category
+      operator: In
+      values:
+        - t
+        - m
+    # - key: karpenter.k8s.aws/instance-cpu
+    #   operator: In
+    #   values:
+    #     - "2"
+    # - key: karpenter.k8s.aws/instance-memory
+    #   operator: In
+    #   values:
+    #     - "8192"
+    - key: karpenter.k8s.aws/instance-size
+      operator: In
+      values:
+        - small
+        - medium
+    # - key: topology.kubernetes.io/zone
+    #   operator: In
+    #   values:
+    #     - ${azs_name_0}
+    - key: kubernetes.io/arch
+      operator: In
+      values:
+        - amd64
+        # - arm64
+    - key: karpenter.sh/capacity-type
+      operator: In
+      values:
+        - spot
+        - on-demand
+  kubeletConfiguration:
+    clusterDNS:
+      - ${cluster_dns_ip}
+    containerRuntime: containerd
+    # maxPods: 29
+  # limits:
+  #   resources:
+  #     cpu: 2k
+  consolidation:
+    enabled: true
+  ttlSecondsUntilExpired: 3600
+  weight: 1
