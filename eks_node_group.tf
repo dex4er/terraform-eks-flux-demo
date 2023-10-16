@@ -2,7 +2,7 @@
 
 locals {
   node_groups = {
-    initial-1 = {
+    initial = {
       create  = true
       default = true
 
@@ -38,19 +38,34 @@ locals {
 
       ebs_optimized = false
 
+      # disk_size = 50
+
       block_device_mappings = {
         boot = {
+          ## nvme0n1
           device_name = "/dev/xvda"
           ebs = {
-            volume_size           = 2
+            volume_size           = 4
             volume_type           = "gp3"
             encrypted             = true
             kms_key_id            = "arn:aws:kms:${var.region}:${var.account_id}:alias/aws/ebs"
             delete_on_termination = true
           }
         }
-        ephemeral = {
+        local = {
+          ## nvme2n1
           device_name = "/dev/xvdb"
+          ebs = {
+            volume_size           = 20
+            volume_type           = "gp3"
+            encrypted             = true
+            kms_key_id            = "arn:aws:kms:${var.region}:${var.account_id}:alias/aws/ebs"
+            delete_on_termination = true
+          }
+        }
+        containerd = {
+          ## nvme1n1
+          device_name = "/dev/xvdc"
           ebs = {
             volume_size           = 30
             volume_type           = "gp3"
@@ -61,7 +76,10 @@ locals {
         }
       }
 
-      platform         = "bottlerocket"
+      platform = "bottlerocket"
+
+      # ami_type = "AL2"
+
       ami_architecture = "x86_64"
       ami_owner        = "amazon"
 
@@ -76,10 +94,14 @@ locals {
       ami_name = "bottlerocket-aws-k8s-1.25-x86_64-v1.15.1-264e294c"
 
       bootstrap_extra_args = <<-EOT
+        registry-qps = 0
         [settings.host-containers.admin]
         enabled = true
-        [settings.kubernetes]
-        registry-qps = 0
+        [settings.bootstrap-containers.bootstrap]
+        source = "public.ecr.aws/stefansundin/bottlerocket-bootstrap-exec-user-data:latest"
+        mode = "always"
+        essential = false
+        user-data = "${filebase64("eks_node_group_bootstrap_initial.sh")}"
       EOT
 
       # pre_bootstrap_user_data = <<-EOT
@@ -124,9 +146,11 @@ module "eks_node_group" {
   instance_types = each.value.instance_types
   ebs_optimized  = each.value.ebs_optimized
 
-  platform               = lookup(each.value, "platform", null)
-  ami_id                 = lookup(each.value, "ami_name", null) != null ? data.aws_ami.eks_node_group[each.key].image_id : null
-  create_launch_template = true
+  platform                   = lookup(each.value, "platform", null)
+  ami_type                   = lookup(each.value, "ami_type", null)
+  ami_id                     = lookup(each.value, "ami_name", null) != null ? data.aws_ami.eks_node_group[each.key].image_id : null
+  create_launch_template     = lookup(each.value, "ami_type", null) == null ? true : false
+  use_custom_launch_template = lookup(each.value, "ami_type", null) == null ? true : false
 
   launch_template_use_name_prefix = false
   launch_template_name            = "${module.eks.cluster_name}-${each.key}"
@@ -134,7 +158,7 @@ module "eks_node_group" {
     Name = "${module.eks.cluster_name}-${each.key}"
   }
 
-  enable_bootstrap_user_data = true
+  enable_bootstrap_user_data = lookup(each.value, "ami_type", null) == null ? true : false
   bootstrap_extra_args = lookup(each.value, "platform", null) == "bottlerocket" ? join("\n", compact(
     [
       "\"cluster-dns-ip\" = \"${cidrhost(local.cluster_service_cidr, 10)}\"",
@@ -156,7 +180,8 @@ module "eks_node_group" {
   labels = each.value.labels
   taints = each.value.taints
 
-  block_device_mappings = each.value.block_device_mappings
+  disk_size             = lookup(each.value, "ami_type", null) != null ? each.value.disk_size : null
+  block_device_mappings = lookup(each.value, "ami_type", null) == null ? each.value.block_device_mappings : null
 
   network_interfaces = [
     {
