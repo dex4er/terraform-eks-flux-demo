@@ -144,6 +144,7 @@ module "eks_node_group" {
   vpc_security_group_ids            = [local.sg_node_group_id]
 
   instance_types = each.value.instance_types
+  capacity_type  = each.value.capacity_type
   ebs_optimized  = each.value.ebs_optimized
 
   platform                   = lookup(each.value, "platform", null)
@@ -201,7 +202,7 @@ module "eks_node_group" {
     Name      = "${var.cluster_name}-${each.key}"
     AmiName   = lookup(each.value, "ami_name", null)
     Cluster   = var.cluster_name
-    NodeGroup = "${var.cluster_name}-${each.key}"
+    NodeGroup = each.key
     Object    = "module.eks_node_group"
   }
 }
