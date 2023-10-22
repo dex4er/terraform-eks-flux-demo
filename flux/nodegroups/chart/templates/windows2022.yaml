@@ -8,7 +8,12 @@ spec:
   securityGroupSelector:
     karpenter.sh/discovery: {{ .Values.cluster_name }}
   amiFamily: Windows2022
+  amiSelector:
+    aws::owners: amazon
+    ## $ aws --region eu-central-1 ec2 describe-images --owners amazon --filters "Name=name,Values=Windows_Server-2022-English-Core-EKS_Optimized-1.25-*" --query 'reverse(sort_by(Images, &Name))[0].Name' --output text | cat
+    ami::name: Windows_Server-2022-English-Core-EKS_Optimized-1.25-2023.09.12
   tags:
+    AmiName: Windows_Server-2022-English-Core-EKS_Optimized-1.25-2023.09.12
     Cluster: {{ .Values.cluster_name }}
     Name: {{ .Values.cluster_name }}-windows2022
     Nodegroup: windows2022
