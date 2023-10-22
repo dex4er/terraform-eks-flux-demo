@@ -1,0 +1,49 @@
+apiVersion: karpenter.k8s.aws/v1alpha1
+kind: AWSNodeTemplate
+metadata:
+  name: windows2022
+spec:
+  subnetSelector:
+    karpenter.sh/discovery: {{ .Values.cluster_name }}
+  securityGroupSelector:
+    karpenter.sh/discovery: {{ .Values.cluster_name }}
+  amiFamily: Windows2022
+  tags:
+    Cluster: {{ .Values.cluster_name }}
+    Name: {{ .Values.cluster_name }}-windows2022
+    Nodegroup: windows2022
+    karpenter.sh/discovery: {{ .Values.cluster_name }}
+  metadataOptions:
+    httpEndpoint: enabled
+    httpProtocolIPv6: disabled
+    httpPutResponseHopLimit: 2
+    httpTokens: required    
+  detailedMonitoring: true
+---
+apiVersion: karpenter.sh/v1alpha5
+kind: Provisioner
+metadata:
+  name: windows2022
+spec:
+  providerRef:
+    name: windows2022
+  labels:
+    nodegroup: windows2022
+    nodegroup/windows2022: "true"
+  requirements:
+    - key: karpenter.k8s.aws/instance-category
+      operator: In
+      values:
+        - t
+        - m
+    - key: karpenter.sh/capacity-type
+      operator: In
+      values:
+        - spot
+        - on-demand
+    - key: kubernetes.io/os
+      operator: In
+      values: 
+        - windows
+  ttlSecondsUntilExpired: 3600
+  weight: 1
