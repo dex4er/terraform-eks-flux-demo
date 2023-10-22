@@ -14,3 +14,5 @@ data:
   enable-network-policy-controller: "false"
   enable-windows-ipam: "true"
   enable-windows-prefix-delegation: "true"
+  minimum-ip-target: "3"
+  warm-ip-target: "1"
