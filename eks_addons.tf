@@ -69,11 +69,6 @@ resource "aws_eks_addon" "before_compute" {
     Name         = "${var.cluster_name}-addon-${each.key}"
     Cluster      = var.cluster_name
     ClusterAddon = each.key
-    Object       = "aws_eks_addon.this"
+    Object       = "aws_eks_addon.before_compute"
   }
-
-  depends_on = [
-    ## CoreDNS requires at least single node running
-    time_sleep.eks_default_node_group_delay,
-  ]
 }
