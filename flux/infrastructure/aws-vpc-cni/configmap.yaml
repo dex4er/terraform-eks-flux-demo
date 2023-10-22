@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  labels:
+    app.kubernetes.io/instance: aws-vpc-cni
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: aws-node
+    app.kubernetes.io/version: v1.15.0
+    helm.sh/chart: aws-vpc-cni-1.15.0
+    k8s-app: aws-node
+  name: amazon-vpc-cni
+  namespace: kube-system
+data:
+  enable-network-policy-controller: "false"
+  enable-windows-ipam: "true"
+  enable-windows-prefix-delegation: "true"
