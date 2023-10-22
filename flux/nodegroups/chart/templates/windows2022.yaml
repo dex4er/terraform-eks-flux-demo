@@ -17,7 +17,17 @@ spec:
     httpEndpoint: enabled
     httpProtocolIPv6: disabled
     httpPutResponseHopLimit: 2
-    httpTokens: required    
+    httpTokens: required
+  blockDeviceMappings:
+    - deviceName: /dev/sda1
+      ebs:
+        volumeSize: 50Gi
+        volumeType: gp3
+        # iops: 3000
+        # throughput: 125
+        encrypted: true
+        kmsKeyID: "arn:aws:kms:{{ .Values.region }}:{{ .Values.account_id }}:alias/aws/ebs"
+        deleteOnTermination: true
   detailedMonitoring: true
 ---
 apiVersion: karpenter.sh/v1alpha5
