@@ -3,8 +3,7 @@
 locals {
   node_groups = {
     initial = {
-      create  = true
-      default = true
+      create = true
 
       labels = {
         "nodegroup"         = "initial"
@@ -18,8 +17,6 @@ locals {
           effect = "NO_SCHEDULE"
         }
       }
-
-      # max_pods = 29
 
       # ## Node group only in first AZ
       # azs = [local.azs_ids[0]]
@@ -38,8 +35,6 @@ locals {
 
       ebs_optimized = false
 
-      # disk_size = 50
-
       block_device_mappings = {
         boot = {
           ## nvme0n1
@@ -53,19 +48,8 @@ locals {
           }
         }
         local = {
-          ## nvme2n1
-          device_name = "/dev/xvdb"
-          ebs = {
-            volume_size           = 20
-            volume_type           = "gp3"
-            encrypted             = true
-            kms_key_id            = "arn:aws:kms:${var.region}:${var.account_id}:alias/aws/ebs"
-            delete_on_termination = true
-          }
-        }
-        containerd = {
           ## nvme1n1
-          device_name = "/dev/xvdc"
+          device_name = "/dev/xvdb"
           ebs = {
             volume_size           = 30
             volume_type           = "gp3"
@@ -78,10 +62,10 @@ locals {
 
       platform = "bottlerocket"
 
-      # ami_type = "AL2"
+      ami_type = "BOTTLEROCKET_x86_64"
 
-      ami_architecture = "x86_64"
-      ami_owner        = "amazon"
+      # ami_architecture = "x86_64"
+      # ami_owner        = "amazon"
 
       ## https://github.com/awslabs/amazon-eks-ami/releases
       # ami_name = "amazon-eks-node-1.25-v20230825"
@@ -91,17 +75,15 @@ locals {
       # ami_name = "ubuntu-eks/k8s_1.25/images/hvm-ssd/ubuntu-focal-20.04-amd64-server-20231007"
 
       ## $ aws --region eu-central-1 ec2 describe-images --owners amazon --filters "Name=name,Values=bottlerocket-aws-k8s-1.25-x86_64-*" --query 'reverse(sort_by(Images, &Name))[0].Name' --output text | cat
-      ami_name = "bottlerocket-aws-k8s-1.25-x86_64-v1.15.1-264e294c"
+      # ami_name = "bottlerocket-aws-k8s-1.25-x86_64-v1.15.1-264e294c"
+
+      # max_pods = 29
 
       bootstrap_extra_args = <<-EOT
+        max-pods = 11
         registry-qps = 0
         [settings.host-containers.admin]
         enabled = true
-        [settings.bootstrap-containers.bootstrap]
-        source = "public.ecr.aws/stefansundin/bottlerocket-bootstrap-exec-user-data:latest"
-        mode = "always"
-        essential = false
-        user-data = "${filebase64("eks_node_group_bootstrap_initial.sh")}"
       EOT
 
       # pre_bootstrap_user_data = <<-EOT
@@ -149,9 +131,9 @@ module "eks_node_group" {
 
   platform                   = lookup(each.value, "platform", null)
   ami_type                   = lookup(each.value, "ami_type", null)
-  ami_id                     = lookup(each.value, "ami_name", null) != null ? data.aws_ami.eks_node_group[each.key].image_id : null
-  create_launch_template     = lookup(each.value, "ami_type", null) == null ? true : false
-  use_custom_launch_template = lookup(each.value, "ami_type", null) == null ? true : false
+  ami_id                     = lookup(each.value, "ami_name", null) != null ? data.aws_ami.eks_node_group[each.key].image_id : ""
+  create_launch_template     = true
+  use_custom_launch_template = true
 
   launch_template_use_name_prefix = false
   launch_template_name            = "${module.eks.cluster_name}-${each.key}"
@@ -159,7 +141,7 @@ module "eks_node_group" {
     Name = "${module.eks.cluster_name}-${each.key}"
   }
 
-  enable_bootstrap_user_data = lookup(each.value, "ami_type", null) == null ? true : false
+  enable_bootstrap_user_data = true
   bootstrap_extra_args = lookup(each.value, "platform", null) == "bottlerocket" ? join("\n", compact(
     [
       "\"cluster-dns-ip\" = \"${cidrhost(local.cluster_service_cidr, 10)}\"",
@@ -178,11 +160,10 @@ module "eks_node_group" {
   max_size     = each.value.max_size
   desired_size = each.value.desired_size
 
-  labels = each.value.labels
-  taints = each.value.taints
+  labels = lookup(each.value, "labels", {})
+  taints = lookup(each.value, "taints", {})
 
-  disk_size             = lookup(each.value, "ami_type", null) != null ? each.value.disk_size : null
-  block_device_mappings = lookup(each.value, "ami_type", null) == null ? each.value.block_device_mappings : null
+  block_device_mappings = each.value.block_device_mappings
 
   network_interfaces = [
     {
