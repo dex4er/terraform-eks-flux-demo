@@ -34,6 +34,14 @@ spec:
     nodeSelector:
       nodegroup/initial: "true"
 
+    controller:
+      resources:
+        requests:
+          cpu: 200m
+          memory: 512Mi
+        limits:
+          memory: 512Mi
+
     settings:
       aws:
         clusterName: ${cluster_name}
