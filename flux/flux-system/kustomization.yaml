@@ -17,6 +17,15 @@ patches:
                 key: CriticalAddonsOnly
                 operator: Equal
                 value: "true"
+            containers:
+            - name: manager
+              resources:
+                limits:
+                  cpu: ~
+                  memory: 256Mi
+                requests:
+                  cpu: 100m
+                  memory: 256Mi
     target:
       kind: Deployment
       labelSelector: app.kubernetes.io/part-of=flux

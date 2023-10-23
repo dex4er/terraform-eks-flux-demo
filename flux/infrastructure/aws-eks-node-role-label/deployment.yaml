@@ -28,7 +28,6 @@ spec:
               cpu: 100m
               memory: 64Mi
             limits:
-              cpu: "666"
               memory: 64Mi
           volumeMounts:
             - name: entrypoint
