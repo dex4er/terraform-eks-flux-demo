@@ -1,0 +1,79 @@
+apiVersion: karpenter.k8s.aws/v1alpha1
+kind: AWSNodeTemplate
+metadata:
+  name: al2
+spec:
+  subnetSelector:
+    karpenter.sh/discovery: {{ .Values.cluster_name }}
+  securityGroupSelector:
+    karpenter.sh/discovery: {{ .Values.cluster_name }}
+  amiFamily: AL2
+  tags:
+    Cluster: {{ .Values.cluster_name }}
+    Name: {{ .Values.cluster_name }}-al2
+    Nodegroup: al2
+    karpenter.sh/discovery: {{ .Values.cluster_name }}
+  metadataOptions:
+    httpEndpoint: enabled
+    httpProtocolIPv6: disabled
+    httpPutResponseHopLimit: 2
+    httpTokens: required
+  blockDeviceMappings:
+    ## boot nvme0n1
+    - deviceName: /dev/xvda
+      ebs:
+        volumeSize: 40Gi
+        volumeType: gp3
+        # iops: 3000
+        # throughput: 125
+        encrypted: true
+        kmsKeyID: "arn:aws:kms:{{ .Values.region }}:{{ .Values.account_id }}:alias/aws/ebs"
+        deleteOnTermination: true
+  detailedMonitoring: true
+---
+apiVersion: karpenter.sh/v1alpha5
+kind: Provisioner
+metadata:
+  name: al2
+spec:
+  providerRef:
+    name: al2
+  labels:
+    nodegroup: al2
+    nodegroup/al2: "true"
+  taints:
+    - key: nodegroup/al2
+      value: "true"
+      effect: NoSchedule
+  requirements:
+    - key: karpenter.k8s.aws/instance-family
+      operator: In
+      values:
+        - m5d
+        - m6id
+    # - key: karpenter.k8s.aws/instance-size
+    #   operator: In
+    #   values:
+    #     - metal
+    - key: kubernetes.io/arch
+      operator: In
+      values:
+        - amd64
+        # - arm64
+    - key: karpenter.sh/capacity-type
+      operator: In
+      values:
+        - spot
+        - on-demand
+  kubeletConfiguration:
+    clusterDNS:
+      - {{ .Values.cluster_dns_ip }}
+    containerRuntime: containerd
+    # maxPods: 29
+  # limits:
+  #   resources:
+  #     cpu: 10k
+  consolidation:
+    enabled: true
+  ttlSecondsUntilExpired: 3600
+  weight: 1
