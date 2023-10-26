@@ -65,6 +65,8 @@ spec:
         deleteOnTermination: true
   detailedMonitoring: true
   userData: |-
+    [settings.kernel.sysctl]
+    user.max_user_namespaces = 16384
     [settings.host-containers.admin]
     enabled = true
     [settings.kubernetes]
