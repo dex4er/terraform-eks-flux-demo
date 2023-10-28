@@ -39,6 +39,10 @@ patches:
                     value: info
                   - name: AWS_VPC_K8S_PLUGIN_LOG_FILE
                     value: stderr
+                  - name: WARM_ENI_TARGET
+                    value: "0"
+                  - name: WARM_PREFIX_TARGET
+                    value: "0"
                 resources:
                   limits:
                     cpu: ~

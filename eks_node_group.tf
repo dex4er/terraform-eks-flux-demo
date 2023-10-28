@@ -74,10 +74,8 @@ locals {
       ## $ aws --region eu-central-1 ec2 describe-images --owners amazon --filters "Name=name,Values=bottlerocket-aws-k8s-1.25-x86_64-*" --query 'reverse(sort_by(Images, &Name))[0].Name' --output text | cat
       # ami_name = "bottlerocket-aws-k8s-1.25-x86_64-v1.15.1-264e294c"
 
-      # max_pods = 29
-
       bootstrap_extra_args = <<-EOT
-        max-pods = 16
+        max-pods = 18
         registry-qps = 0
         [settings.host-containers.admin]
         enabled = true

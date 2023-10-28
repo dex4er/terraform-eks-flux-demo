@@ -1,4 +1,22 @@
-{{- define "daemonset.aws-node" }}
+{{/*
+
+aws-node DaemonSet that runs only for this nodegroup.
+
+It is because all settings are for all DaemonSet node instances but we have
+different setting for MINIMUM_IP_TARGET equal to maxPods - 2 (aws-node and
+kube-proxy don't consume IP addresses).
+
+Source: https://raw.githubusercontent.com/aws/amazon-vpc-cni-k8s/master/config/master/aws-k8s-cni.yaml
+
+Usage: 
+
+```
+---
+{{- template "daemonset.aws-node" (dict "nodegroup" "NAME" "maxPods" NUM) }}
+````
+
+*/}}
+{{- define "daemonset.aws-node" -}}
 apiVersion: apps/v1
 kind: DaemonSet
 metadata:
@@ -47,7 +65,7 @@ spec:
         - name: WARM_IP_TARGET
           value: "0"
         - name: MINIMUM_IP_TARGET
-          value: "{{ .maxPods }}"
+          value: "{{ sub .maxPods 2 }}"
         - name: AWS_VPC_K8S_CNI_LOGLEVEL
           value: info
         - name: AWS_VPC_K8S_CNI_LOG_FILE
@@ -85,9 +103,9 @@ spec:
         - name: VPC_CNI_VERSION
           value: v1.15.1
         - name: WARM_ENI_TARGET
-          value: "1"
+          value: "0"
         - name: WARM_PREFIX_TARGET
-          value: "1"
+          value: "0"
         - name: MY_NODE_NAME
           valueFrom:
             fieldRef:
@@ -226,4 +244,4 @@ spec:
     rollingUpdate:
       maxUnavailable: 25%
     type: RollingUpdate
-{{- end }}
+{{- end -}}

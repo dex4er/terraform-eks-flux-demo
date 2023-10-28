@@ -69,7 +69,7 @@ spec:
     clusterDNS:
       - {{ .Values.cluster_dns_ip }}
     containerRuntime: containerd
-    maxPods: 16
+    maxPods: 18
   # limits:
   #   resources:
   #     cpu: 10k
@@ -78,4 +78,4 @@ spec:
   ttlSecondsUntilExpired: 3600
   weight: 1
 ---
-{{- template "daemonset.aws-node" (dict "nodegroup" "al2" "maxPods" 16) }}
+{{- template "daemonset.aws-node" (dict "nodegroup" "al2" "maxPods" 18) }}
