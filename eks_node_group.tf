@@ -2,12 +2,12 @@
 
 locals {
   node_groups = {
-    initial = {
+    criticals = {
       create = true
 
       labels = {
-        "nodegroup"         = "initial"
-        "nodegroup/initial" = "true"
+        "nodegroup"           = "criticals"
+        "nodegroup/criticals" = "true"
       }
 
       taints = {
@@ -23,9 +23,6 @@ locals {
       azs = local.azs_ids
 
       instance_types = [
-        ## 2vCPU, 2GiB RAM
-        "t3.small",
-        "t3a.small",
         ## 2vCPU, 4GiB RAM
         "t3.medium",
         "t3a.medium",
@@ -80,7 +77,7 @@ locals {
       # max_pods = 29
 
       bootstrap_extra_args = <<-EOT
-        max-pods = 11
+        max-pods = 16
         registry-qps = 0
         [settings.host-containers.admin]
         enabled = true

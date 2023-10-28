@@ -5,6 +5,5 @@ kind: Kustomization
 resources:
   - aws-eks-iam-auth-controller
   - aws-eks-node-role-label
-  - aws-vpc-cni
   - karpenter
   - metrics-server

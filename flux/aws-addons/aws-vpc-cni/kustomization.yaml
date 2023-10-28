@@ -31,9 +31,9 @@ patches:
                   - name: ENABLE_PREFIX_DELEGATION
                     value: "true"
                   - name: WARM_IP_TARGET
-                    value: "1"
+                    value: "0"
                   - name: MINIMUM_IP_TARGET
-                    value: "1"
+                    value: "16"
                   - name: AWS_VPC_K8S_CNI_LOGLEVEL
                     value: info
                   - name: AWS_VPC_K8S_CNI_LOG_FILE
@@ -73,3 +73,6 @@ patches:
         namespace: kube-system
       data:
         enable-windows-ipam: "true"
+        enable-windows-prefix-delegation: "true"
+        minimum-ip-target: "8"
+        warm-ip-target: "0"

@@ -32,7 +32,7 @@ spec:
         eks.amazonaws.com/role-arn: arn:aws:iam::${account_id}:role/${cluster_name}-irsa-karpenter
 
     nodeSelector:
-      nodegroup/initial: "true"
+      nodegroup/critical: "true"
 
     controller:
       resources:
