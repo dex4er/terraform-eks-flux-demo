@@ -2,12 +2,12 @@
 
 locals {
   node_groups = {
-    criticals = {
+    critical = {
       create = true
 
       labels = {
-        "nodegroup"           = "criticals"
-        "nodegroup/criticals" = "true"
+        "nodegroup"          = "critical"
+        "nodegroup/critical" = "true"
       }
 
       taints = {

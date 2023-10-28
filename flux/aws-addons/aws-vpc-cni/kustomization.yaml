@@ -19,10 +19,7 @@ patches:
         template:
           spec:
             tolerations:
-              - effect: NoSchedule
-                key: CriticalAddonsOnly
-                operator: Equal
-                value: "true"
+              - operator: Exists
             containers:
               - name: aws-node
                 livenessProbe:
