@@ -16,15 +16,6 @@ locals {
       resolve_conflicts_on_update = "OVERWRITE"
       configuration_values        = jsonencode(yamldecode(file("${path.module}/eks_addons/kube-proxy.configuration.yaml")))
     }
-    vpc-cni = {
-      ## https://docs.aws.amazon.com/eks/latest/userguide/managing-vpc-cni.html
-      version                     = "v1.15.0-eksbuild.2"
-      resolve_conflicts_on_create = "OVERWRITE"
-      resolve_conflicts_on_update = "OVERWRITE"
-      service_account_role_arn    = module.irsa_aws_vpc_cni.iam_role_arn
-      configuration_values        = jsonencode(yamldecode(file("${path.module}/eks_addons/vpc-cni.configuration.yaml")))
-      before_compute              = true
-    }
   }
 }
 

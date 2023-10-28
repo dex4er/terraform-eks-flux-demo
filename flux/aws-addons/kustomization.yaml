@@ -1,6 +1,8 @@
-## AWS AddOns
+## AWS AddOns that must be installed before other infrastructure services
 
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
   - aws-load-balancer-controller
+  - aws-vpc-cni
+  - eks-charts
