@@ -5,5 +5,4 @@ kind: Kustomization
 resources:
   - aws-load-balancer-controller
   - aws-vpc-cni
-  - cni-metrics-helper
   - eks-charts
