@@ -1,0 +1,38 @@
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: cni-metrics-helper
+  namespace: flux-system
+spec:
+  interval: 1m
+  timeout: 5m
+  maxHistory: 2
+  releaseName: cni-metrics-helper
+  targetNamespace: kube-system
+  storageNamespace: kube-system
+  serviceAccountName: helm-controller
+  chart:
+    spec:
+      interval: 1m
+      chart: cni-metrics-helper
+      version: 1.15.1 ## $ curl -qsS https://aws.github.io/eks-charts/index.yaml | yq .entries.cni-metrics-helper.0.version
+      sourceRef:
+        kind: HelmRepository
+        name: eks-charts
+      reconcileStrategy: ChartVersion
+  values:
+    ## https://github.com/aws/amazon-vpc-cni-k8s/blob/master/charts/cni-metrics-helper/values.yaml
+
+    env:
+      USE_CLOUDWATCH: "false"
+      AWS_CLUSTER_ID: "${cluster_name}"
+
+    serviceAccount:
+      create: false
+
+    resources:
+      limits:
+        memory: 256Mi
+      requests:
+        cpu: 100m
+        memory: 256Mi
