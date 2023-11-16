@@ -66,12 +66,42 @@
           "type": "object"
         },
         "podAnnotations": {
-          "default": {
-            "cluster-autoscaler.kubernetes.io/safe-to-evict": "false",
-            "karpenter.sh/do-not-evict": "true"
-          },
           "properties": {},
           "title": "The podAnnotations Schema",
+          "type": "object"
+        },
+        "podDisruptionBudget": {
+          "description": "podDisruptionBudget configurations",
+          "properties": {
+            "enabled": {
+              "description": "the option to enable managed PDB",
+              "type": "boolean"
+            },
+            "maxUnavailable": {
+              "anyOf": [
+                {
+                  "pattern": ".*%$",
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ],
+              "description": "maxUnavailable value for managed PDB, can be either string or integer; if it's string, should end with %"
+            },
+            "minAvailable": {
+              "anyOf": [
+                {
+                  "pattern": ".*%$",
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ],
+              "description": "minAvailable value for managed PDB, can be either string or integer; if it's string, should end with %"
+            }
+          },
           "type": "object"
         },
         "podLabels": {
@@ -92,8 +122,12 @@
               "operator": "Exists"
             },
             {
-              "key": "node-role.kubernetes.io/master",
-              "operator": "NoSchedule"
+              "effect": "NoSchedule",
+              "key": "node-role.kubernetes.io/control-plane"
+            },
+            {
+              "effect": "NoSchedule",
+              "key": "node-role.kubernetes.io/master"
             }
           ],
           "description": "Tolerations of the coredns pod",
