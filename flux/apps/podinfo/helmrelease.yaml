@@ -42,15 +42,9 @@ spec:
     resources:
       requests:
         cpu: 10m
-        memory: 10Gi
+        memory: 100Mi
       limits:
-        memory: 10Gi
-
-    tolerations:
-      - effect: NoSchedule
-        key: nodegroup/test
-        operator: Equal
-        value: "true"
+        memory: 100Mi
 
     affinity:
       podAntiAffinity:
