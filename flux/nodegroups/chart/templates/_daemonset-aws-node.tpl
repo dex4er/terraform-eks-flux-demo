@@ -23,7 +23,7 @@ metadata:
   labels:
     app.kubernetes.io/instance: aws-vpc-cni
     app.kubernetes.io/name: aws-node
-    app.kubernetes.io/version: v1.15.1
+    app.kubernetes.io/version: v1.15.3
     k8s-app: aws-node-{{ .nodegroup }}
   name: aws-node-{{ .nodegroup }}
   namespace: kube-system
@@ -101,7 +101,7 @@ spec:
         - name: ENABLE_POD_ENI
           value: "false"
         - name: VPC_CNI_VERSION
-          value: v1.15.1
+          value: v1.15.3
         - name: WARM_ENI_TARGET
           value: "0"
         - name: WARM_PREFIX_TARGET
@@ -116,7 +116,7 @@ spec:
             fieldRef:
               apiVersion: v1
               fieldPath: metadata.name
-        image: 602401143452.dkr.ecr.us-west-2.amazonaws.com/amazon-k8s-cni:v1.15.1
+        image: 602401143452.dkr.ecr.us-west-2.amazonaws.com/amazon-k8s-cni:v1.15.3
         livenessProbe:
           exec:
             command:
@@ -174,7 +174,7 @@ spec:
             fieldRef:
               apiVersion: v1
               fieldPath: spec.nodeName
-        image: 602401143452.dkr.ecr.us-west-2.amazonaws.com/amazon/aws-network-policy-agent:v1.0.4
+        image: 602401143452.dkr.ecr.us-west-2.amazonaws.com/amazon/aws-network-policy-agent:v1.0.5
         name: aws-eks-nodeagent
         resources:
           limits:
@@ -203,7 +203,7 @@ spec:
           value: "false"
         - name: ENABLE_IPv6
           value: "false"
-        image: 602401143452.dkr.ecr.us-west-2.amazonaws.com/amazon-k8s-cni-init:v1.15.1
+        image: 602401143452.dkr.ecr.us-west-2.amazonaws.com/amazon-k8s-cni-init:v1.15.3
         name: aws-vpc-cni-init
         resources:
           requests:
