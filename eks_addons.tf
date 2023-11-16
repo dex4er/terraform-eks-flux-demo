@@ -4,14 +4,14 @@ locals {
   cluster_addons = {
     coredns = {
       ## https://docs.aws.amazon.com/eks/latest/userguide/managing-coredns.html
-      version                     = "v1.9.3-eksbuild.6"
+      version                     = "v1.9.3-eksbuild.9"
       resolve_conflicts_on_create = "OVERWRITE"
       resolve_conflicts_on_update = "OVERWRITE"
       configuration_values        = jsonencode(yamldecode(file("${path.module}/eks_addons/coredns.configuration.yaml")))
     }
     kube-proxy = {
       ## https://docs.aws.amazon.com/eks/latest/userguide/managing-kube-proxy.html
-      version                     = "v1.25.11-eksbuild.2"
+      version                     = "v1.26.9-eksbuild.2"
       resolve_conflicts_on_create = "OVERWRITE"
       resolve_conflicts_on_update = "OVERWRITE"
       configuration_values        = jsonencode(yamldecode(file("${path.module}/eks_addons/kube-proxy.configuration.yaml")))
