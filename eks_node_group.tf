@@ -2,49 +2,71 @@
 
 locals {
   node_groups = {
-    default-20230922-1 = {
-      create  = true
-      default = true
-
-      labels = {
-        "nodegroup"         = "default"
-        "nodegroup/default" = "true"
-      }
-
-      taints = {}
-
-      # max_pods = 29
+    default-1 = {
+      create = true
 
       # ## Node group only in first AZ
       # azs = [local.azs_ids[0]]
       azs = local.azs_ids
 
       instance_types = [
-        ## 2vcpu, 8192mem
-        "t3a.large",
-        "t3.large",
-        "m6a.large",
-        "m6i.large",
+        ## 2vCPU, 4GiB RAM
+        "t3.medium",
+        "t3a.medium",
       ]
 
       capacity_type = "SPOT"
 
       ebs_optimized = false
 
-      device_name = "/dev/sda1"
-      disk_size   = 25
-      # iops        = null
-      # throughput  = null
+      block_device_mappings = {
+        boot = {
+          ## nvme0n1
+          device_name = "/dev/xvda"
+          ebs = {
+            volume_size           = 4
+            volume_type           = "gp3"
+            encrypted             = true
+            kms_key_id            = "arn:aws:kms:${var.region}:${var.account_id}:alias/aws/ebs"
+            delete_on_termination = true
+          }
+        }
+        local = {
+          ## nvme1n1
+          device_name = "/dev/xvdb"
+          ebs = {
+            volume_size           = 30
+            volume_type           = "gp3"
+            encrypted             = true
+            kms_key_id            = "arn:aws:kms:${var.region}:${var.account_id}:alias/aws/ebs"
+            delete_on_termination = true
+          }
+        }
+      }
 
-      ami_architecture = "x86_64"
-      ami_owner        = "amazon"
+      platform = "bottlerocket"
+
+      ami_type = "BOTTLEROCKET_x86_64"
+
+      # ami_architecture = "x86_64"
+      # ami_owner        = "amazon"
 
       ## https://github.com/awslabs/amazon-eks-ami/releases
-      # ami_name = "amazon-eks-node-1.25-v20230825"
+      # ami_name = "amazon-eks-node-1.26-v20230825"
 
       ## https://ubuntu.com/server/docs/cloud-images/amazon-ec2
-      ## $ aws --region eu-central-1 ec2 describe-images --owners 099720109477 --filters "Name=name,Values=ubuntu-eks/k8s_1.25/images/hvm-ssd/ubuntu-focal-20.04-amd64-server-*" --query 'reverse(sort_by(Images, &Name))[0].Name' --output text | cat
-      ami_name = "ubuntu-eks/k8s_1.25/images/hvm-ssd/ubuntu-focal-20.04-amd64-server-20230922"
+      ## $ aws --region eu-central-1 ec2 describe-images --owners 099720109477 --filters "Name=name,Values=ubuntu-eks/k8s_1.26/images/hvm-ssd/ubuntu-focal-20.04-amd64-server-*" --query 'reverse(sort_by(Images, &Name))[0].Name' --output text | cat
+      # ami_name = "ubuntu-eks/k8s_1.26/images/hvm-ssd/ubuntu-focal-20.04-amd64-server-20231007"
+
+      ## $ aws --region eu-central-1 ec2 describe-images --owners amazon --filters "Name=name,Values=bottlerocket-aws-k8s-1.26-x86_64-*" --query 'reverse(sort_by(Images, &Name))[0].Name' --output text | cat
+      # ami_name = "bottlerocket-aws-k8s-1.26-x86_64-v1.15.1-264e294c"
+
+      bootstrap_extra_args = <<-EOT
+        max-pods = 18
+        registry-qps = 0
+        [settings.host-containers.admin]
+        enabled = true
+      EOT
 
       # pre_bootstrap_user_data = <<-EOT
       # EOT
@@ -52,7 +74,7 @@ locals {
       # post_bootstrap_user_data = <<-EOT
       # EOT
 
-      min_size     = 1
+      min_size     = 3
       max_size     = 4
       desired_size = 3
     }
@@ -67,7 +89,7 @@ module "eks_node_group" {
   for_each = { for k, v in local.node_groups : k => v if v.create }
 
   use_name_prefix = false
-  name            = "${module.eks.cluster_name}-node-group-${each.key}"
+  name            = "${module.eks.cluster_name}-${each.key}"
 
   cluster_name = module.eks.cluster_name
 
@@ -86,22 +108,33 @@ module "eks_node_group" {
   vpc_security_group_ids            = [local.sg_node_group_id]
 
   instance_types = each.value.instance_types
+  capacity_type  = each.value.capacity_type
   ebs_optimized  = each.value.ebs_optimized
 
-  ami_id                 = lookup(each.value, "ami_name", null) != null ? data.aws_ami.eks_node_group[each.key].image_id : null
-  create_launch_template = true
+  platform                   = lookup(each.value, "platform", null)
+  ami_type                   = lookup(each.value, "ami_type", null)
+  ami_id                     = lookup(each.value, "ami_name", null) != null ? data.aws_ami.eks_node_group[each.key].image_id : ""
+  create_launch_template     = true
+  use_custom_launch_template = true
 
   launch_template_use_name_prefix = false
-  launch_template_name            = "${module.eks.cluster_name}-node-group-${each.key}"
+  launch_template_name            = "${module.eks.cluster_name}-${each.key}"
   launch_template_tags = {
-    Name = "${module.eks.cluster_name}-node-group-${each.key}"
+    Name = "${module.eks.cluster_name}-${each.key}"
   }
 
   enable_bootstrap_user_data = true
-  bootstrap_extra_args = join(" ", compact([
-    lookup(each.value, "bootstrap_extra_args", ""),
-    "--dns-cluster-ip", cidrhost(local.cluster_service_cidr, 10),
-  ]))
+  bootstrap_extra_args = lookup(each.value, "platform", null) == "bottlerocket" ? join("\n", compact(
+    [
+      "\"cluster-dns-ip\" = \"${cidrhost(local.cluster_service_cidr, 10)}\"",
+      lookup(each.value, "bootstrap_extra_args", "")
+    ]
+    )) : join(" ", compact(
+    [
+      lookup(each.value, "bootstrap_extra_args", ""),
+      "--dns-cluster-ip=${cidrhost(local.cluster_service_cidr, 10)}",
+    ]
+  ))
   pre_bootstrap_user_data  = lookup(each.value, "pre_bootstrap_user_data", "")
   post_bootstrap_user_data = lookup(each.value, "post_bootstrap_user_data", "")
 
@@ -109,23 +142,10 @@ module "eks_node_group" {
   max_size     = each.value.max_size
   desired_size = each.value.desired_size
 
-  labels = each.value.labels
-  taints = each.value.taints
+  labels = lookup(each.value, "labels", {})
+  taints = lookup(each.value, "taints", {})
 
-  block_device_mappings = {
-    root = {
-      device_name = lookup(each.value, "device_name", "/dev/xvda")
-      ebs = {
-        volume_size           = each.value.disk_size
-        volume_type           = "gp3"
-        iops                  = lookup(each.value, "iops", null)
-        throughput            = lookup(each.value, "throughput", null)
-        encrypted             = true
-        kms_key_id            = "arn:aws:kms:${var.region}:${var.account_id}:alias/aws/ebs"
-        delete_on_termination = true
-      }
-    }
-  }
+  block_device_mappings = each.value.block_device_mappings
 
   network_interfaces = [
     {
@@ -142,25 +162,21 @@ module "eks_node_group" {
   }
 
   tags = {
-    Name      = "${var.cluster_name}-node-group-${each.key}"
+    Name      = "${var.cluster_name}-${each.key}"
+    AmiName   = lookup(each.value, "ami_name", null)
     Cluster   = var.cluster_name
-    NodeGroup = "${var.cluster_name}-node-group-${each.key}"
+    NodeGroup = each.key
     Object    = "module.eks_node_group"
   }
 }
 
-locals {
-  default_node_groups = { for k, v in local.node_groups : k => v if v.create && v.default }
-  default_node_group  = element(sort(keys(local.default_node_groups)), length(local.default_node_groups) - 1)
-}
-
 resource "time_sleep" "eks_default_node_group_delay" {
-  create_duration = "2m"
+  create_duration = "5m"
 
   triggers = {
-    ## It makes a dependency on the default node group but we need more static string
-    ## ID before colon is the same as cluster name.
-    default_node_group = try(module.eks_node_group[local.default_node_group].node_group_id, module.eks.cluster_name)
+    ## Adds additional delay after cluster is created so addons won't be
+    ## installed before nodegroups will be ready.
+    cluster_name = module.eks.cluster_name
   }
 }
 
