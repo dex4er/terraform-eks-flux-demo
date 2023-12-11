@@ -130,6 +130,10 @@
           "format": "boolean",
           "type": "string"
         },
+        "ENABLE_V4_EGRESS": {
+          "format": "boolean",
+          "type": "string"
+        },
         "ENABLE_V6_EGRESS": {
           "format": "boolean",
           "type": "string"
@@ -179,6 +183,9 @@
       "properties": {
         "env": {
           "$ref": "#/definitions/InitEnv"
+        },
+        "resources": {
+          "$ref": "#/definitions/Resources"
         }
       },
       "title": "Init",
@@ -219,6 +226,13 @@
           "format": "boolean",
           "type": "string"
         },
+        "enablePolicyEventLogs": {
+          "format": "boolean",
+          "type": "string"
+        },
+        "enabled": {
+          "type": "boolean"
+        },
         "healthProbeBindAddr": {
           "format": "integer",
           "type": "string"
@@ -226,6 +240,9 @@
         "metricsBindAddr": {
           "format": "integer",
           "type": "string"
+        },
+        "resources": {
+          "$ref": "#/definitions/Resources"
         }
       },
       "title": "NodeAgent",

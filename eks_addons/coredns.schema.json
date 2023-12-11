@@ -72,35 +72,35 @@
         },
         "podDisruptionBudget": {
           "description": "podDisruptionBudget configurations",
-          "properties": {
-            "enabled": {
-              "description": "the option to enable managed PDB",
-              "type": "boolean"
-            },
-            "maxUnavailable": {
-              "anyOf": [
-                {
-                  "pattern": ".*%$",
-                  "type": "string"
-                },
-                {
-                  "type": "integer"
-                }
-              ],
-              "description": "maxUnavailable value for managed PDB, can be either string or integer; if it's string, should end with %"
-            },
-            "minAvailable": {
-              "anyOf": [
-                {
-                  "pattern": ".*%$",
-                  "type": "string"
-                },
-                {
-                  "type": "integer"
-                }
-              ],
-              "description": "minAvailable value for managed PDB, can be either string or integer; if it's string, should end with %"
-            }
+          "enabled": {
+            "default": true,
+            "description": "the option to enable managed PDB",
+            "type": "boolean"
+          },
+          "maxUnavailable": {
+            "anyOf": [
+              {
+                "pattern": ".*%$",
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              }
+            ],
+            "default": 1,
+            "description": "minAvailable value for managed PDB, can be either string or integer; if it's string, should end with %"
+          },
+          "minAvailable": {
+            "anyOf": [
+              {
+                "pattern": ".*%$",
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              }
+            ],
+            "description": "maxUnavailable value for managed PDB, can be either string or integer; if it's string, should end with %"
           },
           "type": "object"
         },
@@ -124,10 +124,6 @@
             {
               "effect": "NoSchedule",
               "key": "node-role.kubernetes.io/control-plane"
-            },
-            {
-              "effect": "NoSchedule",
-              "key": "node-role.kubernetes.io/master"
             }
           ],
           "description": "Tolerations of the coredns pod",

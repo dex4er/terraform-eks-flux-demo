@@ -1,7 +1,7 @@
 # yaml-language-server: $schema=./coredns.schema.json
 
 ## https://docs.aws.amazon.com/eks/latest/userguide/managing-coredns.html
-## $ aws eks describe-addon-configuration --addon-name coredns --addon-version v1.9.3-eksbuild.9 | jq -r .configurationSchema | jq . > eks_addons/coredns.schema.json
+## $ aws eks describe-addon-configuration --addon-name coredns --addon-version v1.10.1-eksbuild.6 | jq -r .configurationSchema | jq . > eks_addons/coredns.schema.json
 
 affinity:
   podAntiAffinity:
