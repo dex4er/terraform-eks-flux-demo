@@ -274,11 +274,18 @@
         "affinity": {
           "$ref": "#/definitions/Affinity"
         },
+        "branchENICooldown": {
+          "type": "integer"
+        },
         "enableNetworkPolicy": {
           "format": "boolean",
           "type": "string"
         },
         "enableWindowsIpam": {
+          "format": "boolean",
+          "type": "string"
+        },
+        "enableWindowsPrefixDelegation": {
           "format": "boolean",
           "type": "string"
         },
@@ -294,6 +301,9 @@
         "livenessProbeTimeoutSeconds": {
           "type": "integer"
         },
+        "minimumWindowsIPTarget": {
+          "type": "integer"
+        },
         "nodeAgent": {
           "$ref": "#/definitions/NodeAgent"
         },
@@ -305,6 +315,12 @@
         },
         "tolerations": {
           "$ref": "#/definitions/Tolerations"
+        },
+        "warmWindowsIPTarget": {
+          "type": "integer"
+        },
+        "warmWindowsPrefixTarget": {
+          "type": "integer"
         }
       },
       "title": "VpcCni",

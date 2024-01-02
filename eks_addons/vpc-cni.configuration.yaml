@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=./vpc-cni.schema.json
 
-## $ aws eks describe-addon-configuration --addon-name vpc-cni --addon-version v1.15.3-eksbuild.1 | jq -r .configurationSchema | jq . > eks_addons/vpc-cni.schema.json
+## $ aws eks describe-addon-configuration --addon-name vpc-cni --addon-version v1.16.0-eksbuild.1 | jq -r .configurationSchema | jq . > eks_addons/vpc-cni.schema.json
 
 resources:
   limits:

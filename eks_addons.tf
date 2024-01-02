@@ -18,7 +18,7 @@ locals {
     }
     vpc-cni = {
       ## https://docs.aws.amazon.com/eks/latest/userguide/managing-vpc-cni.html
-      version                     = "v1.15.3-eksbuild.1"
+      version                     = "v1.16.0-eksbuild.1"
       resolve_conflicts_on_create = "OVERWRITE"
       resolve_conflicts_on_update = "OVERWRITE"
       service_account_role_arn    = module.irsa_aws_vpc_cni.iam_role_arn
