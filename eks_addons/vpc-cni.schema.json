@@ -222,6 +222,10 @@
     "NodeAgent": {
       "additionalProperties": false,
       "properties": {
+        "conntrackCacheCleanupPeriod": {
+          "format": "integer",
+          "type": "integer"
+        },
         "enableCloudWatchLogs": {
           "format": "boolean",
           "type": "string"
@@ -306,6 +310,22 @@
         },
         "nodeAgent": {
           "$ref": "#/definitions/NodeAgent"
+        },
+        "podAnnotations": {
+          "additionalProperties": {
+            "not": {
+              "type": ["object", "array", "null"]
+            }
+          },
+          "type": ["object", "null"]
+        },
+        "podLabels": {
+          "additionalProperties": {
+            "not": {
+              "type": ["object", "array", "null"]
+            }
+          },
+          "type": ["object", "null"]
         },
         "readinessProbeTimeoutSeconds": {
           "type": "integer"
