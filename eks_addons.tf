@@ -11,7 +11,7 @@ locals {
     }
     kube-proxy = {
       ## https://docs.aws.amazon.com/eks/latest/userguide/managing-kube-proxy.html
-      version                     = "v1.27.6-eksbuild.2"
+      version                     = "v1.27.8-eksbuild.4"
       resolve_conflicts_on_create = "OVERWRITE"
       resolve_conflicts_on_update = "OVERWRITE"
       configuration_values        = jsonencode(yamldecode(file("${path.module}/eks_addons/kube-proxy.configuration.yaml")))
