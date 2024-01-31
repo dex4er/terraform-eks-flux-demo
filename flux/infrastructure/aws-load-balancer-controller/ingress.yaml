@@ -1,0 +1,47 @@
+## This Ingress resource keeps ALB created (deleting the last Ingress causes
+## AWS Load Balancer Controller will delete ALB).
+##
+## The annotations must be compatible with `aws_lb.ingress` and
+## `aws_lb_listener.ingress` Terraform resources. Incompatibilities between
+## annotations and Terraform resources will cause "Reconciler error".
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: listener-http-80
+  namespace: kube-system
+  annotations:
+    ## This Ingress must define at least 1 rule so it is explicit rule the
+    ## same as default in `aws_lb.ingress.default_action`
+    alb.ingress.kubernetes.io/actions.default: |
+      {
+        "type": "fixed-response",
+        "fixedResponseConfig": {
+          "contentType": "text/plain",
+          "statusCode": "404",
+          "messageBody": ""
+        }
+      }
+    ## Name of the ALB
+    alb.ingress.kubernetes.io/group.name: ${cluster_name}-ingress
+    ## The lowest possible priority
+    alb.ingress.kubernetes.io/group.order: "1000"
+    ## Name of the ALB
+    alb.ingress.kubernetes.io/load-balancer-name: ${cluster_name}-ingress
+    ## Must be the same as in `aws_lb.ingress.internal`
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    ## Uses AWS Load Balancer Controller
+    kubernetes.io/ingress.class: alb
+spec:
+  rules:
+    - http:
+        paths:
+          - pathType: Prefix
+            path: /
+            backend:
+              service:
+                ## The same ID as in `alb.ingress.kubernetes.io/actions.ID`
+                name: default
+                port:
+                  ## Must be literally `use-annotation`
+                  name: use-annotation

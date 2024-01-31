@@ -45,3 +45,4 @@ spec:
     defaultTags:
       kubernetes.io/cluster/${cluster_name}: owned
       ManagedBy: AWS Load Balancer Controller
+      Project: ${cluster_name}
