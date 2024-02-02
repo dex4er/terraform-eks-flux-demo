@@ -36,12 +36,14 @@ spec:
       annotations:
         ## Name of the ALB
         alb.ingress.kubernetes.io/group.name: ${cluster_name}-ingress
-        ## ## Name of the ALB
+        ## Name of the ALB
         alb.ingress.kubernetes.io/load-balancer-name: ${cluster_name}-ingress
         ## Must be the same as in `aws_lb.ingress.internal`
         alb.ingress.kubernetes.io/scheme: internet-facing
         ## `instance` for NodePort, `ip` for ClusterIP (then needs direct connection to Pod's IP)
         alb.ingress.kubernetes.io/target-type: instance
+        ## WAF is enabled
+        alb.ingress.kubernetes.io/wafv2-acl-arn: ${wafv2_acl_arn}
         ## Uses AWS Load Balancer Controller
         kubernetes.io/ingress.class: alb
       hosts:

@@ -6,7 +6,7 @@ metadata:
 spec:
   interval: 1m
   ref:
-    branch: alb
+    branch: waf
   url: ${flux_git_repository_url}
   secretRef:
     name: flux-system

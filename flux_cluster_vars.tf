@@ -16,6 +16,7 @@ locals {
     "flux_git_repository_url=${var.flux_git_repository_url}",
     "region=${var.region}",
     "vpc_id=${local.vpc_id}",
+    "wafv2_acl_arn=${local.wafv2_acl_arn}",
   ]))
 }
 
