@@ -1,9 +1,22 @@
 ## EKS managed groups with defined template
 
 locals {
+  eks_managed_node_group_defaults = {
+    attach_cluster_primary_security_group = true
+    iam_role_attach_cni_policy            = true
+
+    create_iam_role = false
+    iam_role_arn    = module.iam_role_node_group.iam_role_arn
+  }
+
   eks_node_groups = {
-    default-1 = {
+    default = {
       create = true
+
+      use_name_prefix                 = true
+      name                            = "${var.cluster_name}-default"
+      launch_template_use_name_prefix = true
+      launch_template_name            = "${var.cluster_name}-default"
 
       # ## Node group only in first AZ
       # azs = [local.azs_ids[0]]
@@ -77,6 +90,13 @@ locals {
       min_size     = 3
       max_size     = 4
       desired_size = 3
+
+      labels = {}
+      taints = []
+
+      tags = {
+        Nodegroup = "default"
+      }
     }
   }
 }

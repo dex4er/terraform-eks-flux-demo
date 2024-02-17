@@ -54,7 +54,8 @@ module "eks" {
   create_aws_auth_configmap = false
   manage_aws_auth_configmap = false
 
-  eks_managed_node_groups = local.eks_node_groups
+  eks_managed_node_group_defaults = local.eks_managed_node_group_defaults
+  eks_managed_node_groups         = local.eks_node_groups
 
   cluster_addons = local.eks_addons
 

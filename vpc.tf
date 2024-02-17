@@ -28,6 +28,8 @@ module "vpc" {
   single_nat_gateway     = var.cluster_in_private_subnet ? true : false
   one_nat_gateway_per_az = false
 
+  map_public_ip_on_launch = var.cluster_in_private_subnet ? false : true
+
   enable_dns_hostnames = true
 
   manage_default_network_acl    = true
