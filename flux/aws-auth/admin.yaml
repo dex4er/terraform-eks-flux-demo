@@ -1,9 +1,0 @@
-apiVersion: iamauthenticator.k8s.aws/v1alpha1
-kind: IAMIdentityMapping
-metadata:
-  name: admin
-spec:
-  arn: ${admin_role_arn}
-  groups:
-    - system:masters
-  username: admin

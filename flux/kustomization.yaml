@@ -9,5 +9,4 @@ namespace: flux-system
 resources:
   - flux-system
   - apps.yaml
-  - aws-auth.yaml
   - infrastructure.yaml

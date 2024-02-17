@@ -17,7 +17,7 @@ locals {
 module "eks" {
   ## https://github.com/terraform-aws-modules/terraform-aws-eks
   source  = "terraform-aws-modules/eks/aws"
-  version = "~> 19.10"
+  version = "~> 20.0"
 
   cluster_name = var.cluster_name
 
@@ -51,8 +51,7 @@ module "eks" {
     resources        = ["secrets"]
   }
 
-  create_aws_auth_configmap = false
-  manage_aws_auth_configmap = false
+  authentication_mode = "API"
 
   eks_managed_node_group_defaults = local.eks_managed_node_group_defaults
   eks_managed_node_groups         = local.eks_node_groups

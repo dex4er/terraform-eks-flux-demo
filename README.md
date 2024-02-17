@@ -178,13 +178,16 @@ aws ec2 describe-availability-zones --region $AWS_REGION --query 'AvailabilityZo
 - Create `terraform.tfvars` file, ie.:
 
 ```tf
-account_id              = "123456789012"
-assume_role             = "arn:aws:iam::123456789012:role/Admin"
-azs                     = ["euc1-az1", "euc1-az2", "euc1-az3"]
-cluster_name            = "eks-flux-demo"
-flux_git_repository_url = "https://github.com/dex4er/terraform-eks-flux-demo.git"
-profile                 = "default"
-region                  = "eu-central-1"
+account_id                   = "123456789012"
+azs                          = ["euc1-az1", "euc1-az2", "euc1-az3"]
+cluster_in_private_subnet    = false
+cluster_name                 = "eks-flux-demo"
+flux_git_repository_password = ""
+flux_git_repository_url      = "https://github.com/dex4er/terraform-eks-flux-demo.git"
+flux_git_repository_username = ""
+profile                      = "default"
+region                       = "eu-central-1"
+vpc_cidr                     = "10.251.0.0/16"
 ```
 
 - Run Terraform:
