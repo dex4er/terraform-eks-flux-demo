@@ -61,12 +61,6 @@ module "vpc" {
   }
 }
 
-locals {
-  subnets_public_ids_by_azs  = { for i, v in var.azs : v => module.vpc.public_subnets[i] }
-  subnets_private_ids_by_azs = { for i, v in var.azs : v => module.vpc.private_subnets[i] }
-  subnets_ids_by_azs         = var.cluster_in_private_subnet ? local.subnets_private_ids_by_azs : local.subnets_public_ids_by_azs
-}
-
 output "vpc" {
   description = "Outputs from VPC module"
   value       = module.vpc

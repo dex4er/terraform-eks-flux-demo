@@ -2,7 +2,7 @@
 
 locals {
   ## https://docs.aws.amazon.com/eks/latest/userguide/kubernetes-versions.html
-  cluster_version = "1.27"
+  cluster_version = "1.28"
 
   ## https://docs.aws.amazon.com/eks/latest/APIReference/API_KubernetesNetworkConfigRequest.html
   cluster_service_cidr = "10.100.0.0/24"
@@ -53,6 +53,10 @@ module "eks" {
 
   create_aws_auth_configmap = false
   manage_aws_auth_configmap = false
+
+  eks_managed_node_groups = local.eks_node_groups
+
+  cluster_addons = local.eks_addons
 
   tags = {
     Name    = var.cluster_name

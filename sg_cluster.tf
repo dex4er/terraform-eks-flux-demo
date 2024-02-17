@@ -16,7 +16,7 @@ module "sg_cluster" {
     {
       description              = "Node groups to cluster API"
       rule                     = "https-443-tcp"
-      source_security_group_id = module.sg_node_group.security_group_id
+      source_security_group_id = local.sg_node_group_id
     },
   ]
 
@@ -24,14 +24,14 @@ module "sg_cluster" {
     {
       description              = "Cluster API to node groups"
       rule                     = "https-443-tcp"
-      source_security_group_id = module.sg_node_group.security_group_id
+      source_security_group_id = local.sg_node_group_id
     },
     {
       description              = "Cluster API to node kubelets"
       from_port                = 10250
       to_port                  = 10250
       protocol                 = "tcp"
-      source_security_group_id = module.sg_node_group.security_group_id
+      source_security_group_id = local.sg_node_group_id
     },
   ]
 
