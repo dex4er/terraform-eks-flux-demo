@@ -3,6 +3,12 @@ variable "account_id" {
   description = "AWS Account ID as a string with leading zeros"
 }
 
+variable "admin_role_arn" {
+  type        = string
+  description = "IAM role with full privileges to the cluster"
+  default     = null
+}
+
 variable "asdf_dir" {
   type        = string
   description = "Common asdf directory."
