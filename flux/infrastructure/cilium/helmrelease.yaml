@@ -25,7 +25,8 @@ spec:
     k8sServiceHost: ${cluster_endpoint_host}
     k8sServicePort: "443"
     ingressController:
-      enabled: false
+      enabled: true
+      default: true
     ipam:
       operator:
         clusterPoolIPv4PodCIDRList:
