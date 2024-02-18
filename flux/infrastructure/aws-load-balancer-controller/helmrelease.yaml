@@ -26,7 +26,7 @@ spec:
   upgrade:
     crds: CreateReplace
   values:
-    ## https://github.com/kubernetes-sigs/aws-load-balancer-controller/blob/main/helm/aws-load-balancer-controller/values.yaml
+    ## https://github.com/kubernetes-sigs/aws-load  -balancer-controller/blob/main/helm/aws-load-balancer-controller/values.yaml
 
     serviceAccount:
       annotations:
@@ -45,3 +45,5 @@ spec:
     defaultTags:
       kubernetes.io/cluster/${cluster_name}: owned
       ManagedBy: AWS Load Balancer Controller
+
+    hostNetwork: true
