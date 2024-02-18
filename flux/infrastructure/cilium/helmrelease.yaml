@@ -22,6 +22,8 @@ spec:
       reconcileStrategy: ChartVersion
   values:
     ## https://github.com/cilium/cilium/blob/main/install/kubernetes/cilium/values.yaml
+    k8sServiceHost: ${cluster_endpoint_host}
+    k8sServicePort: "443"
     ingressController:
       enabled: false
     ipam:

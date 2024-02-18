@@ -11,6 +11,7 @@ locals {
     ], [for i, v in var.azs :
     "azs_name_${i}=${data.aws_availability_zones.this[i].names[0]}"
     ], [
+    "cluster_endpoint_host=${trimprefix(module.eks.cluster_endpoint, "https://")}",
     "cluster_name=${var.cluster_name}",
     "flux_git_repository_url=${var.flux_git_repository_url}",
     "region=${var.region}",
