@@ -19,6 +19,13 @@ module "sg_node_group" {
       source_security_group_id = module.sg_cluster.security_group_id
     },
     {
+      description              = "Cluster API to aws-load-balancer-controller"
+      from_port                = 9443
+      to_port                  = 9443
+      protocol                 = "tcp"
+      source_security_group_id = module.sg_cluster.security_group_id
+    },
+    {
       description              = "Cluster API to node kubelets"
       from_port                = 10250
       to_port                  = 10250
@@ -48,6 +55,16 @@ module "sg_node_group" {
       from_port   = 0
       to_port     = 0
       protocol    = "-1"
+    },
+  ]
+
+  ingress_with_cidr_blocks = [
+    {
+      description = "VPC to node ports"
+      from_port   = 30000
+      to_port     = 32767
+      protocol    = "tcp"
+      cidr_blocks = var.vpc_cidr
     },
   ]
 
