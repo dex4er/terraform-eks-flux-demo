@@ -27,6 +27,13 @@ module "sg_cluster" {
       source_security_group_id = local.sg_node_group_id
     },
     {
+      description              = "Cluster API to node aws-load-balancer-controller"
+      from_port                = 9443
+      to_port                  = 9443
+      protocol                 = "tcp"
+      source_security_group_id = local.sg_node_group_id
+    },
+    {
       description              = "Cluster API to node kubelets"
       from_port                = 10250
       to_port                  = 10250
