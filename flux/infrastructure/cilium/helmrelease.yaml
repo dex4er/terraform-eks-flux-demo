@@ -22,8 +22,9 @@ spec:
       reconcileStrategy: ChartVersion
   values:
     ## https://github.com/cilium/cilium/blob/main/install/kubernetes/cilium/values.yaml
-    k8sServiceHost: ${cluster_endpoint_host}
-    k8sServicePort: "443"
+    egressMasqueradeInterfaces: eth0
+    envoy:
+      enabled: true
     ingressController:
       enabled: true
       default: true
@@ -31,4 +32,6 @@ spec:
       operator:
         clusterPoolIPv4PodCIDRList:
           - 10.252.0.0/16
+    k8sServiceHost: ${cluster_endpoint_host}
+    k8sServicePort: "443"
     kubeProxyReplacement: "true"
