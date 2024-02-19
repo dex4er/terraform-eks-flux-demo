@@ -30,6 +30,7 @@ spec:
       enabled: true
       annotations:
         kubernetes.io/ingress.class: cilium
+        ingress.cilium.io/loadbalancer-mode: shared
       hosts:
         - paths:
             - path: /

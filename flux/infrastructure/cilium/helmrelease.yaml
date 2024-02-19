@@ -31,7 +31,8 @@ spec:
       loadbalancerMode: shared
       service:
         annotations:
-          alb.ingress.kubernetes.io/scheme: internet-facing
+          service.beta.kubernetes.io/aws-load-balancer-scheme: internet-facing
+        loadBalancerClass: service.k8s.aws/nlb
     ipam:
       operator:
         clusterPoolIPv4PodCIDRList:
