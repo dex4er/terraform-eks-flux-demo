@@ -28,6 +28,10 @@ spec:
     ingressController:
       enabled: true
       default: true
+      loadbalancerMode: shared
+      service:
+        annotations:
+          alb.ingress.kubernetes.io/scheme: internet-facing
     ipam:
       operator:
         clusterPoolIPv4PodCIDRList:
