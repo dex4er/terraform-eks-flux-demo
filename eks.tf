@@ -32,10 +32,11 @@ module "eks" {
   cluster_endpoint_private_access = true
   cluster_endpoint_public_access  = true
 
-  create_cluster_security_group              = false
-  create_node_security_group                 = false
   create_cluster_primary_security_group_tags = false
+  create_cluster_security_group              = false
   cluster_security_group_id                  = module.sg_cluster.security_group_id
+  create_node_security_group                 = false
+  node_security_group_id                     = module.sg_node_group.security_group_id
 
   create_iam_role = false
   iam_role_arn    = module.iam_role_cluster.iam_role_arn

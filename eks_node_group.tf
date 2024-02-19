@@ -9,6 +9,7 @@ locals {
     iam_role_arn    = module.iam_role_node_group.iam_role_arn
   }
 
+  ## https://github.com/terraform-aws-modules/terraform-aws-eks/tree/master/modules/eks-managed-node-group
   eks_node_groups = {
     default = {
       create = true
