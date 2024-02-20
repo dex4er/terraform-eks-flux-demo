@@ -37,9 +37,11 @@ spec:
       enabled: true
       default: true
       loadbalancerMode: shared
+      enableProxyProtocol: true
       service:
         annotations:
           service.beta.kubernetes.io/aws-load-balancer-scheme: internet-facing
+          service.beta.kubernetes.io/aws-load-balancer-proxy-protocol: "*"
         loadBalancerClass: service.k8s.aws/nlb
     ipam:
       operator:
