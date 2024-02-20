@@ -25,6 +25,8 @@ spec:
     egressMasqueradeInterfaces: eth0
     envoy:
       enabled: true
+    externalIPs:
+      enabled: true
     hubble:
       enabled: true
       relay:
