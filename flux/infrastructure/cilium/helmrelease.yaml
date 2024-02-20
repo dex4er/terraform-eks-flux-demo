@@ -25,6 +25,14 @@ spec:
     egressMasqueradeInterfaces: eth0
     envoy:
       enabled: true
+    hubble:
+      enabled: true
+      relay:
+        enabled: true
+      ui:
+        enabled: true
+        stadalone:
+          enabled: true
     ingressController:
       enabled: true
       default: true
