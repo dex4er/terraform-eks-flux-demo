@@ -23,6 +23,8 @@ spec:
   values:
     ## https://github.com/stefanprodan/podinfo/blob/master/charts/podinfo/values.yaml
 
+    logLevel: debug
+
     hpa:
       enabled: false
 
