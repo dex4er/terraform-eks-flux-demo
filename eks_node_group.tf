@@ -2,11 +2,11 @@
 
 locals {
   eks_managed_node_group_defaults = {
-    attach_cluster_primary_security_group = true
-    iam_role_attach_cni_policy            = true
+    create_iam_role            = false
+    iam_role_arn               = module.iam_role_node_group.iam_role_arn
+    iam_role_attach_cni_policy = false
 
-    create_iam_role = false
-    iam_role_arn    = module.iam_role_node_group.iam_role_arn
+    attach_cluster_primary_security_group = true
   }
 
   ## https://github.com/terraform-aws-modules/terraform-aws-eks/tree/master/modules/eks-managed-node-group
