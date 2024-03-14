@@ -159,6 +159,10 @@
           "format": "integer",
           "type": "string"
         },
+        "POD_MTU": {
+          "format": "integer",
+          "type": "string"
+        },
         "POD_SECURITY_GROUP_ENFORCING_MODE": {
           "type": "string"
         },

@@ -2,7 +2,7 @@
 
 locals {
   ## https://docs.aws.amazon.com/eks/latest/userguide/kubernetes-versions.html
-  cluster_version = "1.28"
+  cluster_version = "1.29"
 
   ## https://docs.aws.amazon.com/eks/latest/APIReference/API_KubernetesNetworkConfigRequest.html
   cluster_service_cidr = "10.100.0.0/24"
