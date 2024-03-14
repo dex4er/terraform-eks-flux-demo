@@ -22,6 +22,16 @@
           "enum": ["iptables", "ipvs"],
           "type": "string"
         },
+        "podAnnotations": {
+          "properties": {},
+          "title": "The podAnnotations Schema",
+          "type": "object"
+        },
+        "podLabels": {
+          "properties": {},
+          "title": "The podLabels Schema",
+          "type": "object"
+        },
         "resources": {
           "$ref": "#/definitions/Resources"
         }
