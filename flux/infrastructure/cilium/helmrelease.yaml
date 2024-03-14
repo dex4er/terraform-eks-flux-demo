@@ -49,6 +49,7 @@ spec:
       operator:
         clusterPoolIPv4PodCIDRList:
           - 10.252.0.0/16
+        clusterPoolIPv4MaskSize: 28
     k8sServiceHost: ${cluster_endpoint_host}
     k8sServicePort: "443"
     kubeProxyReplacement: "true"
