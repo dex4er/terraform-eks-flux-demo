@@ -130,6 +130,10 @@
           "format": "boolean",
           "type": "string"
         },
+        "ENABLE_SUBNET_DISCOVERY": {
+          "format": "boolean",
+          "type": "string"
+        },
         "ENABLE_V4_EGRESS": {
           "format": "boolean",
           "type": "string"
@@ -157,6 +161,10 @@
         },
         "MINIMUM_IP_TARGET": {
           "format": "integer",
+          "type": "string"
+        },
+        "NETWORK_POLICY_ENFORCING_MODE": {
+          "enum": ["standard", "strict"],
           "type": "string"
         },
         "POD_MTU": {
