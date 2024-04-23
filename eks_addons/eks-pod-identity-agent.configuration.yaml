@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=./eks-pod-identity-agent.schema.json
 
-## $ aws eks describe-addon-configuration --addon-name eks-pod-identity-agent --addon-version v1.0.0-eksbuild.1 | jq -r .configurationSchema | jq . > eks_addons/eks-pod-identity-agent.schema.json
+## $ aws eks describe-addon-configuration --addon-name eks-pod-identity-agent --addon-version v1.2.0-eksbuild.1 | jq -r .configurationSchema | jq . > eks_addons/eks-pod-identity-agent.schema.json
 
 resources:
   limits:

@@ -26,8 +26,9 @@ locals {
 module "iam_role_eks_pod_identity" {
   for_each = { for k, v in local.eks_pod_identity : k => v if lookup(v, "policy", null) != null || lookup(v, "additional_policy_arns", null) != null }
 
-  ## https://github.com/clowdhaus/terraform-aws-eks-pod-identity
-  source = "github.com/clowdhaus/terraform-aws-eks-pod-identity"
+  ## https://github.com/terraform-aws-modules/terraform-aws-eks-pod-identity
+  source  = "terraform-aws-modules/eks-pod-identity/aws"
+  version = "~> 1.2"
 
   use_name_prefix = false
   name            = "${var.cluster_name}-pod-${each.key}"
