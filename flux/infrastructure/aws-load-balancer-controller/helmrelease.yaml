@@ -28,10 +28,6 @@ spec:
   values:
     ## https://github.com/kubernetes-sigs/aws-load-balancer-controller/blob/main/helm/aws-load-balancer-controller/values.yaml
 
-    serviceAccount:
-      annotations:
-        eks.amazonaws.com/role-arn: arn:aws:iam::${account_id}:role/${cluster_name}-irsa-aws-load-balancer-controller
-
     enableCertManager: false
 
     ## To see which policies are available for use, you can use the aws command line tool:
