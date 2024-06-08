@@ -257,6 +257,9 @@
           "format": "integer",
           "type": "string"
         },
+        "networkPolicyAgentLogFileLocation": {
+          "type": "string"
+        },
         "resources": {
           "$ref": "#/definitions/Resources"
         }

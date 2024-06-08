@@ -52,6 +52,32 @@
           "description": "Affinity of the coredns pods",
           "type": ["object", "null"]
         },
+        "autoScaling": {
+          "additionalProperties": false,
+          "description": "autoScaling configurations",
+          "properties": {
+            "enabled": {
+              "default": false,
+              "description": "the option to enable eks managed autoscaling for coredns",
+              "type": "boolean"
+            },
+            "maxReplicas": {
+              "description": "the max value that autoscaler can scale up the coredns replicas to",
+              "maximum": 1000,
+              "minimum": 2,
+              "type": "integer"
+            },
+            "minReplicas": {
+              "default": 2,
+              "description": "the min value that autoscaler can scale down the coredns replicas to",
+              "maximum": 1000,
+              "minimum": 2,
+              "type": "integer"
+            }
+          },
+          "required": ["enabled"],
+          "type": "object"
+        },
         "computeType": {
           "type": "string"
         },
@@ -72,35 +98,37 @@
         },
         "podDisruptionBudget": {
           "description": "podDisruptionBudget configurations",
-          "enabled": {
-            "default": true,
-            "description": "the option to enable managed PDB",
-            "type": "boolean"
-          },
-          "maxUnavailable": {
-            "anyOf": [
-              {
-                "pattern": ".*%$",
-                "type": "string"
-              },
-              {
-                "type": "integer"
-              }
-            ],
-            "default": 1,
-            "description": "minAvailable value for managed PDB, can be either string or integer; if it's string, should end with %"
-          },
-          "minAvailable": {
-            "anyOf": [
-              {
-                "pattern": ".*%$",
-                "type": "string"
-              },
-              {
-                "type": "integer"
-              }
-            ],
-            "description": "maxUnavailable value for managed PDB, can be either string or integer; if it's string, should end with %"
+          "properties": {
+            "enabled": {
+              "default": true,
+              "description": "the option to enable managed PDB",
+              "type": "boolean"
+            },
+            "maxUnavailable": {
+              "anyOf": [
+                {
+                  "pattern": ".*%$",
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ],
+              "default": 1,
+              "description": "maxUnavailable value for managed PDB, can be either string or integer; if it's string, should end with %"
+            },
+            "minAvailable": {
+              "anyOf": [
+                {
+                  "pattern": ".*%$",
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ],
+              "description": "minAvailable value for managed PDB, can be either string or integer; if it's string, should end with %"
+            }
           },
           "type": "object"
         },
