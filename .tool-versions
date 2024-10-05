@@ -4,4 +4,4 @@ flux2                2.3.0
 go-containerregistry 0.19.1
 kubectl              1.30.0
 kustomize            5.4.2
-opentofu             1.7.2
+opentofu             1.8.3
