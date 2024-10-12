@@ -8,10 +8,9 @@ resource "shell_script" "vpc_cleanup" {
   }
 
   environment = {
-    asdf_dir = var.asdf_dir
-    profile  = var.profile
-    region   = var.region
-    vpc_id   = module.vpc.vpc_id
+    profile = var.profile
+    region  = var.region
+    vpc_id  = module.vpc.vpc_id
   }
 
   working_directory = path.module

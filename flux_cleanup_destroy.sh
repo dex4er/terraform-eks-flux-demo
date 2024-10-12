@@ -1,6 +1,5 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
-asdf_tools="awscli flux2 kubectl"
 kustomization_to_remove_later="flux-system|infrastructure"
 . shell_common.sh
 
@@ -11,9 +10,11 @@ kubectl get gitrepository flux-system -n flux-system \
   --kubeconfig <(echo "${kubeconfig}") \
   --context ${cluster_context} |
   while read -r name _rest; do
-    flux suspend source git ${name} \
+    kubectl patch gitrepository ${name} -n flux-system \
       --kubeconfig <(echo "${kubeconfig}") \
-      --context ${cluster_context}
+      --context ${cluster_context} \
+      --type='merge' \
+      --patch '{"spec":{"suspend":true}}'
   done
 
 kubectl get kustomization flux-system -n flux-system \
@@ -21,9 +22,11 @@ kubectl get kustomization flux-system -n flux-system \
   --kubeconfig <(echo "${kubeconfig}") \
   --context ${cluster_context} |
   while read -r name _rest; do
-    flux suspend ks ${name} \
+    kubectl patch kustomization ${name} -n flux-system \
       --kubeconfig <(echo "${kubeconfig}") \
-      --context ${cluster_context}
+      --context ${cluster_context} \
+      --type='merge' \
+      --patch '{"spec":{"suspend":true}}'
   done
 
 kubectl get kustomization -n flux-system \
@@ -32,7 +35,10 @@ kubectl get kustomization -n flux-system \
   --context ${cluster_context} |
   grep -v -E "^(${kustomization_to_remove_later})" |
   while read -r name _rest; do
-    kubectl delete kustomization ${name} -n flux-system --ignore-not-found --kubeconfig <(echo "${kubeconfig}") --context ${cluster_context}
+    kubectl delete kustomization ${name} -n flux-system \
+      --ignore-not-found \
+      --kubeconfig <(echo "${kubeconfig}") \
+      --context ${cluster_context}
   done
 
 sleep 180
@@ -50,12 +56,3 @@ kubectl get kustomization -n flux-system \
   done
 
 sleep 60
-
-kubectl delete secret -n flux-system flux-system \
-  --ignore-not-found \
-  --kubeconfig <(echo "${kubeconfig}") \
-  --context ${cluster_context}
-
-flux uninstall --keep-namespace=true --silent \
-  --kubeconfig <(echo "${kubeconfig}") \
-  --context ${cluster_context}

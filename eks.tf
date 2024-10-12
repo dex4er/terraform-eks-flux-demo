@@ -67,6 +67,11 @@ module "eks" {
   }
 }
 
+locals {
+  cluster_endpoint       = module.eks.cluster_endpoint
+  cluster_ca_certificate = base64decode(module.eks.cluster_certificate_authority_data)
+}
+
 output "eks" {
   description = "Outputs from EKS module"
   value       = module.eks

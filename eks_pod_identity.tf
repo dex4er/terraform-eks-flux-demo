@@ -1,4 +1,3 @@
-
 ## IAM role for cluster nodes shared between all node groups
 
 locals {

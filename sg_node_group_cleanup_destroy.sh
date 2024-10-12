@@ -1,6 +1,5 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
-asdf_tools="awscli"
 . shell_common.sh
 
 ${aws} ec2 describe-network-interfaces \

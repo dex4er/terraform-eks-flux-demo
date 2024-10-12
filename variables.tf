@@ -9,12 +9,6 @@ variable "admin_role_arn" {
   default     = null
 }
 
-variable "asdf_dir" {
-  type        = string
-  description = "Common asdf directory."
-  default     = ".asdf"
-}
-
 variable "assume_role" {
   type        = string
   description = "IAM role to assume by Terraform. If null then current user is used as a cluster creator."

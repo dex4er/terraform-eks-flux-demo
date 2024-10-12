@@ -8,7 +8,6 @@ resource "shell_script" "sg_node_group_cleanup" {
   }
 
   environment = {
-    asdf_dir          = var.asdf_dir
     profile           = var.profile
     region            = var.region
     security_group_id = module.sg_node_group.security_group_id
