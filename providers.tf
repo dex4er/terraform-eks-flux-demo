@@ -3,9 +3,13 @@ provider "aws" {
   profile             = var.profile
   region              = var.region
 
-  assume_role {
-    role_arn     = var.assume_role
-    session_name = "Terraform"
+  dynamic "assume_role" {
+    for_each = toset(var.assume_role != null ? [var.assume_role] : [])
+
+    content {
+      role_arn     = assume_role.key
+      session_name = "Terraform"
+    }
   }
 
   default_tags {
@@ -23,9 +27,13 @@ provider "aws" {
   profile             = var.profile
   region              = "us-east-1"
 
-  assume_role {
-    role_arn     = var.assume_role
-    session_name = "Terraform"
+  dynamic "assume_role" {
+    for_each = toset(var.assume_role != null ? [var.assume_role] : [])
+
+    content {
+      role_arn     = assume_role.key
+      session_name = "Terraform"
+    }
   }
 
   default_tags {
