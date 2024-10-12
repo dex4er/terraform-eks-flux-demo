@@ -15,13 +15,15 @@ spec:
     spec:
       interval: 1m
       chart: podinfo
-      version: 6.4.1 ## curl -qsS https://stefanprodan.github.io/podinfo/index.yaml | yq .entries.podinfo.0.version
+      version: 6.7.1 ## $ curl -qsS https://stefanprodan.github.io/podinfo/index.yaml | yq .entries.podinfo.0.version
       sourceRef:
         kind: HelmRepository
         name: podinfo
       reconcileStrategy: ChartVersion
   values:
     ## https://github.com/stefanprodan/podinfo/blob/master/charts/podinfo/values.yaml
+
+    logLevel: debug
 
     hpa:
       enabled: false

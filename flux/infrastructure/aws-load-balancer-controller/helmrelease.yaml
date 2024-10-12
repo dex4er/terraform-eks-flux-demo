@@ -16,7 +16,7 @@ spec:
     spec:
       interval: 1m
       chart: aws-load-balancer-controller
-      version: 1.6.0 ## curl -qsS https://aws.github.io/eks-charts/index.yaml | yq .entries.aws-load-balancer-controller.0.version
+      version: 1.9.1 ## $ curl -qsS https://aws.github.io/eks-charts/index.yaml | yq .entries.aws-load-balancer-controller.0.version
       sourceRef:
         kind: HelmRepository
         name: eks-charts
