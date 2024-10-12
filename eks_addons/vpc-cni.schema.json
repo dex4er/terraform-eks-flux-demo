@@ -3,7 +3,10 @@
   "$schema": "http://json-schema.org/draft-06/schema#",
   "definitions": {
     "Affinity": {
-      "type": ["object", "null"]
+      "type": [
+        "object",
+        "null"
+      ]
     },
     "EniConfig": {
       "additionalProperties": false,
@@ -28,14 +31,20 @@
                 "type": "array"
               }
             },
-            "required": ["id"],
+            "required": [
+              "id"
+            ],
             "type": "object"
           },
           "minProperties": 1,
           "type": "object"
         }
       },
-      "required": ["create", "region", "subnets"],
+      "required": [
+        "create",
+        "region",
+        "subnets"
+      ],
       "type": "object"
     },
     "Env": {
@@ -164,7 +173,10 @@
           "type": "string"
         },
         "NETWORK_POLICY_ENFORCING_MODE": {
-          "enum": ["standard", "strict"],
+          "enum": [
+            "standard",
+            "strict"
+          ],
           "type": "string"
         },
         "POD_MTU": {
@@ -314,6 +326,9 @@
         "env": {
           "$ref": "#/definitions/Env"
         },
+        "extraEnv": {
+          "type": "array"
+        },
         "init": {
           "$ref": "#/definitions/Init"
         },
@@ -329,18 +344,32 @@
         "podAnnotations": {
           "additionalProperties": {
             "not": {
-              "type": ["object", "array", "null"]
+              "type": [
+                "object",
+                "array",
+                "null"
+              ]
             }
           },
-          "type": ["object", "null"]
+          "type": [
+            "object",
+            "null"
+          ]
         },
         "podLabels": {
           "additionalProperties": {
             "not": {
-              "type": ["object", "array", "null"]
+              "type": [
+                "object",
+                "array",
+                "null"
+              ]
             }
           },
-          "type": ["object", "null"]
+          "type": [
+            "object",
+            "null"
+          ]
         },
         "readinessProbeTimeoutSeconds": {
           "type": "integer"

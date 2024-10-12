@@ -24,9 +24,14 @@ locals {
       azs = local.azs_ids
 
       instance_types = [
-        ## 2vCPU, 4GiB RAM
-        "t3.medium",
-        "t3a.medium",
+        ## 2vcpu, 4GiB
+        "t4g.medium",
+        "c6g.large",
+        "c6gd.large",
+        "c6gn.large",
+        "c7g.large",
+        "c7gd.large",
+        "c8g.large",
       ]
 
       capacity_type = "SPOT"
@@ -60,20 +65,20 @@ locals {
 
       platform = "bottlerocket"
 
-      ami_type = "BOTTLEROCKET_x86_64"
+      ami_type = "BOTTLEROCKET_ARM_64"
 
       # ami_architecture = "x86_64"
       # ami_owner        = "amazon"
 
       ## https://github.com/awslabs/amazon-eks-ami/releases
-      # ami_name = "amazon-eks-node-1.26-v20230825"
+      # ami_name = "amazon-eks-arm64-node-1.31-v20240928"
 
       ## https://ubuntu.com/server/docs/cloud-images/amazon-ec2
-      ## $ aws --region eu-central-1 ec2 describe-images --owners 099720109477 --filters "Name=name,Values=ubuntu-eks/k8s_1.26/images/hvm-ssd/ubuntu-focal-20.04-amd64-server-*" --query 'reverse(sort_by(Images, &Name))[0].Name' --output text | cat
-      # ami_name = "ubuntu-eks/k8s_1.26/images/hvm-ssd/ubuntu-focal-20.04-amd64-server-20231007"
+      ## $ aws --region eu-central-1 ec2 describe-images --owners 099720109477 --filters "Name=name,Values=ubuntu-eks/k8s_1.31/images/hvm-ssd/ubuntu-jammy-22.04-arm64-server-*" --query 'reverse(sort_by(Images, &Name))[0].Name' --output text | cat
+      # ami_name = "ubuntu-eks/k8s_1.31/images/hvm-ssd/ubuntu-jammy-22.04-arm64-server-20240930"
 
-      ## $ aws --region eu-central-1 ec2 describe-images --owners amazon --filters "Name=name,Values=bottlerocket-aws-k8s-1.26-x86_64-*" --query 'reverse(sort_by(Images, &Name))[0].Name' --output text | cat
-      # ami_name = "bottlerocket-aws-k8s-1.26-x86_64-v1.15.1-264e294c"
+      ## $ aws --region eu-central-1 ec2 describe-images --owners amazon --filters "Name=name,Values=bottlerocket-aws-k8s-1.31-x86_64-*" --query 'reverse(sort_by(Images, &Name))[0].Name' --output text | cat
+      # ami_name = "bottlerocket-aws-k8s-1.31-x86_64-v1.15.1-314e294c"
 
       bootstrap_extra_args = <<-EOT
         max-pods = 18

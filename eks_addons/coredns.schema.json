@@ -16,12 +16,17 @@
                         {
                           "key": "kubernetes.io/os",
                           "operator": "In",
-                          "values": ["linux"]
+                          "values": [
+                            "linux"
+                          ]
                         },
                         {
                           "key": "kubernetes.io/arch",
                           "operator": "In",
-                          "values": ["amd64", "arm64"]
+                          "values": [
+                            "amd64",
+                            "arm64"
+                          ]
                         }
                       ]
                     }
@@ -37,7 +42,9 @@
                           {
                             "key": "k8s-app",
                             "operator": "In",
-                            "values": ["kube-dns"]
+                            "values": [
+                              "kube-dns"
+                            ]
                           }
                         ]
                       },
@@ -50,7 +57,10 @@
             }
           },
           "description": "Affinity of the coredns pods",
-          "type": ["object", "null"]
+          "type": [
+            "object",
+            "null"
+          ]
         },
         "autoScaling": {
           "additionalProperties": false,
@@ -75,7 +85,9 @@
               "type": "integer"
             }
           },
-          "required": ["enabled"],
+          "required": [
+            "enabled"
+          ],
           "type": "object"
         },
         "computeType": {

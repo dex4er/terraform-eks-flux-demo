@@ -19,7 +19,11 @@
           "$ref": "#/definitions/Ipvs"
         },
         "mode": {
-          "enum": ["iptables", "ipvs"],
+          "enum": [
+            "iptables",
+            "ipvs",
+            "nftables"
+          ],
           "type": "string"
         },
         "podAnnotations": {

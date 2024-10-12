@@ -4,13 +4,19 @@
   "definitions": {
     "Affinity": {
       "title": "Affinity Schema",
-      "type": ["object", "null"]
+      "type": [
+        "object",
+        "null"
+      ]
     },
     "Agent": {
       "additionalProperties": false,
       "properties": {
         "additionalArgs": {
-          "type": ["object", "null"]
+          "type": [
+            "object",
+            "null"
+          ]
         }
       },
       "title": "Agent Schema",
@@ -66,7 +72,10 @@
       "additionalProperties": false,
       "properties": {
         "pullPolicy": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         }
       },
       "title": "Image Schema",
@@ -84,7 +93,10 @@
       "additionalProperties": false,
       "properties": {
         "additionalArgs": {
-          "type": ["object", "null"]
+          "type": [
+            "object",
+            "null"
+          ]
         },
         "create": {
           "type": "boolean"
@@ -108,11 +120,17 @@
     },
     "NodeSelector": {
       "title": "NodeSelector Schema",
-      "type": ["object", "null"]
+      "type": [
+        "object",
+        "null"
+      ]
     },
     "PodAnnotations": {
       "title": "PodAnnotations Schema",
-      "type": ["object", "null"]
+      "type": [
+        "object",
+        "null"
+      ]
     },
     "Resources": {
       "additionalProperties": false,
@@ -137,7 +155,10 @@
     },
     "UpdateStrategy": {
       "title": "UpdateStrategy Schema",
-      "type": ["object", "null"]
+      "type": [
+        "object",
+        "null"
+      ]
     }
   },
   "description": "EKS Pod Identity Agent"
