@@ -16,7 +16,7 @@ instance:
   sync:
     kind: GitRepository
     # url: ${var.flux_git_repository_url}
-    ref: refs/heads/main
+    ref: refs/heads/cilium
     path: flux
     pullSecret: flux-system
 

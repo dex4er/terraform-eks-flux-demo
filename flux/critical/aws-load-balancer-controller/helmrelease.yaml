@@ -31,8 +31,7 @@ spec:
     tolerations:
       - effect: NoSchedule
         key: CriticalAddonsOnly
-        operator: Equal
-        value: "true"
+        operator: Exists
 
     enableCertManager: false
 

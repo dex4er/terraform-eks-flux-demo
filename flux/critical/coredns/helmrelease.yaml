@@ -1,0 +1,82 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: coredns
+  namespace: flux-system
+spec:
+  interval: 1m
+  timeout: 2m
+  maxHistory: 2
+  driftDetection:
+    mode: enabled
+  releaseName: coredns
+  targetNamespace: kube-system
+  storageNamespace: kube-system
+  serviceAccountName: helm-controller
+  chart:
+    spec:
+      interval: 1m
+      chart: coredns
+      version: 1.36.1 ## $ curl -qsS https://coredns.github.io/helm/index.yaml | yq .entries.coredns.0.version
+      sourceRef:
+        kind: HelmRepository
+        name: coredns
+      reconcileStrategy: ChartVersion
+  values:
+    ## https://github.com/coredns/helm/blob/master/charts/coredns/values.yaml
+
+    image:
+      repository: 602401143452.dkr.ecr.eu-central-1.amazonaws.com/eks/coredns
+      ## https://docs.aws.amazon.com/eks/latest/userguide/managing-coredns.html
+      tag: v1.11.3-eksbuild.2
+
+    replicaCount: 2
+
+    resources:
+      limits:
+        cpu: 666
+        memory: 128Mi
+      requests:
+        cpu: 100m
+        memory: 128Mi
+
+    priorityClassName: system-cluster-critical
+
+    nodeSelector:
+      nodegroup/critical: "true"
+
+    tolerations:
+      - effect: NoSchedule
+        key: CriticalAddonsOnly
+        operator: Exists
+
+  postRenderers:
+    - kustomize:
+        patches:
+          ## CoreDNS is preinstalled in EKS and selector is immutable
+          - patch: |-
+              apiVersion: apps/v1
+              kind: Deployment
+              metadata:
+                name: coredns
+                namespace: kube-system
+              spec:
+                template:
+                  metadata:
+                    labels:
+                      app.kubernetes.io/instance: null
+                      app.kubernetes.io/name: null
+          - patch: |
+              - op: replace
+                path: /spec/selector/matchLabels
+                value:
+                  eks.amazonaws.com/component: coredns
+                  k8s-app: kube-dns
+              - op: replace
+                path: /spec/template/metadata/labels
+                value:
+                  eks.amazonaws.com/component: coredns
+                  k8s-app: kube-dns
+            target:
+              kind: Deployment
+              name: coredns

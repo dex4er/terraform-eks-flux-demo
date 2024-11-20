@@ -1,0 +1,41 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: eks-pod-identity-agent
+  namespace: flux-system
+spec:
+  interval: 1m
+  timeout: 2m
+  maxHistory: 2
+  driftDetection:
+    mode: enabled
+  releaseName: eks-pod-identity-agent
+  targetNamespace: kube-system
+  storageNamespace: kube-system
+  serviceAccountName: helm-controller
+  chart:
+    spec:
+      interval: 1m
+      chart: charts/eks-pod-identity-agent
+      sourceRef:
+        kind: GitRepository
+        name: eks-pod-identity-agent
+      reconcileStrategy: ChartVersion
+  values:
+    ## https://github.com/aws/eks-pod-identity-agent/blob/main/charts/eks-pod-identity-agent/values.yaml
+
+    clusterName: ${cluster_name}
+
+    env:
+      AWS_REGION: ${region}
+
+    image:
+      ## crane ls 602401143452.dkr.ecr.eu-central-1.amazonaws.com/eks/eks-pod-identity-agent | sort -r -V | grep '^[0-9.]*$' | head -n1
+      tag: 0.1.17
+
+    resources:
+      limits:
+        memory: 256Mi
+      requests:
+        cpu: 100m
+        memory: 256Mi

@@ -1,0 +1,11 @@
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: GitRepository
+metadata:
+  name: eks-pod-identity-agent
+  namespace: flux-system
+spec:
+  interval: 1h
+  ref:
+    branch: main
+  timeout: 1m
+  url: https://github.com/aws/eks-pod-identity-agent.git

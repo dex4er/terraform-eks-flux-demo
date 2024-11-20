@@ -58,8 +58,6 @@ module "eks" {
   eks_managed_node_group_defaults = local.eks_managed_node_group_defaults
   eks_managed_node_groups         = local.eks_node_groups
 
-  cluster_addons = local.eks_addons
-
   tags = {
     Name    = var.cluster_name
     Cluster = var.cluster_name
