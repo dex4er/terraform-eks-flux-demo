@@ -1,7 +1,7 @@
-awscli               2.18.5
+awscli               2.21.3
 envsubst             1.4.2
 flux2                2.4.0
 go-containerregistry 0.20.2
-kubectl              1.31.1
+kubectl              1.31.2
 kustomize            5.5.0
-opentofu             1.8.3
+opentofu             1.8.5

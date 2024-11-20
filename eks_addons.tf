@@ -32,7 +32,6 @@ locals {
       addon_version               = "v1.18.5-eksbuild.1"
       resolve_conflicts_on_create = "OVERWRITE"
       resolve_conflicts_on_update = "OVERWRITE"
-      service_account_role_arn    = module.eks_pod_identity_aws_vpc_cni.iam_role_arn
       configuration_values        = jsonencode(yamldecode(file("${path.module}/eks_addons/vpc-cni.configuration.yaml")))
     }
   }

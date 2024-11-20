@@ -47,9 +47,10 @@ resource "kubernetes_config_map_v1_data" "cluster-vars" {
       "azs_name_${i}" => data.aws_availability_zones.this[i].names[0]
     },
     {
-      cluster_name = var.cluster_name
-      region       = var.region
-      vpc_id       = local.vpc_id
+      cluster_endpoint = module.eks.cluster_endpoint
+      cluster_name     = var.cluster_name
+      region           = var.region
+      vpc_id           = local.vpc_id
     }
   )
 
@@ -102,23 +103,11 @@ resource "time_sleep" "wait_for_flux_repo_credentials" {
 resource "helm_release" "flux_operator" {
   name       = "flux-operator"
   namespace  = "flux-system"
-  repository = "oci://ghcr.io/controlplaneio-fluxcd/charts/flux-operator"
+  repository = "oci://ghcr.io/controlplaneio-fluxcd/charts"
   chart      = "flux-operator"
   version    = "0.10.0" ## $ crane ls ghcr.io/controlplaneio-fluxcd/charts/flux-operator | sort -r -V | grep '^[0-9]*\.' | head -n1
 
-  ## https://github.com/controlplaneio-fluxcd/charts/blob/main/charts/flux-operator/values.yaml
-  values = [yamlencode({
-    resources = {
-      requests = {
-        cpu    = 666
-        memory = "128Mi"
-      }
-      limits = {
-        cpu    = "100m"
-        memory = "128Mi"
-      }
-    }
-  })]
+  values = [file("${path.module}/flux_operator.values.yaml")]
 
   depends_on = [
     kubernetes_config_map_v1_data.cluster-vars,
@@ -133,30 +122,12 @@ resource "helm_release" "flux_instance" {
   chart      = "flux-instance"
   version    = "0.10.0" ## $ crane ls ghcr.io/controlplaneio-fluxcd/charts/flux-instance | sort -r -V | grep '^[0-9]*\.' | head -n1
 
-  ## https://github.com/controlplaneio-fluxcd/charts/blob/main/charts/flux-instance/values.yaml
-  values = [yamlencode({
-    instance = {
-      distribution = {
-        version  = "2.4.0"
-        registry = "ghcr.io/fluxcd"
-      }
-      components = [
-        "source-controller",
-        "kustomize-controller",
-        "helm-controller",
-      ]
-      cluster = {
-        type = "aws"
-      }
-      sync = {
-        kind       = "GitRepository"
-        url        = var.flux_git_repository_url
-        ref        = "main"
-        path       = "flux"
-        pullSecret = "flux-system"
-      }
-    }
-  })]
+  values = [file("${path.module}/flux_instance.values.yaml")]
+
+  set {
+    name  = "instance.sync.url"
+    value = var.flux_git_repository_url
+  }
 
   depends_on = [helm_release.flux_operator]
 }

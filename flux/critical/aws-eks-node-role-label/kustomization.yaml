@@ -1,0 +1,22 @@
+## Bash script that adds labels for cluster nodes with the name of the EKS
+## node group and EC2 profile.
+
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: kube-system
+resources:
+  - clusterrole.yaml
+  - clusterrolebinding.yaml
+  - deployment.yaml
+  - poddisruptionbudget.yaml
+  - serviceaccount.yaml
+configMapGenerator:
+  - name: aws-eks-node-role-label-entrypoint
+    files:
+      - files/entrypoint.sh
+generatorOptions:
+  annotations:
+    kustomize.toolkit.fluxcd.io/substitute: disabled
+images:
+  - name: public.ecr.aws/bitnami/kubectl:latest
+    newTag: 1.31.2

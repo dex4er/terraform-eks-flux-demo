@@ -11,27 +11,40 @@ locals {
 
   ## https://github.com/terraform-aws-modules/terraform-aws-eks/tree/master/modules/eks-managed-node-group
   eks_node_groups = {
-    default = {
+    critical = {
       create = true
 
       use_name_prefix                 = true
-      name                            = "${var.cluster_name}-default"
+      name                            = "${var.cluster_name}-critical"
       launch_template_use_name_prefix = true
-      launch_template_name            = "${var.cluster_name}-default"
+      launch_template_name            = "${var.cluster_name}-critical"
 
       # ## Node group only in first AZ
       # azs = [local.azs_ids[0]]
       azs = local.azs_ids
 
       instance_types = [
-        ## 2vcpu, 4GiB
-        "t4g.medium",
-        "c6g.large",
-        "c6gd.large",
-        "c6gn.large",
-        "c7g.large",
-        "c7gd.large",
-        "c8g.large",
+        ## amd64, 2vpcu, 4GiB
+        "c5.large",
+        "c5a.large",
+        "c5ad.large",
+        "c5d.large",
+        "c6a.large",
+        "c6i.large",
+        "c6id.large",
+        "c6in.large",
+        "c7a.large",
+        "c7i.large",
+        "t3.medium",
+        "t3a.medium",
+        # ## arm64, 2vcpu, 4GiB
+        # "t4g.medium",
+        # "c6g.large",
+        # "c6gd.large",
+        # "c6gn.large",
+        # "c7g.large",
+        # "c7gd.large",
+        # "c8g.large",
       ]
 
       capacity_type = "SPOT"
@@ -65,7 +78,9 @@ locals {
 
       platform = "bottlerocket"
 
-      ami_type = "BOTTLEROCKET_ARM_64"
+      ami_type = "BOTTLEROCKET_x86_64"
+
+      # ami_type = "BOTTLEROCKET_ARM_64"
 
       # ami_architecture = "x86_64"
       # ami_owner        = "amazon"
@@ -82,9 +97,12 @@ locals {
 
       bootstrap_extra_args = <<-EOT
         max-pods = 18
-        registry-qps = 0
+        registry-qps = 75
+        registry-burst = 150
         [settings.host-containers.admin]
         enabled = true
+        [settings.kernel]
+        lockdown = "integrity"
       EOT
 
       # pre_bootstrap_user_data = <<-EOT
@@ -93,15 +111,29 @@ locals {
       # post_bootstrap_user_data = <<-EOT
       # EOT
 
+      metadata_options = {
+        http_endpoint               = "enabled"
+        http_protocol_ipv6          = "disabled"
+        http_tokens                 = "required"
+        http_put_response_hop_limit = 1
+      }
+
       min_size     = 3
       max_size     = 4
       desired_size = 3
 
-      labels = {}
-      taints = []
+      labels = {
+        "nodegroup/critical" = "true"
+      }
+
+      taints = [{
+        key    = "CriticalAddonsOnly"
+        value  = "true"
+        effect = "NO_SCHEDULE"
+      }]
 
       tags = {
-        Nodegroup = "default"
+        Nodegroup = "critical"
       }
     }
   }

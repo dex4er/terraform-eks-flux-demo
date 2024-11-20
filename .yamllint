@@ -1,0 +1,13 @@
+rules:
+  quoted-strings:
+    required: only-when-needed
+    extra-allowed:
+      - "{|}"
+      - ^\d+$
+  empty-values:
+    forbid-in-block-mappings: true
+    forbid-in-flow-mappings: true
+  key-duplicates: {}
+  octal-values:
+    forbid-explicit-octal: false
+    forbid-implicit-octal: true

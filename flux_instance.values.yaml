@@ -1,0 +1,107 @@
+## https://github.com/controlplaneio-fluxcd/charts/blob/main/charts/flux-instance/values.yaml
+
+instance:
+  distribution:
+    version: 2.4.0 ## https://github.com/fluxcd/flux2/releases
+    registry: ghcr.io/fluxcd
+
+  components:
+    - source-controller
+    - kustomize-controller
+    - helm-controller
+
+  cluster:
+    type: aws
+
+  sync:
+    kind: GitRepository
+    # url: ${var.flux_git_repository_url}
+    ref: refs/heads/main
+    path: flux
+    pullSecret: flux-system
+
+  kustomize:
+    patches:
+      ## Node selector
+      - patch: |
+          - op: replace
+            path: /spec/template/spec/nodeSelector
+            value:
+              nodegroup/critical: "true"
+          - op: add
+            path: /spec/template/spec/tolerations
+            value:
+              - effect: NoSchedule
+                key: CriticalAddonsOnly
+                operator: Exists
+        target:
+          kind: Deployment
+      ## Resources
+      - patch: |
+          - op: replace
+            path: /spec/template/spec/containers/0/resources
+            value:
+              limits:
+                memory: 1500Mi
+              requests:
+                cpu: 100m
+                memory: 1500Mi
+        target:
+          kind: Deployment
+          name: helm-controller
+      - patch: |
+          - op: replace
+            path: /spec/template/spec/containers/0/resources
+            value:
+              limits:
+                memory: 256Mi
+              requests:
+                cpu: 100m
+                memory: 256Mi
+        target:
+          kind: Deployment
+          name: kustomize-controller
+      - patch: |
+          - op: replace
+            path: /spec/template/spec/containers/0/resources
+            value:
+              limits:
+                memory: 256Mi
+              requests:
+                cpu: 100m
+                memory: 256Mi
+        target:
+          kind: Deployment
+          name: source-controller
+      ## Do not prune CRDs
+      - patch: |
+          - op: add
+            path: /metadata/annotations/kustomize.toolkit.fluxcd.io~1prune
+            value: disabled
+        target:
+          kind: CustomResourceDefinition
+      ## Do not prune namespace
+      - patch: |
+          - op: add
+            path: /metadata/annotations/kustomize.toolkit.fluxcd.io~1prune
+            value: disabled
+        target:
+          kind: Namespace
+      ## Tweak main Kustomization
+      - patch: |
+          - op: replace
+            path: /spec/interval
+            value: 1m
+          - op: replace
+            path: /spec/prune
+            value: false
+          - op: add
+            path: /spec/postBuild
+            value:
+              substituteFrom:
+              - kind: ConfigMap
+                name: cluster-vars
+                optional: false
+        target:
+          kind: Kustomization
+          name: flux-system
