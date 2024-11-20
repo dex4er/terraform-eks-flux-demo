@@ -11,7 +11,7 @@ spec:
   subnetSelectorTerms:
     - tags:
         VPC: ${cluster_name}
-        Reach: intra
+        Reach: ${cluster_subnet_reach}
 
   securityGroupSelectorTerms:
     - tags:
@@ -36,6 +36,7 @@ spec:
   tags:
     Cluster: ${cluster_name}
     Nodegroup: default
+    Name: ${cluster_name}-default
 
   metadataOptions:
     httpEndpoint: enabled
@@ -51,7 +52,7 @@ spec:
         volumeType: gp3
         # iops: 3000
         # throughput: 125
-        encrypted: true
+        # encrypted: true
         # kmsKeyID:
         deleteOnTermination: true
     ## local nvme1n1
@@ -61,7 +62,7 @@ spec:
         volumeType: gp3
         # iops: 3000
         # throughput: 125
-        encrypted: true
+        # encrypted: true
         # kmsKeyID:
         deleteOnTermination: true
 

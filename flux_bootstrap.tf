@@ -47,10 +47,11 @@ resource "kubernetes_config_map_v1_data" "cluster-vars" {
       "azs_name_${i}" => data.aws_availability_zones.this[i].names[0]
     },
     {
-      cluster_endpoint = module.eks.cluster_endpoint
-      cluster_name     = var.cluster_name
-      region           = var.region
-      vpc_id           = local.vpc_id
+      cluster_endpoint     = module.eks.cluster_endpoint
+      cluster_name         = var.cluster_name
+      cluster_subnet_reach = var.cluster_in_private_subnet ? "private" : "public"
+      region               = var.region
+      vpc_id               = local.vpc_id
     }
   )
 
