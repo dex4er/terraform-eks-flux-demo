@@ -44,7 +44,7 @@ spec:
 
     settings:
       clusterName: ${cluster_name}
-      clusterEndpoint: https://${cluster_endpoint}
+      clusterEndpoint: ${cluster_endpoint}
       isolatedVPC: false
       interruptionQueue: ${cluster_name}-karpenter
       reservedENIs: "0"
