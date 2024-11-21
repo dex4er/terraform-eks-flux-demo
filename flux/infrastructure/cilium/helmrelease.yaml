@@ -1,0 +1,56 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: cilium
+  namespace: flux-system
+spec:
+  interval: 1m
+  timeout: 5m
+  maxHistory: 2
+  releaseName: cilium
+  targetNamespace: kube-system
+  storageNamespace: kube-system
+  driftDetection:
+    mode: enabled
+  chart:
+    spec:
+      chart: cilium
+      version: 1.16.4 ## $ curl -qsS https://helm.cilium.io/index.yaml | yq '.entries.cilium[]|.version' | grep '[0-9]*\.[0-9]*\.[0-9]*$' | sort -r -V | head -n1
+      sourceRef:
+        kind: HelmRepository
+        name: cilium
+      reconcileStrategy: ChartVersion
+  values:
+    ## https://github.com/cilium/cilium/blob/main/install/kubernetes/cilium/values.yaml
+
+    egressMasqueradeInterfaces: eth0
+    envoy:
+      enabled: true
+    externalIPs:
+      enabled: true
+    hubble:
+      enabled: true
+      relay:
+        enabled: true
+      ui:
+        enabled: true
+        stadalone:
+          enabled: true
+    ingressController:
+      enabled: true
+      default: true
+      loadbalancerMode: shared
+      enableProxyProtocol: true
+      service:
+        annotations:
+          service.beta.kubernetes.io/aws-load-balancer-scheme: internet-facing
+          service.beta.kubernetes.io/aws-load-balancer-proxy-protocol: "*"
+        loadBalancerClass: service.k8s.aws/nlb
+    ipam:
+      operator:
+        clusterPoolIPv4PodCIDRList:
+          - 10.252.0.0/16
+        clusterPoolIPv4MaskSize: 28
+    k8sServiceHost: ${cluster_endpoint#https://}
+    k8sServicePort: "443"
+    kubeProxyReplacement: "true"

@@ -17,6 +17,11 @@ spec:
         kind: EC2NodeClass
         name: default
 
+      startupTaints:
+        - key: node.cilium.io/agent-not-ready
+          value: "true"
+          effect: NoExecute
+
       expireAfter: 336h # 14d
 
       requirements:

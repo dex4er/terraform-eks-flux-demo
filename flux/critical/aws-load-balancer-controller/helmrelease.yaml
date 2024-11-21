@@ -43,6 +43,8 @@ spec:
     region: ${region}
     vpcId: ${vpc_id}
 
+    hostNetwork: true
+
     defaultTags:
       kubernetes.io/cluster/${cluster_name}: owned
       ManagedBy: AWS Load Balancer Controller
