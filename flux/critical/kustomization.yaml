@@ -5,6 +5,9 @@ kind: Kustomization
 resources:
   - aws-eks-node-role-label
   - aws-load-balancer-controller
+  - aws-vpc-cni
+  - cilium
   - coredns
   - eks-pod-identity-agent
   - karpenter
+  - kube-proxy

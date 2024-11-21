@@ -54,3 +54,6 @@ spec:
     k8sServiceHost: ${cluster_endpoint#https://}
     k8sServicePort: "443"
     kubeProxyReplacement: "true"
+    operator:
+      nodeSelector:
+        nodegroup/critical: "true"

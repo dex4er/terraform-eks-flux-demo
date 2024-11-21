@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-kustomization_to_remove_later="flux-system|infrastructure"
+kustomization_to_remove_later="flux-system|critical|infrastructure"
 . shell_common.sh
 
 kubeconfig=$(${aws} ssm get-parameter --name ${kubeconfig_parameter} --output text --query Parameter.Value --with-decryption)
