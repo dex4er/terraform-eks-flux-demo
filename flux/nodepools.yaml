@@ -9,7 +9,7 @@ metadata:
   namespace: flux-system
 spec:
   dependsOn:
-    - name: critical
+    - name: networking
   interval: 1m
   sourceRef:
     kind: GitRepository
