@@ -41,6 +41,24 @@ kubectl get kustomization -n flux-system \
       --context ${cluster_context}
   done
 
+kubectl get services -A \
+  --no-headers \
+  --kubeconfig <(echo "${kubeconfig}") \
+  --context ${cluster_context} |
+  grep -v -E "^(${kustomization_to_remove_later})" |
+  while read -r namespace name type _rest; do
+    if [[ ${type} == "LoadBalancer" ]]; then
+      kubectl delete service ${name} -n ${namespace} \
+        --ignore-not-found \
+        --kubeconfig <(echo "${kubeconfig}") \
+        --context ${cluster_context}
+    fi
+  done
+
+kubectl delete targetgroupbindings -A \
+  --all \
+  --ignore-not-found
+
 sleep 180
 
 kubectl get kustomization -n flux-system \

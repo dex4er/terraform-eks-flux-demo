@@ -1,4 +1,4 @@
-## FluxCD application for infrastructure-level resources in the Kubernetes
+## FluxCD application for networking resources in the Kubernetes
 ## cluster.
 ##
 ## It defines substituted variables that can be used in the base directory.
@@ -6,18 +6,24 @@
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: infrastructure
+  name: networking
   namespace: flux-system
 spec:
   dependsOn:
-    - name: networking
+    - name: critical
   interval: 1m
   sourceRef:
     kind: GitRepository
     name: flux-system
-  path: /flux/infrastructure
+  path: /flux/networking
   prune: true
   postBuild:
     substituteFrom:
       - kind: ConfigMap
         name: cluster-vars
+  healthChecks:
+    - apiVersion: helm.toolkit.fluxcd.io/v2
+      kind: HelmRelease
+      name: cilium
+      namespace: flux-system
+  timeout: 5m

@@ -10,4 +10,5 @@ resources:
   - apps.yaml
   - critical.yaml
   - infrastructure.yaml
+  - networking.yaml
   - nodepools.yaml
