@@ -28,6 +28,9 @@ spec:
   values:
     ## https://github.com/kubernetes-sigs/aws-load-balancer-controller/blob/main/helm/aws-load-balancer-controller/values.yaml
 
+    nodeSelector:
+      nodegroup/critical: "true"
+
     tolerations:
       - effect: NoSchedule
         key: CriticalAddonsOnly

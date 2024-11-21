@@ -7,8 +7,7 @@ resource "kubernetes_namespace_v1" "flux-system" {
   }
 
   lifecycle {
-    prevent_destroy = true
-    ignore_changes  = all
+    ignore_changes = all
   }
 }
 
