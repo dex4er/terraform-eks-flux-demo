@@ -5,4 +5,5 @@ kind: Kustomization
 resources:
   - aws-vpc-cni
   - coredns
+  - kube-proxy
   - metrics-server

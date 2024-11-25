@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  annotations:
+    kustomize.toolkit.fluxcd.io/prune: disabled
+    kustomize.toolkit.fluxcd.io/ssa: merge
+  labels:
+    k8s-app: kube-proxy
+  name: kube-proxy
+  namespace: kube-system
+spec:
+  selector:
+    matchLabels:
+      k8s-app: kube-proxy
+  template:
+    metadata:
+      labels:
+        k8s-app: kube-proxy
+    spec:
+      nodeSelector:
+        io.cilium/aws-node-enabled: "true"
+      containers:
+        - name: aws-node
+          image: 602401143452.dkr.ecr.eu-central-1.amazonaws.com/eks/kube-proxy:v1.31.2-minimal-eksbuild.3
