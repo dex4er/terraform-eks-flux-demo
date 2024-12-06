@@ -9,6 +9,8 @@ resource "kubernetes_namespace_v1" "flux-system" {
   lifecycle {
     ignore_changes = all
   }
+
+  depends_on = [terraform_data.eks_is_ready]
 }
 
 ## This ConfigMap is used to substitute variables used in Kustomizations.

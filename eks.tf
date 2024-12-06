@@ -65,6 +65,10 @@ module "eks" {
   }
 }
 
+resource "terraform_data" "eks_is_ready" {
+  input = module.eks.cluster_name
+}
+
 locals {
   cluster_endpoint       = module.eks.cluster_endpoint
   cluster_ca_certificate = base64decode(module.eks.cluster_certificate_authority_data)
