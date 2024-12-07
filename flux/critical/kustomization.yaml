@@ -1,0 +1,7 @@
+## The manifest with critical services that runs before Flux is bootstrapped.
+
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - aws-eks-node-role-label
+  - aws-load-balancer-controller

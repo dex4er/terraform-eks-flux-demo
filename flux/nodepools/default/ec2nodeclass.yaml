@@ -1,0 +1,68 @@
+apiVersion: karpenter.k8s.aws/v1
+kind: EC2NodeClass
+metadata:
+  name: default
+spec:
+  amiFamily: Bottlerocket
+
+  amiSelectorTerms:
+    - alias: bottlerocket@latest
+
+  subnetSelectorTerms:
+    - tags:
+        VPC: ${cluster_name}
+        Reach: intra
+
+  securityGroupSelectorTerms:
+    - tags:
+        Name: ${cluster_name}-node-group
+
+  role: ${cluster_name}-node-group
+
+  kubelet:
+    maxPods: 18
+    imageGCHighThresholdPercent: 75
+    imageGCLowThresholdPercent: 70
+
+  userData: |-
+    [settings.kubernetes]
+    registry-qps = 75
+    registry-burst = 150
+    [settings.host-containers.admin]
+    enabled = true
+    [settings.kernel]
+    lockdown = "integrity"
+
+  tags:
+    Cluster: ${cluster_name}
+    Nodegroup: default
+
+  metadataOptions:
+    httpEndpoint: enabled
+    httpProtocolIPv6: disabled
+    httpPutResponseHopLimit: 1
+    httpTokens: required
+
+  blockDeviceMappings:
+    ## boot nvme0n1
+    - deviceName: /dev/xvda
+      ebs:
+        volumeSize: 4Gi
+        volumeType: gp3
+        # iops: 3000
+        # throughput: 125
+        encrypted: true
+        # kmsKeyID:
+        deleteOnTermination: true
+    ## local nvme1n1
+    - deviceName: /dev/xvdb
+      ebs:
+        volumeSize: 100Gi
+        volumeType: gp3
+        # iops: 3000
+        # throughput: 125
+        encrypted: true
+        # kmsKeyID:
+        deleteOnTermination: true
+
+  detailedMonitoring: true

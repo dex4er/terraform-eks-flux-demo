@@ -1,0 +1,12 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: aws-eks-node-role-label
+subjects:
+  - kind: ServiceAccount
+    name: aws-eks-node-role-label
+    namespace: kube-system
+roleRef:
+  kind: ClusterRole
+  name: aws-eks-node-role-label
+  apiGroup: rbac.authorization.k8s.io

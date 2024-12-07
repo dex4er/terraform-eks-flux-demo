@@ -7,18 +7,13 @@ locals {
       service_account = "aws-load-balancer-controller"
       role_arn        = module.eks_pod_identity_aws_lb_controller.iam_role_arn
     }
-    aws-vpc-cni = {
-      namespace       = "kube-system"
-      service_account = "aws-node"
-      role_arn        = module.eks_pod_identity_aws_vpc_cni.iam_role_arn
-    }
-    default = {
-      namespace       = "default"
-      service_account = "default"
-      additional_policy_arns = {
-        AmazonS3FullAccess = "arn:aws:iam::aws:policy/AmazonS3FullAccess",
-      }
-    }
+    # default = {
+    #   namespace       = "default"
+    #   service_account = "default"
+    #   additional_policy_arns = {
+    #     AmazonS3FullAccess = "arn:aws:iam::aws:policy/AmazonS3FullAccess",
+    #   }
+    # }
   }
 }
 

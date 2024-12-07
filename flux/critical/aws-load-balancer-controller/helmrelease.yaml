@@ -16,7 +16,7 @@ spec:
     spec:
       interval: 1m
       chart: aws-load-balancer-controller
-      version: 1.9.1 ## $ curl -qsS https://aws.github.io/eks-charts/index.yaml | yq .entries.aws-load-balancer-controller.0.version
+      version: 1.10.0 ## $ curl -qsS https://aws.github.io/eks-charts/index.yaml | yq .entries.aws-load-balancer-controller.0.version
       sourceRef:
         kind: HelmRepository
         name: eks-charts
@@ -27,6 +27,12 @@ spec:
     crds: CreateReplace
   values:
     ## https://github.com/kubernetes-sigs/aws-load-balancer-controller/blob/main/helm/aws-load-balancer-controller/values.yaml
+
+    tolerations:
+      - effect: NoSchedule
+        key: CriticalAddonsOnly
+        operator: Equal
+        value: "true"
 
     enableCertManager: false
 

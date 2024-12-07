@@ -1,6 +1,5 @@
-## The manifest with infrastructure-level services.
-
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
-  - metrics-server
+  - ec2nodeclass.yaml
+  - nodepool.yaml

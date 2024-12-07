@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: aws-eks-node-role-label
+  labels:
+    app.kubernetes.io/name: aws-eks-node-role-label
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: aws-eks-node-role-label
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: aws-eks-node-role-label
+    spec:
+      serviceAccountName: aws-eks-node-role-label
+      containers:
+        - name: kubectl
+          image: public.ecr.aws/bitnami/kubectl:latest
+          command:
+            - /entrypoint/entrypoint.sh
+          env:
+            - name: PREFIX
+              value: ${cluster_name}-
+          resources:
+            requests:
+              cpu: 100m
+              memory: 64Mi
+            limits:
+              memory: 64Mi
+          volumeMounts:
+            - name: entrypoint
+              mountPath: /entrypoint
+      nodeSelector:
+        nodegroup/critical: "true"
+      tolerations:
+        - effect: NoSchedule
+          key: CriticalAddonsOnly
+          operator: Exists
+      volumes:
+        - name: entrypoint
+          configMap:
+            name: aws-eks-node-role-label-entrypoint
+            defaultMode: 0o755

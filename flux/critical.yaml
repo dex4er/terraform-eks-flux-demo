@@ -1,21 +1,18 @@
-## FluxCD application for infrastructure-level resources in the Kubernetes
-## cluster.
-##
-## It defines substituted variables that can be used in the base directory.
+## FluxCD critical services that must be installed before other infrastructure.
 
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: infrastructure
+  name: critical
   namespace: flux-system
 spec:
   dependsOn:
-    - name: critical
+    - name: flux-system
   interval: 1m
   sourceRef:
     kind: GitRepository
     name: flux-system
-  path: /flux/infrastructure
+  path: /flux/critical
   prune: true
   postBuild:
     substituteFrom:

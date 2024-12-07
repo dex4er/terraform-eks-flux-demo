@@ -1,0 +1,25 @@
+## https://github.com/controlplaneio-fluxcd/charts/blob/main/charts/flux-operator/values.yaml
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 128Mi
+
+  limits:
+    cpu: "666"
+    memory: 128Mi
+
+affinity:
+  nodeAffinity:
+    requiredDuringSchedulingIgnoredDuringExecution:
+      nodeSelectorTerms:
+        - matchExpressions:
+            - key: nodegroup/critical
+              operator: In
+              values:
+                - "true"
+
+tolerations:
+  - effect: NoSchedule
+    key: CriticalAddonsOnly
+    operator: Exists

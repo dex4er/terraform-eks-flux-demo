@@ -1,0 +1,54 @@
+apiVersion: karpenter.sh/v1
+kind: NodePool
+metadata:
+  name: default
+spec:
+  weight: 100
+
+  template:
+    metadata:
+      labels:
+        nodegroup: default
+        nodegroup/default: "true"
+
+    spec:
+      nodeClassRef:
+        group: karpenter.k8s.aws
+        kind: EC2NodeClass
+        name: default
+
+      expireAfter: 336h # 14d
+
+      requirements:
+        ## ordered entries as they are patched for individual environments
+        - key: karpenter.sh/capacity-type
+          operator: In
+          values:
+            - on-demand
+            - spot
+        ## other entries may have a random index
+        - key: karpenter.k8s.aws/instance-category
+          operator: In
+          values:
+            - t
+            - m
+            - c
+        - key: karpenter.k8s.aws/instance-size
+          operator: NotIn
+          values:
+            - nano
+            - micro
+            - small
+            - medium
+        - key: kubernetes.io/arch
+          operator: In
+          values:
+            - amd64
+            - arm64
+
+  disruption:
+    consolidationPolicy: WhenEmptyOrUnderutilized
+    consolidateAfter: 5m
+
+  limits:
+    cpu: "960"
