@@ -208,6 +208,19 @@
         "env": {
           "$ref": "#/definitions/InitEnv"
         },
+        "image": {
+          "additionalProperties": false,
+          "properties": {
+            "pullPolicy": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          },
+          "title": "Image Schema",
+          "type": "object"
+        },
         "resources": {
           "$ref": "#/definitions/Resources"
         }
@@ -264,6 +277,19 @@
         "healthProbeBindAddr": {
           "format": "integer",
           "type": "string"
+        },
+        "image": {
+          "additionalProperties": false,
+          "properties": {
+            "pullPolicy": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          },
+          "title": "Image Schema",
+          "type": "object"
         },
         "metricsBindAddr": {
           "format": "integer",

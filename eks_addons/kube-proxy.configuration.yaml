@@ -1,10 +1,11 @@
 # yaml-language-server: $schema=./kube-proxy.schema.json
 
 ## https://docs.aws.amazon.com/eks/latest/userguide/managing-kube-proxy.html
-## $ aws eks describe-addon-configuration --addon-name kube-proxy --addon-version v1.31.0-eksbuild.5  | jq -r .configurationSchema | jq . > kube-proxy.schema.json
+## $ aws eks describe-addon-configuration --addon-name kube-proxy --addon-version v1.31.3-eksbuild.2  | jq -r .configurationSchema | jq . > kube-proxy.schema.json
 
 resources:
   limits:
+    cpu: 100m
     memory: 128Mi
   requests:
     cpu: 100m

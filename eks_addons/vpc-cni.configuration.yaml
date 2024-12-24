@@ -1,11 +1,31 @@
 # yaml-language-server: $schema=./vpc-cni.schema.json
 
 ## https://docs.aws.amazon.com/eks/latest/userguide/managing-vpc-cni.html
-## $ aws eks describe-addon-configuration --addon-name vpc-cni --addon-version v1.18.5-eksbuild.1 | jq -r .configurationSchema | jq . > vpc-cni.schema.json
+## $ aws eks describe-addon-configuration --addon-name vpc-cni --addon-version v1.19.0-eksbuild.1 | jq -r .configurationSchema | jq . > vpc-cni.schema.json
+
+env:
+  ADDITIONAL_ENI_TAGS: |
+    {
+      "Cluster": "${cluster_name}",
+      "creator": "aws-vpc-cni"
+    }
+
+nodeAgent:
+  resources:
+    limits:
+      cpu: 100m
+      memory: 256Mi
+    requests:
+      cpu: 100m
+      memory: 256Mi
 
 resources:
   limits:
+    cpu: 100m
     memory: 256Mi
   requests:
     cpu: 100m
     memory: 256Mi
+
+tolerations:
+  - operator: Exists
