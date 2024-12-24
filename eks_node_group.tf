@@ -24,14 +24,23 @@ locals {
       azs = local.azs_ids
 
       instance_types = [
-        ## 2vcpu, 4GiB
-        "t4g.medium",
-        "c6g.large",
-        "c6gd.large",
-        "c6gn.large",
-        "c7g.large",
-        "c7gd.large",
-        "c8g.large",
+        # ## 2vcpu, 4GiB
+        # "t4g.medium",
+        # "c6g.large",
+        # "c6gd.large",
+        # "c6gn.large",
+        # "c7g.large",
+        # "c7gd.large",
+        # "c8g.large",
+
+        ## 4vcpu, 8GiB
+        "c7gd.xlarge",
+        "c6gn.xlarge",
+        "c8g.xlarge",
+        "c6gd.xlarge",
+        "c7g.xlarge",
+        "c6g.xlarge",
+        "a1.xlarge",
       ]
 
       capacity_type = "SPOT"
